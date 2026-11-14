@@ -1,0 +1,77 @@
+{
+  "mola_463m_gale": {
+    "name": "mola_463m_gale",
+    "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif",
+    "source_size_bytes": null,
+    "source_width": 46080,
+    "source_height": 23040,
+    "source_crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs=True",
+    "bbox_lonlat_requested": [
+      136.2,
+      -7.0,
+      139.4,
+      -3.8
+    ],
+    "pixel_window": [
+      40473,
+      12006,
+      410,
+      410
+    ],
+    "transfer_bytes": 37785600,
+    "seconds": 19.6,
+    "local_file": "raw/mola_463m_gale.tif",
+    "local_md5": "ca8c2b02d507e72136db8869b764d36e",
+    "fetched_at": "2026-11-14T18:59:11+01:00"
+  },
+  "hrsc_mola_blend_200m_gale": {
+    "name": "hrsc_mola_blend_200m_gale",
+    "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif",
+    "source_size_bytes": null,
+    "source_width": 106694,
+    "source_height": 53347,
+    "source_crs": "+proj=longlat +R=3396190 +no_defs=True",
+    "bbox_lonlat_requested": [
+      136.2,
+      -7.0,
+      139.4,
+      -3.8
+    ],
+    "pixel_window": [
+      93713,
+      27799,
+      948,
+      948
+    ],
+    "transfer_bytes": 202291824,
+    "seconds": 93.5,
+    "local_file": "raw/hrsc_mola_blend_200m_gale.tif",
+    "local_md5": "608f866c2c5d5774058c7522b7b40eab",
+    "fetched_at": "2026-11-14T19:00:45+01:00"
+  },
+  "msl_gale_dem_1m_box": {
+    "name": "msl_gale_dem_1m_box",
+    "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+    "source_size_bytes": null,
+    "source_width": 32980,
+    "source_height": 57440,
+    "source_crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs=True",
+    "bbox_lonlat_requested": [
+      137.3565,
+      -4.8335,
+      137.4035,
+      -4.7765
+    ],
+    "pixel_window": [
+      13771,
+      38344,
+      2786,
+      3379
+    ],
+    "transfer_bytes": 445757680,
+    "seconds": 196.9,
+    "local_file": "raw/msl_gale_dem_1m_box.tif",
+    "local_md5": "2a68dbedab666c07d1c3f996d2a9e41f",
+    "fetched_at": "2026-11-14T19:04:03+01:00"
+  }
+}
