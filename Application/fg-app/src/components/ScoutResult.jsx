@@ -33,7 +33,11 @@ export default function ScoutResult({ result }) {
       <canvas ref={wave} width="440" height="90" />
       <small>Sound energy over 30 shots on the same spot (drops faster on soft ground):</small>
       <canvas ref={bars} width="440" height="60" />
-      <small>Hardness index {Math.round(result.h * 100)}/100 · computed from our AI's terrain result at sol {result.sol}.</small>
+      <small>Hardness index {Math.round(result.h * 100)}/100 · computed from our AI's terrain result at sol {result.sol}{result.grey ? " (nearest Curiosity stop: no photo in this area)" : ""}{result.changed ? " + the simulated change" : ""}.</small>
+      <div className="sensors">
+        <span>🌡 {result.env.tempC} °C</span><span>☢ {result.env.radMsvDay} mSv/day</span><span>🟨 sand {Math.round(result.sand_pct * 100)}%</span>
+        <span className="tag">LIVE · replaces the stored AI result</span>
+      </div>
     </div>
   );
 }

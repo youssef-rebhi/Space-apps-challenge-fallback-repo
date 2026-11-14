@@ -29,6 +29,7 @@ export function shotEnergies(h, shots = 30) {
 
 export function verdict(s) {
   const sand = s.sand_pct ?? 0;
+  if ((s.bigrock_pct ?? 0) > 0.02) return { label: "BIG ROCKS: DON'T GO", colour: "red" };
   if (sand > 0.3) return { label: "SOFT SAND", colour: "red" };
   if (sand >= 0.1) return { label: "MIXED: CAREFUL", colour: "orange" };
   return { label: "HARD GROUND", colour: "green" };
