@@ -15,7 +15,7 @@ const BASES = {
   crater: { file: "regional_gale_elevation.webp", key: "regional_gale_elevation.png", label: "Whole Gale crater" },
 };
 
-export default function GeoMap({ targets = [], astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, droneCells = [], scoutSegs = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
+export default function GeoMap({ targets = [], astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, waypoints = [], onMoveWaypoint, abortPaths = [], hoverCoord = null, droneCells = [], scoutSegs = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
   const box = useRef(null), map = useRef(null), layers = useRef({}), geo = useRef(null), fitted = useRef(false);
   const fitStops = (m) => stops.length && m.fitBounds(L.latLngBounds(stops.map((s) => [s.lat, s.lon])), { padding: [50, 50] });
   const [base, setBase] = useState("gonogo");
@@ -88,7 +88,36 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
       }
       flush();
     }
-    ["A", "B"].forEach((k) => { const P = ab[k]; if (P) L.marker([P.lat, P.lon], { icon: L.divIcon({ className: "abpin " + k, html: k, iconSize: [26, 26] }), interactive: false }).addTo(grp); });
+    // Abort Corridors
+    abortPaths.forEach((ap) => {
+      L.polyline(ap.pts.map((q) => [q.lat, q.lon]), {
+        color: ap.pastPNR ? "#d73027" : "#ff7733",
+        weight: 2.5,
+        opacity: 0.85,
+        dashArray: "4 6",
+        interactive: true,
+      }).bindTooltip(`🚨 Emergency Abort Corridor W${ap.fromIndex} → Base (${Math.round(ap.dist)} m, ${Math.round(ap.minutes)} min)${ap.pastPNR ? " ⚠ PAST PNR" : ""}`).addTo(grp);
+    });
+
+    // Waypoints (draggable) or fallback to A / B pins
+    if (waypoints && waypoints.length > 0) {
+      waypoints.forEach((wp, idx) => {
+        const isBase = idx === 0;
+        const icon = L.divIcon({
+          className: `abpin ${isBase ? "A" : "wp"}`,
+          html: isBase ? "W0" : `W${idx}`,
+          iconSize: [28, 28],
+        });
+        const mkr = L.marker([wp.lat, wp.lon], { icon, draggable: true, zIndexOffset: 850 }).addTo(grp);
+        mkr.bindTooltip(`${isBase ? "W0 (Base / Lander)" : `Waypoint W${idx}`} · drag to adjust`);
+        mkr.on("dragend", (e) => {
+          const ll = e.target.getLatLng();
+          onMoveWaypoint?.(idx, ll.lat, ll.lng);
+        });
+      });
+    } else {
+      ["A", "B"].forEach((k) => { const P = ab[k]; if (P) L.marker([P.lat, P.lon], { icon: L.divIcon({ className: "abpin " + k, html: k, iconSize: [26, 26] }), interactive: false }).addTo(grp); });
+    }
     targets.forEach((t) => {
       if (t.lat == null) return;
       L.marker([t.lat, t.lon], { icon: L.divIcon({ className: "sciIcon " + t.type, html: "🔬", iconSize: [26, 26] }), bubblingMouseEvents: false, zIndexOffset: 500 })
@@ -108,7 +137,24 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
       L.circleMarker([p.lat, p.lon], { radius: sel ? 9 : 7, color: "#fff", weight: sel ? 3 : 2, dashArray: "3 2", fillColor: COLOURS[c], fillOpacity: 0.9, bubblingMouseEvents: false })
         .on("click", () => onSelect(p)).bindTooltip("your point").addTo(grp);
     });
-  }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, droneCells, scoutSegs, route, selected, scouted, colourFor, ready, base, showStops]);
+  }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, waypoints, abortPaths, droneCells, scoutSegs, route, selected, scouted, colourFor, ready, base, showStops]);
+
+  // Synchronized elevation profile hover crosshair
+  useEffect(() => {
+    const fx = layers.current.fx; if (!fx) return;
+    if (layers.current.hoverMkr) { layers.current.hoverMkr.remove(); layers.current.hoverMkr = null; }
+    if (hoverCoord && hoverCoord.lat != null) {
+      layers.current.hoverMkr = L.circleMarker([hoverCoord.lat, hoverCoord.lon], {
+        radius: 8,
+        color: "#ffffff",
+        weight: 3,
+        fillColor: hoverCoord.color || "#3cff8f",
+        fillOpacity: 1,
+        className: "profile-hover-marker",
+        interactive: false,
+      }).addTo(fx);
+    }
+  }, [hoverCoord, ready]);
 
   // drone scan layer (SIMULATED, by the team's drone simulator): display only, not used for decisions
   const DRONE_STYLE = { clear: "#3ecf8e", sand: "#ffb020", slope_caution: "#b57cff", slope_nogo: "#6a1fd1", obstacle: "#ff5a5a", obstacle_point: "#ff5a5a" };

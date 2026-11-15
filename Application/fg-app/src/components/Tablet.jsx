@@ -14,6 +14,7 @@ import { dist } from "../lib/mission.js";
 import { safestPath, samplePath, WEIGHTS, droneScan, cellLatLon } from "../lib/pathfind.js";
 import { scoutNeeds, scoutRun, rerouteScanned, cellCentre } from "../lib/routes.js";
 import Planner from "./Planner.jsx";
+import ElevationProfile from "./ElevationProfile.jsx";
 import { samplePts } from "../lib/routes.js";
 import { scienceTargets, LABEL, siteNear, openOf, samplesOf, HUMAN } from "../lib/science.js";
 import { publish, subscribe } from "../lib/live.js";
@@ -42,8 +43,13 @@ export default function Tablet() {
   const [droneCells, setDroneCells] = useState([]);
   // route planner A → B (several options)
   const [A, setA] = useState(null), [B, setB] = useState(null), [pickFor, setPickFor] = useState(null);
+  const [waypoints, setWaypoints] = useState([]);
+  const [abortData, setAbortData] = useState(null);
+  const [hoverCoord, setHoverCoord] = useState(null);
+  const [loadedGeo, setLoadedGeo] = useState(null);
   const [options, setOptions] = useState([]), [chosen, setChosen] = useState(0);
   const [targets, setTargets] = useState([]);
+  useEffect(() => { loadGeo().then(setLoadedGeo).catch(() => {}); }, []);
   useEffect(() => { if (stops.length) scienceTargets(stops, dist).then(setTargets); }, [stops]);
   const targetOf = (s) => (s && !s.grey ? siteNear(s, targets, dist) : null);
   // LIVE astronaut from the helmet (telemetry every second through server.py)
@@ -70,13 +76,58 @@ export default function Tablet() {
 
   // click anywhere on the map → a point with the DEM slope/height; no AI photo there → scout it
   async function pick(lat, lon) {
-    if (pickFor) { (pickFor === "A" ? setA : setB)({ lat, lon, label: "picked on map" }); setPickFor(null); setOptions([]); return; }
+    if (pickFor) {
+      if (pickFor === "A") setA({ lat, lon, label: "picked on map" });
+      else if (pickFor === "B") setB({ lat, lon, label: "picked on map" });
+      else if (pickFor.startsWith("W")) {
+        const idx = parseInt(pickFor.slice(1));
+        setWaypoints((wps) => {
+          const next = [...wps];
+          next[idx] = { ...next[idx], lat, lon, label: idx === 0 ? "W0 (Base)" : `W${idx}` };
+          return next;
+        });
+      }
+      setPickFor(null);
+      setOptions([]);
+      return;
+    }
     let slope_class = null, elev = null, map_class = null;
     try { const g = await loadGeo(); slope_class = g.slopeAt(lat, lon); elev = elevAt(g.elev, lat, lon); map_class = g.mapAt ? g.mapAt(lat, lon) : null; } catch {}
     const p = { ...pointFrom(lat, lon, stops, dist), slope_class, elev, map_class };
     setPicks((ps) => [...ps.filter((x) => route.includes(x.id)).slice(-60), p]);
     setSel(p);
   }
+
+  const handleMoveWaypoint = (idx, newLat, newLon) => {
+    setWaypoints((wps) => {
+      const next = [...wps];
+      next[idx] = { ...next[idx], lat: newLat, lon: newLon };
+      return next;
+    });
+    setOptions([]);
+  };
+
+  const elevStats = useMemo(() => {
+    const pts = options[chosen]?.pts;
+    if (!pts || pts.length < 2 || !loadedGeo?.elev) return null;
+    let gain = 0, loss = 0, minZ = Infinity, maxZ = -Infinity, multSum = 0;
+    for (let i = 0; i < pts.length; i++) {
+      const z = pts[i].elev != null ? pts[i].elev : (elevAt(loadedGeo.elev, pts[i].lat, pts[i].lon) ?? -4400);
+      if (z < minZ) minZ = z;
+      if (z > maxZ) maxZ = z;
+      let slope = 0;
+      if (i > 0) {
+        const prevZ = pts[i - 1].elev != null ? pts[i - 1].elev : (elevAt(loadedGeo.elev, pts[i - 1].lat, pts[i - 1].lon) ?? -4400);
+        const dz = z - prevZ;
+        if (dz > 0) gain += dz; else loss += Math.abs(dz);
+        const d = dist(pts[i - 1], pts[i]);
+        slope = d > 0 ? (Math.atan(Math.abs(dz) / d) * 180) / Math.PI : 0;
+      }
+      const uphill = slope > 0 ? (slope / 15) * 0.25 : 0;
+      multSum += (1.0 + uphill);
+    }
+    return { gain, loss, minElev: minZ, maxElev: maxZ, avgMultiplier: multSum / pts.length };
+  }, [options, chosen, loadedGeo]);
 
   // start of the walk: last point of the route, else Curiosity's latest stop (our "base")
   const startPoint = () => (route.length ? resolve(route[route.length - 1]) : stops.reduce((a, b) => (b.sol > a.sol ? b : a), stops[0]));
@@ -267,9 +318,10 @@ export default function Tablet() {
         <section className="mapCol">
           {view3d
             ? (noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
-                     : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
+                     : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} hoverCoord={hoverCoord} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
             : (noGeo ? <MiniMap stops={stops} greys={greys} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} />
-                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
+                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} waypoints={waypoints} onMoveWaypoint={handleMoveWaypoint} abortPaths={abortData?.abortPaths || []} hoverCoord={hoverCoord} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
+          <ElevationProfile routePts={options[chosen]?.pts} geo={loadedGeo} stops={stops} onHoverCoord={setHoverCoord} hoveredCoord={hoverCoord} />
           <div className="legend">
             {["green", "orange", "red", "grey"].map((c) => (
               <span key={c}><i style={{ background: COLOURS[c] }} />{{ green: "GO · AI sure", orange: "careful · or AI unsure", red: "don't go", grey: "no ground data · send scout" }[c]}</span>
@@ -284,8 +336,9 @@ export default function Tablet() {
               {stops.map((q) => <option key={q.sol + "-" + q.lon} value={q.sol}>sol {q.sol} · {{ green: "GO", orange: "careful", red: "don't go", grey: "no data" }[colourFor(q)]} · sand {Math.round((q.sand_pct ?? 0) * 100)}%</option>)}
             </select>
           </label>
-          {!noGeo && <Planner targets={targets} stops={stops} A={A} B={B} setA={setA} setB={setB} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
-            options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} need={need} onScout={scoutRoute} scoutBusy={scoutBusy} />}
+          {!noGeo && <Planner targets={targets} stops={stops} A={A} B={B} setA={setA} setB={setB} waypoints={waypoints} setWaypoints={setWaypoints} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
+            options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} need={need} onScout={scoutRoute} scoutBusy={scoutBusy}
+            abortData={abortData} setAbortData={setAbortData} plan={plan} elevStats={elevStats} />}
           {sel && (
             <div className="card">
               {targetOf(sel) && (
