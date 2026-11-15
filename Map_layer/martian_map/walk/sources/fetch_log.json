@@ -1,0 +1,14 @@
+{
+ "file": "PIA26693.png",
+ "url": "https://assets.science.nasa.gov/content/dam/science/psd/photojournal/pia/pia26/pia26693/PIA26693.png",
+ "page": "https://science.nasa.gov/photojournal/curiosity-surveys-the-boxwork-region/",
+ "bytes": 179468813,
+ "md5": "6a06db7742934e28757e8f87fc8b41d2",
+ "pixels": [
+  16221,
+  6189
+ ],
+ "credit": "NASA/JPL-Caltech/MSSS",
+ "fetched": "2026-11-15, with curl (same URL as pipeline/12_fetch_color_ref.py); HTTP 200, content-type image/png",
+ "used_for": "walk view ground and sky colours (docs/ASSUMPTIONS.md A37, pipeline/walk_color.py)"
+}
