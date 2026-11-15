@@ -12,3 +12,6 @@ Drone/sim/data/usgs_box.npy
 Drone/sim/data/ml_bins.csv
 Drone/sim/data/route_flights_aug.json
 Drone/sim/data/usgs_box_hillshade.png
+
+# phone portal: self-signed https certificate made on each PC (never commit keys)
+Application/firmground-app-built/certs/
