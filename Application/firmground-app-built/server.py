@@ -38,6 +38,9 @@ class H(SimpleHTTPRequestHandler):
             return self._json({"ok": True, "id": e["id"]})
         self.send_error(404)
 
+    def end_headers(self):  # rebuilds keep the same file names: the browser re-checks each file (a quick 304 if unchanged)
+        self.send_header("Cache-Control", "no-cache"); super().end_headers()
+
     def log_message(self, *a): pass
 
 if __name__ == "__main__":
