@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marsouine demo film (30 s)</title>
+<style>
+  :root { --bg: #050507; --ui: rgba(14, 16, 22, .92); --line: #2a2d36; --text: #e8e9ee; --dim: #9aa0ad; --accent: #36e0ff; }
+  html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font: 14px/1.4 "Segoe UI", system-ui, sans-serif; overflow: hidden; }
+  #stage { position: fixed; inset: 0 0 64px 0; display: grid; place-items: center; }
+  body.noui #stage { inset: 0; }
+  #out { display: block; background: #000; box-shadow: 0 0 0 1px #1b1d24; }
+  #ui { position: fixed; left: 0; right: 0; bottom: 0; height: 64px; display: flex; align-items: center; gap: 12px; padding: 0 16px; background: var(--ui); border-top: 1px solid var(--line); box-sizing: border-box; }
+  body.noui #ui { display: none; }
+  #ui button { background: #1d2029; color: var(--text); border: 1px solid #343846; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; white-space: nowrap; }
+  #ui button:hover { border-color: var(--accent); }
+  #ui button:disabled { opacity: .45; cursor: default; }
+  #play { width: 44px; font-size: 16px !important; }
+  #scrub { flex: 1; min-width: 120px; accent-color: var(--accent); }
+  #time { font-variant-numeric: tabular-nums; min-width: 92px; color: var(--dim); }
+  #shot { min-width: 150px; color: var(--accent); font-weight: 600; }
+  #msg { position: fixed; left: 50%; top: 18px; transform: translateX(-50%); background: var(--ui); border: 1px solid var(--line); border-radius: 10px; padding: 10px 16px; display: none; max-width: 80vw; z-index: 5; }
+  #loading { position: fixed; inset: 0; display: grid; place-items: center; background: var(--bg); color: var(--dim); font-size: 16px; z-index: 9; text-align: center; padding: 24px; }
+  @media (max-width: 760px) { #shot, #saveBtn { display: none; } #ui { gap: 6px; padding: 0 8px; } #ui button { padding: 6px 8px; } }
+</style>
+<script type="importmap">{"imports":{"three":"../vendor/three/build/three.module.js","three/addons/":"../vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="stage"><canvas id="out" width="1920" height="1080"></canvas></div>
+<div id="ui">
+  <button id="play" title="Play / pause (Space)">▶</button>
+  <input id="scrub" type="range" min="0" max="30" step="0.001" value="0" aria-label="Time">
+  <span id="time">0.00 / 30 s</span>
+  <span id="shot"></span>
+  <button id="mp4Btn" title="Renders every frame, then saves an MP4 (H.264). Needs Chrome or Edge and the mp4-muxer library from cdn.jsdelivr.net.">Export MP4</button>
+  <button id="webmBtn" title="Plays the film once in real time and records it (WebM). Use it if MP4 export is not available.">Record WebM</button>
+  <button id="saveBtn" title="Save this frame as a PNG">Save frame</button>
+</div>
+<div id="msg"></div>
+<div id="loading">Loading the film…</div>
+
+<script type="module">
+// Marsouine: 30 s demo film. Every picture is a pure function of the time t (seconds), so the MP4 export is frame-exact.
+// All facts on screen are read from the data files at run time (layers.json, data/combined_report.json, overlays.json,
+// walk/walk.json, film/assets/facts.json). Display choices (timings, camera paths, colours, height x2) are docs/ASSUMPTIONS.md A48-A53.
+import * as THREE from 'three';
+import {LineSegments2} from 'three/addons/lines/LineSegments2.js';
+import {LineSegmentsGeometry} from 'three/addons/lines/LineSegmentsGeometry.js';
+import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
+import * as SEC from '../lib/sections.js';
+import {sunAtLTST, planetographic} from '../walk/mars24.js';
+
+const $ = s => document.querySelector(s);
+const Q = new URLSearchParams(location.search);
+const W = 1920, H = 1080, DUR = 30;
+const FPS = [24, 25, 30, 50, 60].includes(+Q.get('fps')) ? +Q.get('fps') : 30;
+const SS = Math.min(2, Math.max(1, +Q.get('ss') || 1));          // supersampling of the 3D picture (1 = off)
+if (Q.get('ui') === '0') document.body.classList.add('noui');
+const fail = e => { $('#loading').textContent = 'Could not load: ' + (e.message || e) + '. Serve the web/ folder (see README) and open /film/.'; throw e; };
+const J = p => fetch(p).then(r => { if (!r.ok) throw new Error(p + ' ' + r.status); return r.json(); });
+
+// ---------------------------------------------------------------- data (read, never typed in)
+const manifest = await J('../layers.json').catch(fail);
+const [meta, report, OV, FACTS, CR, WALK] = await Promise.all([J('../' + manifest.terrain), J('../' + manifest.report), J('../' + manifest.overlays),
+  J('assets/facts.json'), J('assets/crater.json'), J('../walk/walk.json')]).catch(fail);
+const LAY = Object.fromEntries(manifest.layers.map(l => [l.id, l]));
+const F = SEC.makeFrame(meta);
+const [WM, HM] = meta.size_m, ZMIN = meta.z.min, ZMAX = meta.z.max, ZMID = (ZMIN + ZMAX) / 2;
+const EX = 2;                                                      // height x2 on the map shots (display only, A49)
+const FOOT = report.profiles.foot;
+const pct = (v, d = 1) => (v * 100).toFixed(d);
+const BOX = FOOT.box, PATH_NOGO = FOOT.curiosity_path_before_rover_rule['NO-GO'];
+const TARGET = (FOOT.strictness_verdict.match(/target\s*<=\s*([\d.]+)/) || [])[1];
+const LEG = OV.routes.find(r => r.profile === 'foot' && r.leg === '4718->5050');
+const RP = LEG.props;
+const ROUTE = LEG.xyz.map(p => [p[0], p[1], p[2]]);
+const AI = FACTS.ai, DRONE = FACTS.drone;
+const SECT = SEC.sectionFromPath(F, ROUTE.map(p => [p[0], p[1]]), {heading: true});
+const short = s => s.split(/ \/ | \(/)[0].trim();                   // "Nazca (49th drill hole)" -> "Nazca"
+const BOXKM = [(WM * F.ewGround / 1000).toFixed(1), (HM / 1000).toFixed(1)];
+
+// ---------------------------------------------------------------- small helpers
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const eout = x => 1 - Math.pow(1 - x, 3);
+const ein = x => x * x * x;
+const backOut = x => { const c = 1.4; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+const seg = (t, a, b, e = eio) => e(clamp((t - a) / (b - a)));
+const win = (t, a, b, fi = .3, fo = .3) => Math.min(seg(t, a, a + fi, eout), 1 - seg(t, b - fo, b, ein));   // 0 -> 1 -> 0
+const P3 = (x, y, z, lift = 0, ex = EX) => new THREE.Vector3(x - WM / 2, (z - ZMID) * ex + lift, (HM - y) - HM / 2);
+const rgb = a => new THREE.Color(a[0] / 255, a[1] / 255, a[2] / 255);   // raw sRGB bytes (no conversion, as the textures)
+
+// ---------------------------------------------------------------- renderer + 2D output
+const out = $('#out'), X = out.getContext('2d');
+const renderer = new THREE.WebGLRenderer({antialias: true, alpha: true, preserveDrawingBuffer: true});
+renderer.setPixelRatio(1); renderer.setSize(W * SS, H * SS, false); renderer.setClearColor(0x000000, 0);
+renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NoToneMapping;
+const GL = renderer.domElement;
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, W / H, 10, 1e6);
+
+// ---------------------------------------------------------------- textures
+const loader = new THREE.TextureLoader();
+const tex = async (src, nearest = false, srgb = false) => {
+  const t = await loader.loadAsync(src);
+  t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;     // map sheets: raw bytes in, raw out
+  if (nearest) { t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; }
+  else t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return t;
+};
+const layerTex = async id => { const L = LAY[id], t = await tex('../' + L.file, !!L.nearest);
+  return {t, st: new THREE.Vector4(WM / L.covers_m[0], HM / L.covers_m[1], 0, 1 - HM / L.covers_m[1]), faint: id === 'conv_terrain' || id === 'conv_groundtruth'}; };
+const plain = t => ({t, st: new THREE.Vector4(1, 1, 0, 0), faint: false});
+const bareT = new THREE.DataTexture(new Uint8Array([172, 164, 154, 255]), 1, 1); bareT.needsUpdate = true;
+const [T_nat, T_col, T_photo, T_slope, T_rough, T_terr, T_gt, aiImg] = await Promise.all([
+  tex('../walk/' + WALK.color.overview).then(plain), layerTex('combined_over_photo_foot'), layerTex('photo'),
+  layerTex('conv_slope_foot'), layerTex('conv_roughness'), layerTex('conv_terrain'), layerTex('conv_groundtruth'),
+  new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = 'assets/' + AI.stop.photo; })]).catch(fail);
+const T_bare = plain(bareT);
+
+// ---------------------------------------------------------------- the box heights (4 m) and the crater (MOLA-HRSC)
+const hm = meta.heightmaps.find(h => h.file === 'height_4m.bin');
+const HTS = new Float32Array(await (await fetch('../terrain/' + hm.file)).arrayBuffer());
+const CW = WM / hm.cols, CH = HM / hm.rows;
+function hAt(x, y) {                                                // bilinear on the 4 m heightmap (row 0 = north)
+  const c = clamp(x / CW - .5, 0, hm.cols - 1), r = clamp((HM - y) / CH - .5, 0, hm.rows - 1);
+  const c0 = Math.floor(c), r0 = Math.floor(r), c1 = Math.min(c0 + 1, hm.cols - 1), r1 = Math.min(r0 + 1, hm.rows - 1), fc = c - c0, fr = r - r0, G = (a, b) => HTS[a * hm.cols + b];
+  return (G(r0, c0) * (1 - fc) + G(r0, c1) * fc) * (1 - fr) + (G(r1, c0) * (1 - fc) + G(r1, c1) * fc) * fr;
+}
+const CRZ = new Float32Array(await (await fetch('assets/' + CR.file)).arrayBuffer());
+
+// ---------------------------------------------------------------- crater mesh
+const SKY_H = rgb(WALK.sky.horizon_srgb), GROUND = rgb(WALK.color.far_ground_srgb);
+const crater = (() => {
+  const n = CR.cols, m = CR.rows, pos = new Float32Array(n * m * 3), loc = new Float32Array(n * m * 2), idx = [];
+  for (let r = 0; r < m; r++) for (let c = 0; c < n; c++) {
+    const k = r * n + c, p = P3(CR.x_m[c], CR.y_m[r], CRZ[k]);
+    pos.set([p.x, p.y, p.z], k * 3); loc.set([CR.x_m[c], CR.y_m[r]], k * 2);
+  }
+  for (let r = 0; r < m - 1; r++) for (let c = 0; c < n - 1; c++) { const a = r * n + c; idx.push(a, a + n, a + 1, a + 1, a + n, a + n + 1); }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('loc', new THREE.BufferAttribute(loc, 2));
+  g.setIndex(idx); g.computeVertexNormals();
+  const mat = new THREE.ShaderMaterial({transparent: true,
+    uniforms: {col: {value: GROUND}, haze: {value: SKY_H}, hazeK: {value: 1 / 520000}, opacity: {value: 1}, sunDir: {value: new THREE.Vector3(-.55, .62, .2).normalize()},
+      box: {value: new THREE.Vector4(0, 0, WM, HM)}, hideBox: {value: 0}},
+    vertexShader: `attribute vec2 loc; varying vec2 vL; varying vec3 vN; varying float vD;
+      void main() { vL = loc; vN = normal; vec4 mv = modelViewMatrix * vec4(position, 1.0); vD = -mv.z; gl_Position = projectionMatrix * mv; }`,
+    fragmentShader: `uniform vec3 col, haze, sunDir; uniform float hazeK, opacity, hideBox; uniform vec4 box; varying vec2 vL; varying vec3 vN; varying float vD;
+      void main() {
+        if (hideBox > 0.5 && vL.x > box.x && vL.y > box.y && vL.x < box.z && vL.y < box.w) discard;
+        float l = max(dot(normalize(vN), sunDir), 0.0);
+        vec3 c = col * (0.22 + 0.95 * l);
+        c = mix(c, haze * 0.8, 1.0 - exp(-vD * hazeK));
+        gl_FragColor = vec4(c, opacity); }`});
+  const mesh = new THREE.Mesh(g, mat); mesh.frustumCulled = false; mesh.renderOrder = 0; scene.add(mesh);
+  return mesh;
+})();
+
+// ---------------------------------------------------------------- map sheets (the explode page's sheet, plus a wipe and a section cut)
+const hTex = new THREE.DataTexture(HTS, hm.cols, hm.rows, THREE.RedFormat, THREE.FloatType);
+hTex.minFilter = hTex.magFilter = THREE.NearestFilter; hTex.needsUpdate = true;
+function makeGrid(nc, nr) {
+  const n = nc * nr, pos = new Float32Array(n * 3), uv = new Float32Array(n * 2), guv = new Float32Array(n * 2), idx = new Uint32Array((nc - 1) * (nr - 1) * 6);
+  for (let r = 0, i = 0; r < nr; r++) for (let c = 0; c < nc; c++, i++) {
+    const fx = (.5 + c * (hm.cols - 1) / (nc - 1)) / hm.cols, fy = (.5 + r * (hm.rows - 1) / (nr - 1)) / hm.rows;
+    pos[i * 3] = fx * WM - WM / 2; pos[i * 3 + 2] = fy * HM - HM / 2;
+    uv[i * 2] = fx; uv[i * 2 + 1] = 1 - fy; guv[i * 2] = c / (nc - 1); guv[i * 2 + 1] = r / (nr - 1);
+  }
+  for (let r = 0, k = 0; r < nr - 1; r++) for (let c = 0; c < nc - 1; c++) { const a = r * nc + c, b = a + 1, d = a + nc, e = d + 1; idx.set([a, d, b, b, d, e], k); k += 6; }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  g.setAttribute('guv', new THREE.BufferAttribute(guv, 2)); g.setIndex(new THREE.BufferAttribute(idx, 1));
+  return g;
+}
+function makeSkirt() {
+  const P = [], UV = [], B = [], SH = [], I = [], C1 = hm.cols - 1, R1 = hm.rows - 1;
+  const sides = [[[0, 0], [1, 0], .62], [[C1, 0], [0, 1], .95], [[C1, R1], [-1, 0], 1.0], [[0, R1], [0, -1], .7]];
+  for (const [[c0, r0], [dc, dr], shade] of sides) {
+    const n = dc ? hm.cols : hm.rows, base = P.length / 3;
+    for (let k = 0; k < n; k++) {
+      const c = c0 + dc * k, r = r0 + dr * k, fx = (c + .5) / hm.cols, fy = (r + .5) / hm.rows;
+      for (const b of [0, 1]) { P.push(fx * WM - WM / 2, 0, fy * HM - HM / 2); UV.push(fx, 1 - fy); B.push(b); SH.push(shade); }
+      if (k) { const a = base + (k - 1) * 2; I.push(a, a + 1, a + 2, a + 2, a + 1, a + 3); }
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2));
+  g.setAttribute('bottom', new THREE.Float32BufferAttribute(B, 1)); g.setAttribute('side', new THREE.Float32BufferAttribute(SH, 1)); g.setIndex(I);
+  return g;
+}
+const COMMON = `uniform sampler2D hTex; uniform vec2 hTexel, cell; uniform float zmid, zmin, exag, flatten, baseY;
+float Hs(vec2 p) { return texture2D(hTex, vec2(p.x, 1.0 - p.y)).r; }`;
+const SHEET_VS = COMMON + `
+attribute vec2 guv; uniform vec3 sunDir; uniform float lit;
+varying vec2 vUv; varying vec2 vG; varying float vShade;
+void main() {
+  float k = exag * (1.0 - flatten);
+  vec3 p = position; p.y = baseY + (Hs(uv) - zmid) * k;
+  float hl = Hs(uv - vec2(hTexel.x, 0.0)), hr = Hs(uv + vec2(hTexel.x, 0.0)), hn = Hs(uv + vec2(0.0, hTexel.y)), hs = Hs(uv - vec2(0.0, hTexel.y));
+  vec3 n = normalize(vec3(-(hr - hl) * k / (2.0 * cell.x), 1.0, -(hs - hn) * k / (2.0 * cell.y)));
+  vShade = mix(1.0, 0.3 + 0.95 * max(dot(n, sunDir), 0.0), lit * (1.0 - flatten));
+  vUv = uv; vG = guv;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
+const SHEET_FS = `
+uniform sampler2D mapA, mapB; uniform vec4 stA, stB, wipe, clip; uniform vec2 box, clipRot; uniform vec3 glowCol, edgeColor;
+uniform float mixAB, faintA, faintB, opacity, edgeW, clipMode, dimOut, holeDark;
+varying vec2 vUv; varying vec2 vG; varying float vShade;
+vec4 tap(sampler2D m, vec4 st, float faint) {
+  vec4 c = texture2D(m, vUv * st.xy + st.zw);
+  vec3 d = abs(c.rgb - vec3(0.6196));                              // UNKNOWN grey (158,158,158) shown faint, as on the explode page
+  if (faint > 0.5 && max(d.r, max(d.g, d.b)) < 0.03) c.a *= 0.1;
+  return c;
+}
+void main() {
+  vec2 L = vec2(vUv.x * box.x, vUv.y * box.y);                      // local metres: x east, y north
+  float inside = 1.0;
+  if (clipMode > 0.5) {
+    vec2 d = L - clip.xy; float u = d.x * clipRot.x - d.y * clipRot.y, v = d.x * clipRot.y + d.y * clipRot.x;
+    inside = step(abs(u), clip.z) * step(abs(v), clip.w);
+    if (clipMode < 1.5 && inside < 0.5) discard;
+  }
+  float s = dot(L, wipe.xy);
+  float m = max(mixAB, 1.0 - smoothstep(wipe.z - wipe.w, wipe.z, s));
+  vec4 c = mix(tap(mapA, stA, faintA), tap(mapB, stB, faintB), m);
+  c.rgb *= vShade;
+  float g = (s - wipe.z) / (0.18 * wipe.w);
+  c.rgb += glowCol * exp(-g * g);
+  if (clipMode > 1.5) c.rgb *= mix(1.0 - dimOut, holeDark, inside);
+  vec2 e2 = min(vG, 1.0 - vG) / max(fwidth(vG), vec2(1e-6));
+  c = mix(c, vec4(edgeColor, 1.0), (1.0 - smoothstep(0.7, 1.7, min(e2.x, e2.y))) * edgeW);
+  gl_FragColor = vec4(c.rgb, c.a * opacity);
+}`;
+const SKIRT_VS = COMMON + `
+attribute float bottom; attribute float side; uniform float skirt; varying float vS;
+void main() {
+  float k = exag * (1.0 - flatten); vec3 p = position;
+  p.y = bottom > 0.5 ? baseY - (zmid - zmin) * k - skirt : baseY + (Hs(uv) - zmid) * k;
+  vS = side; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
+const SKIRT_FS = `uniform vec3 color; uniform float opacity; varying float vS; void main() { gl_FragColor = vec4(color * vS, opacity); }`;
+const SUN_DAY = new THREE.Vector3(-.5, .7071, -.5).normalize();
+const U = {hTex: {value: hTex}, hTexel: {value: new THREE.Vector2(1 / hm.cols, 1 / hm.rows)}, cell: {value: new THREE.Vector2(CW, CH)},
+  zmid: {value: ZMID}, zmin: {value: ZMIN}, sunDir: {value: SUN_DAY.clone()}, box: {value: new THREE.Vector2(WM, HM)},
+  glowCol: {value: new THREE.Color(.55, .9, 1)}, edgeColor: {value: new THREE.Color(.92, .93, .96)}};
+const gridRelief = makeGrid(hm.cols, hm.rows), gridFlat = makeGrid(2, 2);
+function sheetMat(extra = {}) {
+  return new THREE.ShaderMaterial({vertexShader: SHEET_VS, fragmentShader: SHEET_FS, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    uniforms: {...U, exag: {value: EX}, flatten: {value: 0}, baseY: {value: 0}, lit: {value: 1}, mapA: {value: null}, mapB: {value: null},
+      stA: {value: new THREE.Vector4(1, 1, 0, 0)}, stB: {value: new THREE.Vector4(1, 1, 0, 0)}, mixAB: {value: 0}, faintA: {value: 0}, faintB: {value: 0},
+      opacity: {value: 1}, edgeW: {value: 0}, wipe: {value: new THREE.Vector4(1, 0, -1e9, 1)}, clip: {value: new THREE.Vector4()}, clipRot: {value: new THREE.Vector2(1, 0)},
+      clipMode: {value: 0}, dimOut: {value: 0}, holeDark: {value: .18}, ...extra}});
+}
+// the stack, bottom -> top. Titles come from layers.json; only the short role lines are ours.
+const DEFS = [
+  {key: 'bare', relief: true, own: T_bare, title: 'Bare terrain', src: 'USGS 1 m DEM · Layer 2'},
+  {key: 'photo', relief: true, own: T_photo, title: LAY.photo.title.replace(/ \(Layer 1\)/, ''), src: 'USGS 25 cm orthophoto · Layer 1'},
+  {key: 'slope', own: T_slope, title: LAY.conv_slope_foot.title.replace(' - ', ' · '), src: 'from the 1 m DEM · Layer 2'},
+  {key: 'rough', own: T_rough, title: LAY.conv_roughness.title, src: 'from the 1 m DEM · Layer 2'},
+  {key: 'terrain', own: T_terr, title: LAY.conv_terrain.title, src: 'geology · Layer 3'},
+  {key: 'gt', own: T_gt, title: LAY.conv_groundtruth.title, src: 'Curiosity + AI stops · Layers 4, 5'},
+];
+const sheets = DEFS.map((d, i) => {
+  const mat = sheetMat(); const mesh = new THREE.Mesh(d.relief ? gridRelief : gridFlat, mat);
+  mesh.frustumCulled = false; mesh.renderOrder = 10 + i; scene.add(mesh);
+  return {...d, i, mat, mesh};
+});
+const skirt = new THREE.Mesh(makeSkirt(), new THREE.ShaderMaterial({vertexShader: SKIRT_VS, fragmentShader: SKIRT_FS, transparent: true, side: THREE.DoubleSide,
+  uniforms: {...U, exag: {value: EX}, flatten: {value: 0}, baseY: {value: 0}, skirt: {value: 30}, color: {value: new THREE.Color(.36, .29, .25)}, opacity: {value: 1}}}));
+skirt.frustumCulled = false; skirt.renderOrder = 9; scene.add(skirt);
+const setTex = (m, slot, T) => { m.uniforms['map' + slot].value = T.t; m.uniforms['st' + slot].value = T.st; m.uniforms['faint' + slot].value = T.faint ? 1 : 0; };
+
+// the route's section (sections.js), lifted out of the map on the tablet
+const secMat = sheetMat({clipMode: {value: 1}}); setTex(secMat, 'A', T_col); setTex(secMat, 'B', T_col);
+const secR = SECT.rot * Math.PI / 180;
+for (const m of [secMat, sheets[0].mat]) { m.uniforms.clip.value.set(SECT.cx, SECT.cy, SECT.w / 2, SECT.h / 2); m.uniforms.clipRot.value.set(Math.cos(secR), Math.sin(secR)); }
+const secMesh = new THREE.Mesh(gridRelief, secMat); secMesh.frustumCulled = false; secMesh.renderOrder = 30; scene.add(secMesh);
+const secGroup = new THREE.Group(); scene.add(secGroup);
+const secZmin = (() => { let z = Infinity; const b = SEC.bounds(SECT); for (let y = b.y0; y <= b.y1; y += 4) for (let x = b.x0; x <= b.x1; x += 4) if (SEC.contains(SECT, x, y)) z = Math.min(z, hAt(x, y)); return z; })();
+const secWalls = (() => {                                            // side walls of the lifted piece, sampled every 4 m along its edges
+  const C = SEC.corners(SECT), P = [], CO = [], I = [];
+  for (let s = 0; s < 4; s++) {
+    const a = C[s], b = C[(s + 1) % 4], n = Math.max(2, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 4)), base = P.length / 3, shade = [.55, .8, 1, .7][s];
+    for (let k = 0; k <= n; k++) {
+      const x = lerp(a[0], b[0], k / n), y = lerp(a[1], b[1], k / n), top = P3(x, y, hAt(x, y)), bot = P3(x, y, secZmin, -24);
+      P.push(top.x, top.y, top.z, bot.x, bot.y, bot.z); CO.push(.42 * shade, .33 * shade, .27 * shade, .2 * shade, .16 * shade, .13 * shade);
+      if (k) { const q = base + (k - 1) * 2; I.push(q, q + 1, q + 2, q + 2, q + 1, q + 3); }
+    }
+  }
+  const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('color', new THREE.Float32BufferAttribute(CO, 3)); g.setIndex(I);
+  const m = new THREE.Mesh(g, new THREE.MeshBasicMaterial({vertexColors: true, side: THREE.DoubleSide, transparent: true, depthWrite: true}));
+  m.renderOrder = 29; secGroup.add(m); return m;
+})();
+
+// ---------------------------------------------------------------- lines: Curiosity's path, the route, the drone's hazard lines
+function lines(segs, width, opacity = 1, depthTest = true) {          // segs: [[x0,y0,z0,x1,y1,z1, r,g,b], ...] in scene units
+  const g = new LineSegmentsGeometry();
+  g.setPositions(segs.flatMap(s => s.slice(0, 6)));
+  g.setColors(segs.flatMap(s => [s[6], s[7], s[8], s[6], s[7], s[8]]));
+  const m = new LineMaterial({linewidth: width, vertexColors: true, transparent: true, opacity, depthTest, depthWrite: false, worldUnits: false});
+  const o = new LineSegments2(g, m); o.frustumCulled = false; o.n = segs.length; return o;
+}
+function polySegs(pts, lift, col) {                                  // pts [[x, y, z]] local -> scene segments
+  const S = [];
+  for (let k = 1; k < pts.length; k++) {
+    const a = P3(pts[k - 1][0], pts[k - 1][1], Math.max(pts[k - 1][2], hAt(pts[k - 1][0], pts[k - 1][1])), lift), b = P3(pts[k][0], pts[k][1], Math.max(pts[k][2], hAt(pts[k][0], pts[k][1])), lift);
+    S.push([a.x, a.y, a.z, b.x, b.y, b.z, ...col]);
+  }
+  return S;
+}
+const pathSegs = OV.curiosity_path.flatMap(s => polySegs(s, 9, [1, 1, 1]));
+const pathGlow = lines(pathSegs.map(s => [...s.slice(0, 6), 1, 1, 1]), 13, .28), pathCore = lines(pathSegs, 3.2, 1);
+pathGlow.renderOrder = 40; pathCore.renderOrder = 41; scene.add(pathGlow, pathCore);
+const ROUTE_C = [0x36 / 255, 0xe0 / 255, 1];
+const routeSegs = polySegs(ROUTE, 11, ROUTE_C);
+const routeGlow = lines(routeSegs.map(s => [...s.slice(0, 6), 0, 0, 0]), 11, .55), routeCore = lines(routeSegs, 4.5, 1);
+routeGlow.renderOrder = 42; routeCore.renderOrder = 43; secGroup.add(routeGlow, routeCore);
+const routeLen = (() => { let L = 0; for (let k = 1; k < ROUTE.length; k++) L += Math.hypot((ROUTE[k][0] - ROUTE[k - 1][0]) * F.ewGround, ROUTE[k][1] - ROUTE[k - 1][1]); return L; })();
+
+// drone (simulated): hazard lines drawn on their own see-through plane above the stack
+const DRONE_LINES = await J('assets/drone.json').catch(fail);
+const HZ = {clear: [.24, .82, .48], slope_caution: [.96, .77, .19], slope_nogo: [.84, .19, .15], obstacle: [1, .36, .24], sand: [1, .85, .54]};
+const droneSeg = [], dronePts = [];
+for (const l of DRONE_LINES.lines) {
+  const c = HZ[l.h]; if (!c) continue;                               // obstacle_point features are single points: not drawn as lines
+  for (let k = 1; k < l.p.length; k++) {
+    const [x0, y0] = l.p[k - 1], [x1, y1] = l.p[k]; if (Math.hypot(x1 - x0, y1 - y0) < .5) continue;
+    droneSeg.push([x0 - WM / 2, 0, (HM - y0) - HM / 2, x1 - WM / 2, 0, (HM - y1) - HM / 2, ...c]); dronePts.push([x1, y1]);
+  }
+}
+const droneGroup = new THREE.Group(); scene.add(droneGroup);
+const droneLines = lines(droneSeg, 5, 1, false); droneLines.renderOrder = 50; droneGroup.add(droneLines);
+const drone = (() => {                                               // a stylised drone icon, not to scale (A52)
+  const g = new THREE.Group(), white = new THREE.MeshBasicMaterial({color: 0xe8ecf2}), dark = new THREE.MeshBasicMaterial({color: 0x2a2f3a});
+  const body = new THREE.Mesh(new THREE.BoxGeometry(34, 12, 34), white); g.add(body);
+  for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    const arm = new THREE.Mesh(new THREE.BoxGeometry(44, 4, 5), dark); arm.position.set(sx * 20, 0, sz * 20); arm.rotation.y = Math.atan2(sz, sx) * -1; g.add(arm);
+    const rot = new THREE.Mesh(new THREE.CylinderGeometry(17, 17, 2, 24), new THREE.MeshBasicMaterial({color: 0xcfe9ff, transparent: true, opacity: .55})); rot.position.set(sx * 36, 5, sz * 36); g.add(rot);
+  }
+  const cone = new THREE.Mesh(new THREE.ConeGeometry(70, 1, 32, 1, true), new THREE.MeshBasicMaterial({color: 0x36e0ff, transparent: true, opacity: .16, side: THREE.DoubleSide, depthWrite: false}));
+  cone.name = 'laser'; g.add(cone);
+  cone.userData.op = .16; g.traverse(o => { o.renderOrder = 60; o.frustumCulled = false; if (o.material) { o.material.transparent = true; o.userData.op ??= o.material.opacity; } });
+  droneGroup.add(g); return g;
+})();
+
+// ---------------------------------------------------------------- the astronaut's walk (true heights, 1 m, NASA colours): its own scene
+const walk = await (async () => {
+  const M = WALK, [WW, HW] = M.size_m, ZS = (M.z.max - M.z.min) / 65535;
+  const H16 = new Uint16Array(await (await fetch('../walk/' + M.height.file)).arrayBuffer());
+  const hPix = (c, r) => M.z.min + H16[clamp(r, 0, HW - 1) * WW + clamp(c, 0, WW - 1)] * ZS;
+  const heightAt = (x, y) => { const fc = x - .5, fr = HW - y - .5, c = Math.floor(fc), r = Math.floor(fr), tx = fc - c, ty = fr - r;
+    return (hPix(c, r) * (1 - tx) + hPix(c + 1, r) * tx) * (1 - ty) + (hPix(c, r + 1) * (1 - tx) + hPix(c + 1, r + 1) * tx) * ty; };
+  const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = '../walk/' + M.walk.file; });
+  const cv = document.createElement('canvas'); cv.width = img.width; cv.height = img.height; const g2 = cv.getContext('2d', {willReadFrequently: true}); g2.drawImage(img, 0, 0);
+  const MASK = g2.getImageData(0, 0, img.width, img.height).data;
+  const cellAt = (x, y) => { const c = Math.floor(x / M.walk.cell_m), r = Math.floor((HW - y) / M.walk.cell_m); return c < 0 || r < 0 || c >= M.walk.cols || r >= M.walk.rows ? -1 : MASK[(r * M.walk.cols + c) * 4]; };
+  // the walk path: along the route from A, sampled every 0.5 m
+  const path = [[ROUTE[0][0], ROUTE[0][1], 0]];
+  for (let k = 1; k < ROUTE.length && path[path.length - 1][2] < 140; k++) {
+    const [x0, y0] = ROUTE[k - 1], [x1, y1] = ROUTE[k], L = Math.hypot(x1 - x0, y1 - y0), n = Math.max(1, Math.ceil(L / .5)), s0 = path[path.length - 1][2];
+    for (let j = 1; j <= n; j++) path.push([lerp(x0, x1, j / n), lerp(y0, y1, j / n), s0 + L * j / n]);
+  }
+  for (let pass = 0; pass < 40; pass++) for (let k = 1; k < path.length - 1; k++) { path[k][0] = (path[k - 1][0] + 2 * path[k][0] + path[k + 1][0]) / 4; path[k][1] = (path[k - 1][1] + 2 * path[k][1] + path[k + 1][1]) / 4; }
+  const at = s => { let k = 1; while (k < path.length - 1 && path[k][2] < s) k++; const a = path[k - 1], b = path[k], f = clamp((s - a[2]) / Math.max(1e-6, b[2] - a[2])); return [lerp(a[0], b[0], f), lerp(a[1], b[1], f)]; };
+  const [ax, ay] = path[0], az = heightAt(ax, ay);
+  const toS = (x, y, z) => new THREE.Vector3(x - ax, z - az, -(y - ay));
+  const ws = new THREE.Scene();
+  const SKY_T = new THREE.Color().setRGB(...M.sky.top_srgb.map(v => v / 255), THREE.SRGBColorSpace), SKY_HL = new THREE.Color().setRGB(...M.sky.horizon_srgb.map(v => v / 255), THREE.SRGBColorSpace);
+  const GR = new THREE.Color().setRGB(...M.color.ground_median_srgb.map(v => v / 255), THREE.SRGBColorSpace), FARC = new THREE.Color().setRGB(...M.color.far_ground_srgb.map(v => v / 255), THREE.SRGBColorSpace);
+  ws.fog = new THREE.FogExp2(SKY_HL.clone(), 2.5e-5);                                  // A44 (walk view)
+  // Sun: Mars24 for this site on a fixed date, 09:00 local Mars time (the team's EVA start, walk.json)
+  const sunI = sunAtLTST(Date.UTC(2026, 10, 15, 12), M.sun.default_ltst_h, planetographic(M.lat_center));
+  const e = sunI.elevation * Math.PI / 180, a = sunI.azimuth * Math.PI / 180, sunDir = new THREE.Vector3(Math.sin(a) * Math.cos(e), Math.sin(e), -Math.cos(a) * Math.cos(e));
+  const sun = new THREE.DirectionalLight(0xffffff, Math.PI); sun.position.copy(sunDir).multiplyScalar(1000); ws.add(sun, new THREE.HemisphereLight(SKY_T, GR, Math.PI * .35));   // A45
+  const sky = new THREE.Mesh(new THREE.SphereGeometry(5000, 48, 24), new THREE.ShaderMaterial({side: THREE.BackSide, depthWrite: false, fog: false,
+    uniforms: {hor: {value: SKY_HL}, top: {value: SKY_T}, sunDir: {value: sunDir}},
+    vertexShader: `varying vec3 vDir; void main(){ vDir = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); gl_Position.z = gl_Position.w; }`,
+    fragmentShader: `uniform vec3 hor, top, sunDir; varying vec3 vDir; void main(){ vec3 d = normalize(vDir); vec3 c = mix(hor, top, smoothstep(0.0, 0.5, d.y));
+      float s = max(dot(d, sunDir), 0.0); c += vec3(0.25) * pow(s, 60.0); if (s > 0.99999) c = vec3(1.0); gl_FragColor = vec4(c, 1.0);
+      #include <colorspace_fragment>
+    }`}));
+  sky.renderOrder = -1; sky.frustumCulled = false; ws.add(sky);
+  const grid = (x0, yTop0, step, nx, ny, uvFn, curv, drop) => {
+    const pos = new Float32Array(nx * ny * 3), uv = new Float32Array(nx * ny * 2), idx = [];
+    for (let b = 0, k = 0; b < ny; b++) for (let a2 = 0; a2 < nx; a2++, k++) {
+      const x = x0 + a2 * step, y = HW - (yTop0 + b * step), d2 = (x - ax) ** 2 + (y - ay) ** 2;
+      const p = toS(x, y, heightAt(clamp(x, 0, WW), clamp(y, 0, HW)) - (curv ? d2 / (2 * 3396190) : 0) - drop); pos.set([p.x, p.y, p.z], k * 3); uv.set(uvFn(a2, b), k * 2);
+    }
+    for (let j = 0; j < ny - 1; j++) for (let i = 0; i < nx - 1; i++) { const q = j * nx + i; idx.push(q, q + nx, q + 1, q + 1, q + nx, q + nx + 1); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setIndex(idx); g.computeVertexNormals(); return g;
+  };
+  const TM = M.color.tile_m, mid = at(70), ci = Math.floor(mid[0] / TM), cj = Math.floor((HW - mid[1]) / TM), RING = 3;
+  const near = {x0: (ci - RING) * TM, x1: (ci + RING + 1) * TM, yT0: (cj - RING) * TM, yT1: (cj + RING + 1) * TM};
+  const discardRect = (mat, inside, rect) => { mat.onBeforeCompile = s => {
+    s.vertexShader = s.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;').replace('#include <begin_vertex>', '#include <begin_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+    s.fragmentShader = s.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;').replace('#include <clipping_planes_fragment>',
+      `#include <clipping_planes_fragment>\n{ vec2 L = vec2(vWP.x + ${ax.toFixed(2)}, ${ay.toFixed(2)} - vWP.z); bool inR = L.x > ${rect[0].toFixed(2)} && L.y > ${rect[1].toFixed(2)} && L.x < ${rect[2].toFixed(2)} && L.y < ${rect[3].toFixed(2)};
+       if (${inside ? '' : '!'}inR) discard; }`); };
+    mat.customProgramCacheKey = () => 'rect' + inside + rect.join(','); };
+  const tileJobs = [];
+  for (let j = cj - RING; j <= cj + RING; j++) for (let i = ci - RING; i <= ci + RING; i++) {
+    if (i < 0 || j < 0 || i >= M.color.nx || j >= M.color.ny) continue;
+    tileJobs.push(loader.loadAsync('../walk/' + M.color.tiles.replace('{i}', i).replace('{j}', j)).then(t => {
+      t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      ws.add(new THREE.Mesh(grid(i * TM, j * TM, 1, TM + 1, TM + 1, (p, q) => [p / TM, 1 - q / TM], false, 0), new THREE.MeshStandardMaterial({map: t, roughness: 1, metalness: 0})));
+    }));
+  }
+  const ov = await loader.loadAsync('../walk/' + M.color.overview); ov.colorSpace = THREE.SRGBColorSpace; ov.anisotropy = 8;
+  const st = 4, cmat = new THREE.MeshStandardMaterial({map: ov, roughness: 1, metalness: 0});
+  discardRect(cmat, true, [near.x0, HW - near.yT1, near.x1, HW - near.yT0]);
+  ws.add(new THREE.Mesh(grid(0, 0, st, Math.ceil(WW / st) + 1, Math.ceil(HW / st) + 1, (p, q) => [Math.min(1, p * st / WW), 1 - Math.min(1, q * st / HW)], true, 0), cmat));
+  const FAR = new Float32Array(await (await fetch('../walk/' + M.far.file)).arrayBuffer());
+  { const n = M.far.cols, m = M.far.rows, pos = new Float32Array(n * m * 3), idx = [];
+    for (let r = 0; r < m; r++) for (let c = 0; c < n; c++) { const x = M.far.x0 + c * M.far.step_m, y = M.far.y_top - r * M.far.step_m, d2 = (x - ax) ** 2 + (y - ay) ** 2;
+      const p = toS(x, y, FAR[r * n + c] - d2 / (2 * 3396190)); pos.set([p.x, p.y, p.z], (r * n + c) * 3); }
+    for (let r = 0; r < m - 1; r++) for (let c = 0; c < n - 1; c++) { const q = r * n + c; idx.push(q, q + n, q + 1, q + 1, q + n, q + n + 1); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    const fm = new THREE.MeshStandardMaterial({color: FARC, roughness: 1, metalness: 0}); discardRect(fm, true, [0, 0, WW, HW]);
+    const far = new THREE.Mesh(g, fm); far.frustumCulled = false; ws.add(far); }
+  await Promise.all(tileJobs);
+  // chevrons along the way ahead and a beacon at B (display, as the walk view)
+  const chevShape = new THREE.Shape([[0, .45], [.4, -.05], [.4, -.3], [0, .15], [-.4, -.3], [-.4, -.05]].map(([p, q]) => new THREE.Vector2(p, q)));
+  const chevGeo = new THREE.ShapeGeometry(chevShape); chevGeo.rotateX(-Math.PI / 2);
+  const chev = new THREE.InstancedMesh(chevGeo, new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: .92, depthTest: false, depthWrite: false, side: THREE.DoubleSide, fog: false}), 24);
+  chev.instanceColor = new THREE.InstancedBufferAttribute(new Float32Array(24 * 3), 3); chev.frustumCulled = false; chev.renderOrder = 2; ws.add(chev);
+  const B = ROUTE[ROUTE.length - 1], beacon = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 60, 12), new THREE.MeshBasicMaterial({color: 0x36e0ff, fog: false}));
+  beacon.position.copy(toS(B[0], B[1], heightAt(B[0], B[1]) + 30)); ws.add(beacon);
+  const wcam = new THREE.PerspectiveCamera(60, W / H, .1, 400000);   // 60 deg view, eye 1.7 m (A42)
+  return {ws, wcam, at, path, heightAt, cellAt, toS, chev, EYE: M.walker.eye_height_m, SPEED: M.walker.speed_m_s};
+})().catch(fail);
+
+// ---------------------------------------------------------------- 2D overlay pieces (precomputed)
+const mk = (w, h) => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+const BG = mk(W, H); { const g = BG.getContext('2d'), r = g.createRadialGradient(W * .55, H * .45, 60, W * .5, H * .5, W * .75);
+  r.addColorStop(0, '#1d1820'); r.addColorStop(.55, '#0d0b10'); r.addColorStop(1, '#040405'); g.fillStyle = r; g.fillRect(0, 0, W, H); }
+const VIG = mk(W, H); { const g = VIG.getContext('2d'), r = g.createRadialGradient(W / 2, H / 2, H * .45, W / 2, H / 2, W * .72);
+  r.addColorStop(0, 'rgba(0,0,0,0)'); r.addColorStop(1, 'rgba(0,0,0,.55)'); g.fillStyle = r; g.fillRect(0, 0, W, H); }
+const GRAIN = [0, 1, 2, 3].map(k => { const c = mk(256, 256), g = c.getContext('2d'), d = g.createImageData(256, 256); let s = 1234567 + k * 99991;
+  for (let i = 0; i < d.data.length; i += 4) { s = (s * 1664525 + 1013904223) >>> 0; const v = s >>> 24; d.data.set([v, v, v, 255], i); } g.putImageData(d, 0, 0); return c; });
+const FONT = '"Segoe UI Variable Display", "Segoe UI", Inter, system-ui, sans-serif';
+const COL = {GO: '#1a9850', CAUTION: '#f4c430', 'NO-GO': '#d73027', UNKNOWN: '#9e9e9e', route: '#36e0ff', accent: '#36e0ff', sim: '#f4c430'};
+
+function txt(s, x, y, size, weight, color, alpha = 1, o = {}) {
+  if (alpha <= 0.002) return 0;
+  X.save(); X.globalAlpha = alpha; X.font = `${weight} ${size}px ${FONT}`; X.fillStyle = color; X.textAlign = o.align || 'left'; X.textBaseline = o.base || 'alphabetic';
+  X.letterSpacing = (o.ls || 0) + 'px';
+  if (o.shadow !== false) { X.shadowColor = 'rgba(0,0,0,.65)'; X.shadowBlur = o.blur ?? 18; X.shadowOffsetY = 2; }
+  X.fillText(s, x, y); const w = X.measureText(s).width; X.restore(); return w;
+}
+const measure = (s, size, weight, ls = 0) => { X.save(); X.font = `${weight} ${size}px ${FONT}`; X.letterSpacing = ls + 'px'; const w = X.measureText(s).width; X.restore(); return w; };
+function pill(x, y, label, o = {}) {                                // returns width
+  const size = o.size || 22, padX = o.padX ?? 16, h = size + 18, w = measure(label, size, o.weight || 600, o.ls || 0) + padX * 2 + (o.dot ? 22 : 0);
+  X.save(); X.globalAlpha = o.alpha ?? 1;
+  X.beginPath(); X.roundRect(x, y - h / 2, w, h, h / 2); X.fillStyle = o.fill || 'rgba(14,16,22,.72)'; X.fill();
+  X.lineWidth = 1.5; X.strokeStyle = o.stroke || 'rgba(255,255,255,.18)'; X.stroke();
+  if (o.dot) { X.beginPath(); X.arc(x + padX + 6, y, 7, 0, 7); X.fillStyle = o.dot; X.fill(); }
+  X.restore();
+  txt(label, x + padX + (o.dot ? 22 : 0), y + 1, size, o.weight || 600, o.color || '#eef0f4', o.alpha ?? 1, {base: 'middle', ls: o.ls || 0, shadow: false});
+  return w;
+}
+const simTag = (x, y, a, label = 'SIMULATED') => pill(x, y, label, {size: 16, ls: 2.5, weight: 700, color: COL.sim, stroke: 'rgba(244,196,48,.8)', fill: 'rgba(244,196,48,.12)', alpha: a, padX: 12});
+// a title block: kicker, title (lines slide up out of a mask), sub. Returns the bottom y.
+function block(t, a, b, B) {
+  if (t < a || t > b) return;
+  const o = 1 - seg(t, b - .28, b, ein), x = B.x, ts = B.size || 76, lh = ts * 1.06, al = B.align || 'left';
+  let y = B.y;
+  if (B.kicker) { const k = seg(t, a, a + .4, eout); const kw = txt(B.kicker, x, y - 14 * (1 - k), 22, 700, B.kc || COL.accent, k * o, {ls: 5, align: al});
+    if (B.sim) simTag((al === 'center' ? x + kw / 2 : x + kw) + 18, y - 8, k * o); y += 22 + lh * .9; }
+  B.title.split('\n').forEach((line, i) => {
+    const k = seg(t, a + .06 + i * .08, a + .56 + i * .08, eout);
+    X.save(); X.beginPath(); X.rect(0, y - ts * 1.02, W, ts * 1.32); X.clip();
+    txt(line, x, y + lh * .9 * (1 - k), ts, 800, '#ffffff', o * Math.min(1, k * 1.6), {ls: -.5, align: al}); X.restore();
+    y += lh;
+  });
+  if (B.sub) for (const [i, line] of B.sub.split('\n').entries()) { const k = seg(t, a + .2 + i * .06, a + .7 + i * .06, eout); txt(line, x, y + 6 + 12 * (1 - k), B.subSize || 30, 500, 'rgba(232,234,240,.92)', k * o, {align: al}); y += (B.subSize || 30) * 1.3; }
+  return y;
+}
+const source = (t, a, b, s) => { if (t < a || t > b) return; txt(s, W - 44, H - 34, 17, 500, 'rgba(255,255,255,.62)', win(t, a, b, .4, .3), {align: 'right', blur: 8}); };
+function project(v, R, camera = cam) { const p = v.clone().project(camera); return [R.x + (p.x + 1) / 2 * R.w, R.y + (1 - p.y) / 2 * R.h, p.z]; }
+
+// ---------------------------------------------------------------- the timeline (seconds). Shots and their beats: docs/ASSUMPTIONS.md A48
+const SHOTS = [[0, 'Crater dive'], [3, 'Real data'], [7, 'GO / NO-GO'], [8.5, 'Layers'], [10, 'AI'], [11.8, 'Drone'], [13.4, 'Worst layer wins'], [15, 'Curiosity test'],
+  [18, 'Tablet: A → B'], [21.4, 'Section'], [24, 'Walk'], [26.4, 'Title']];
+const shotAt = t => SHOTS.filter(s => s[0] <= t + 1e-6).pop()[1];
+const N = sheets.length, GAP = 520, STACK = i => (i - (N - 1) / 2) * GAP;
+const T_SEP = i => 8.5 + i * .06, T_SLAM = 13.4;
+const BOXC = new THREE.Vector3(0, 0, 0);
+const GALE = P3(26100, -33800, ZMID);                                // near the crater's middle, for the opening view only
+const sideOf = (bearing, elev) => { const b = bearing * Math.PI / 180, e = elev * Math.PI / 180; return new THREE.Vector3(Math.sin(b) * Math.cos(e), Math.sin(e), -Math.cos(b) * Math.cos(e)); };
+function aim(target, dist, bearing, elev, R) {
+  cam.up.set(0, 1, 0); cam.position.copy(target).addScaledVector(sideOf(bearing, elev), dist); cam.lookAt(target);
+  cam.aspect = R.w / R.h; cam.near = Math.max(1, dist * .004); cam.far = Math.max(dist * 40, 4e5); cam.updateProjectionMatrix();
+}
+const lerpAng = (a, b, k) => a + (((b - a + 540) % 360) - 180) * k;
+const secCenter = (lift = 0) => P3(SECT.cx, SECT.cy, (hAt(SECT.cx, SECT.cy) + ZMID) / 2, lift);
+const HEADING = SECT.rot;                                            // A -> B bearing (deg from north), from sections.js
+const stopV = (y) => new THREE.Vector3(AI.stop.x - WM / 2, y, (HM - AI.stop.y) - HM / 2);
+const routeCentroid = (() => { const v = new THREE.Vector3(); for (const p of ROUTE) v.add(P3(p[0], p[1], p[2])); return v.multiplyScalar(1 / ROUTE.length); })();
+const pathCentroid = (() => { const v = new THREE.Vector3(); let n = 0; for (const s of OV.curiosity_path) for (const p of s) { v.add(P3(p[0], p[1], p[2])); n++; } return v.multiplyScalar(1 / n); })();
+const droneCentroid = (() => { let x = 0, y = 0; for (const p of dronePts) { x += p[0]; y += p[1]; } return [x / dronePts.length, y / dronePts.length]; })();
+
+// tablet layout (canonical, in output pixels)
+const TAB = {x: 650, y: 96, w: 1180, h: 888}, SIDE = 316, TOP = 58;
+const MAPR = {x: TAB.x + SIDE, y: TAB.y + TOP, w: TAB.w - SIDE, h: TAB.h - TOP};
+const FULL = {x: 0, y: 0, w: W, h: H};
+const lerpR = (A, B, k) => ({x: lerp(A.x, B.x, k), y: lerp(A.y, B.y, k), w: lerp(A.w, B.w, k), h: lerp(A.h, B.h, k)});
+const zoomR = (R, s, cx, cy) => ({x: cx + (R.x - cx) * s, y: cy + (R.y - cy) * s, w: R.w * s, h: R.h * s});
+
+function sceneState(t) {
+  // ---- defaults
+  const st = {R: FULL, tablet: 0, tabZoom: 1, pov: 0, main: 1};
+  crater.visible = t < 3.05; crater.material.uniforms.opacity.value = 1 - seg(t, 2.3, 3.0); crater.material.uniforms.hideBox.value = t > 1.6 ? 1 : 0;
+  for (const s of sheets) {
+    const u = s.mat.uniforms; u.exag.value = EX; u.flatten.value = s.relief ? 0 : 1; u.baseY.value = 0; u.opacity.value = 0; u.mixAB.value = 0; u.edgeW.value = 0;
+    u.wipe.value.set(1, 0, -1e9, 1); u.lit.value = 1; u.clipMode.value = 0; u.dimOut.value = 0; setTex(s.mat, 'A', T_col); setTex(s.mat, 'B', s.own);
+  }
+  U.sunDir.value.copy(SUN_DAY);
+  const S0 = sheets[0].mat.uniforms;
+  S0.opacity.value = 1; skirt.material.uniforms.opacity.value = 1; skirt.material.uniforms.exag.value = EX; skirt.material.uniforms.baseY.value = 0;
+  secMesh.visible = false; secWalls.visible = false; secGroup.position.y = 0;
+  pathGlow.visible = pathCore.visible = false; routeGlow.visible = routeCore.visible = false; droneGroup.visible = false;
+
+  // ---- 0-3 s: crater dive -> the box (natural colours)
+  if (t < 3.0) {
+    const k = seg(t, 0, 3.0, x => eio(x) * .82 + x * .18);
+    const tgt = GALE.clone().lerp(BOXC, seg(t, .2, 2.6));
+    const dist = Math.exp(lerp(Math.log(330000), Math.log(6200), k));
+    aim(tgt, dist, lerp(330, 312, k), lerp(62, 36, k), FULL);
+    setTex(sheets[0].mat, 'A', T_nat); const a = seg(t, 1.9, 2.8); S0.opacity.value = a; skirt.material.uniforms.opacity.value = a;
+  }
+  // ---- 3-7 s: real data, Curiosity's path draws
+  else if (t < 7.0) {
+    const k = seg(t, 3.0, 7.0, x => x);
+    aim(new THREE.Vector3(lerp(0, pathCentroid.x * .4, k), 0, lerp(0, pathCentroid.z * .4, k)), lerp(6200, 4300, eout(k)), lerp(312, 262, k), lerp(36, 27, k), FULL);
+    setTex(sheets[0].mat, 'A', T_nat);
+    pathGlow.visible = pathCore.visible = true; const n = Math.floor(pathSegs.length * seg(t, 3.7, 6.4, eio)); pathGlow.geometry.instanceCount = pathCore.geometry.instanceCount = n;
+    pathCore.material.opacity = 1; pathGlow.material.opacity = .28;
+  }
+  // ---- 7-8.5 s: the GO / NO-GO colours sweep in
+  else if (t < 8.5) {
+    const k = seg(t, 7.0, 8.5, x => x);
+    aim(new THREE.Vector3(pathCentroid.x * .4, 0, pathCentroid.z * .4), lerp(4300, 4700, k), lerp(262, 236, k), lerp(27, 30, k), FULL);
+    setTex(sheets[0].mat, 'A', T_nat); setTex(sheets[0].mat, 'B', T_col);
+    const d = new THREE.Vector2(1, 1).normalize(), s = lerp(-300, (WM + HM) / Math.SQRT2 + 300, seg(t, 7.05, 8.3, eio));
+    S0.wipe.value.set(d.x, d.y, s, 260);
+    pathGlow.visible = pathCore.visible = true; pathCore.material.opacity = 1 - seg(t, 7.0, 7.6); pathGlow.material.opacity = .28 * (1 - seg(t, 7.0, 7.6));
+    pathGlow.geometry.instanceCount = pathCore.geometry.instanceCount = Infinity;
+  }
+  // ---- 8.5-15 s: burst into layers, AI, drone, slam back
+  else if (t < 15.0) {
+    const slam = seg(t, T_SLAM, 14.0, ein), relax = seg(t, 14.0, 14.7, eout);
+    for (const s of sheets) {
+      const u = s.mat.uniforms, sep = seg(t, T_SEP(s.i), T_SEP(s.i) + .85, backOut), tx = seg(t, T_SEP(s.i), T_SEP(s.i) + .5);
+      const p = sep * (1 - slam);
+      u.exag.value = t < 14.0 ? lerp(EX, 1, seg(t, 8.5, 9.1)) : lerp(1, EX, relax);   // relief x1 while stacked, so sheets do not cut each other
+      u.baseY.value = STACK(s.i) * p;
+      u.flatten.value = s.relief ? 0 : Math.min(1, tx * 1.4) * (1 - slam);
+      u.mixAB.value = tx * (1 - seg(t, T_SLAM + .25, 14.0));
+      u.opacity.value = t >= 14.0 ? (s.i === 0 ? 1 : 0) : s.i === 0 ? 1 : s.relief ? .92 : .86;
+      u.edgeW.value = .8 * p;
+      if (s.i === 0) setTex(s.mat, 'A', T_col);
+    }
+    skirt.material.uniforms.exag.value = S0.exag.value;
+    // camera: rise to see the stack, drift to the AI stop, follow the drone, come back down for the slam
+    const top = STACK(N - 1);
+    const kUp = seg(t, 8.5, 9.6), kAI = win(t, 10.0, 11.8, .5, .5), kDr = seg(t, 11.7, 12.3) * (1 - seg(t, 13.1, 13.7)), kDn = seg(t, 13.4, 14.6);
+    let tgt = new THREE.Vector3(pathCentroid.x * .4, 0, pathCentroid.z * .4).lerp(new THREE.Vector3(0, 120, 0), kUp);
+    tgt.lerp(stopV(STACK(N - 1) * .45), kAI * .45);
+    const dc = new THREE.Vector3(droneCentroid[0] - WM / 2, top + 300, (HM - droneCentroid[1]) - HM / 2); tgt.lerp(dc, kDr * .55);
+    tgt.lerp(new THREE.Vector3(0, 0, 0), kDn);
+    let dist = lerp(4700, 9800, kUp); dist = lerp(dist, 8600, kAI); dist = lerp(dist, 7400, kDr); dist = lerp(dist, 5200, kDn);
+    let bear = lerp(236, 222, kUp) + 8 * seg(t, 9.6, 13.4, x => x); bear = lerp(bear, 230, kDn);
+    let elev = lerp(30, 17, kUp); elev = lerp(elev, 30, kDr); elev = lerp(elev, 30, kDn);
+    // a small shake on the slam (deterministic)
+    const sh = Math.exp(-Math.max(0, t - 14.0) * 9) * (t >= 14.0 ? 1 : 0);
+    tgt.x += Math.sin(t * 97) * 26 * sh; tgt.y += Math.sin(t * 131) * 18 * sh;
+    aim(tgt, dist, bear, elev, FULL);
+    // drone over the top of the stack (simulated flights)
+    if (t > 11.7 && t < 13.6) {
+      droneGroup.visible = true; const dy = top + 300; droneLines.position.y = dy;
+      const f = seg(t, 11.9, 13.2, x => x), n = Math.max(1, Math.floor(droneSeg.length * f)); droneLines.geometry.instanceCount = n;
+      droneLines.material.opacity = win(t, 11.7, 13.6, .25, .35);
+      const s0 = droneSeg[n - 1], hx = s0[3], hz = s0[5], bob = Math.sin(t * 7) * 6;
+      drone.position.set(hx, dy + 190 + bob, hz); drone.rotation.y = Math.sin(t * 2) * .4;
+      const cone = drone.getObjectByName('laser'); cone.scale.set(1, 190, 1); cone.position.set(0, -95, 0);
+      const da = win(t, 11.75, 13.55, .2, .3); drone.traverse(o => { if (o.material) o.material.opacity = (o.userData.op ?? 1) * da; });
+    }
+  }
+  // ---- 15-18 s: the test on Curiosity's real path
+  else if (t < 18.0) {
+    const k = seg(t, 15.0, 18.0, x => x);
+    aim(new THREE.Vector3(pathCentroid.x, pathCentroid.y * .5, pathCentroid.z), lerp(3900, 3300, eio(k)), lerp(214, 186, k), lerp(22, 26, k), FULL);
+    pathGlow.visible = pathCore.visible = true; pathGlow.geometry.instanceCount = pathCore.geometry.instanceCount = Infinity;
+    const pulse = .5 + .5 * Math.sin((t - 15.0) * Math.PI * 2 * 2);   // 2 pulses a second (on the beat)
+    const a = seg(t, 15.0, 15.4); pathCore.material.opacity = a; pathGlow.material.opacity = a * (.25 + .3 * pulse); pathGlow.userData.lw = 13 + 8 * pulse;
+    S0.dimOut.value = 0;
+  }
+  // ---- 18-24 s: the tablet (A -> B, route, the section lifts out)
+  else if (t < 24.0) {
+    const kIn = seg(t, 18.0, 18.9), kSec = seg(t, 21.4, 23.0), zoom = seg(t, 23.15, 24.0, ein);
+    st.tablet = seg(t, 18.3, 19.0); st.R = lerpR(FULL, MAPR, kIn);
+    const zc = [MAPR.x + MAPR.w / 2, MAPR.y + MAPR.h / 2]; st.tabZoom = lerp(1, 3.2, zoom);
+    st.R = zoomR(st.R, st.tabZoom, zc[0], zc[1]);
+    // top-down (north up) -> behind A, looking along the route
+    const fitWhole = (HM * 1.04 / 2) / Math.tan(15 * Math.PI / 180);
+    const lift = 260 * eout(kSec);
+    const tgt0 = new THREE.Vector3(pathCentroid.x, pathCentroid.y * .5, pathCentroid.z).lerp(new THREE.Vector3(0, 0, 0), kIn), tgt1 = secCenter(lift);
+    const tgt = tgt0.clone().lerp(tgt1, eio(kSec));
+    let dist = lerp(lerp(3300, fitWhole, kIn), Math.max(SECT.w, SECT.h) * 2.15, eio(kSec));
+    const bear = kSec > 0 ? lerpAng(180, HEADING + 180, eio(kSec)) : lerp(186, 180, kIn);
+    const elev = lerp(lerp(26, 89.4, kIn), 34, eio(kSec));
+    aim(tgt, dist * (1 - .25 * zoom), bear, elev, st.R);
+    S0.dimOut.value = .55 * kSec; S0.clipMode.value = kSec > 0 ? 2 : 0; S0.holeDark.value = lerp(1, .12, kSec);
+    secMesh.visible = secWalls.visible = kSec > 0; secMat.uniforms.baseY.value = lift; secGroup.position.y = lift; secWalls.material.opacity = Math.min(1, kSec * 3);
+    secMat.uniforms.opacity.value = 1;
+    routeGlow.visible = routeCore.visible = t > 20.0; const n = Math.floor(routeSegs.length * seg(t, 20.0, 21.2, eio)); routeGlow.geometry.instanceCount = routeCore.geometry.instanceCount = n;
+    st.lift = lift;
+  }
+  // ---- 24-26.4 s: the walk (own scene), then 26.4-30 s: the title over the whole map, low sun
+  else {
+    st.pov = t < 26.9 ? 1 : 0; st.main = seg(t, 26.2, 26.9);
+    const k = seg(t, 26.2, 30, x => eout(x));
+    const tgt = routeCentroid.clone().lerp(new THREE.Vector3(0, -150, 0), k);
+    aim(tgt, lerp(1500, 7600, k), lerp(HEADING + 180, 300, k), lerp(14, 27, k), FULL);
+    // low sun from the west (display: long shading for the last shot)
+    U.sunDir.value.copy(SUN_DAY).lerp(new THREE.Vector3(-.92, .26, .28).normalize(), seg(t, 26.2, 28.5)).normalize();
+    routeGlow.visible = routeCore.visible = true; routeGlow.geometry.instanceCount = routeCore.geometry.instanceCount = Infinity;
+    pathGlow.visible = pathCore.visible = true; pathGlow.geometry.instanceCount = pathCore.geometry.instanceCount = Infinity;
+    pathCore.material.opacity = .55; pathGlow.material.opacity = .15;
+  }
+  return st;
+}
+
+function walkState(t) {                                              // astronaut's eye: x20 along the route from A (team values, A42)
+  const s = clamp(t - 23.9, 0, 3) * walk.SPEED * 20, [x, y] = walk.at(s), [lx, ly] = walk.at(s + 14);
+  const z = walk.heightAt(x, y) + walk.EYE, p = walk.toS(x, y, z), q = walk.toS(lx, ly, walk.heightAt(lx, ly) + walk.EYE * .55);
+  walk.wcam.position.copy(p); walk.wcam.lookAt(q); walk.wcam.rotateX(-.04 + Math.sin(s * 1.6) * .006);
+  walk.wcam.aspect = W / H; walk.wcam.updateProjectionMatrix();
+  // chevrons every 2 m ahead (1.5 m to 47.5 m)
+  const m4 = new THREE.Matrix4(), qq = new THREE.Quaternion(), sc = new THREE.Vector3(1.4, 1, 1.4), up = new THREE.Vector3(0, 1, 0), c = new THREE.Color();
+  for (let k = 0; k < 24; k++) {
+    const d = s + 1.5 + k * 2, [cx, cy] = walk.at(d), [nx, ny] = walk.at(d + .5);
+    qq.setFromAxisAngle(up, Math.atan2(-(nx - cx), ny - cy));
+    walk.chev.setMatrixAt(k, m4.compose(walk.toS(cx, cy, walk.heightAt(cx, cy) + .06), qq, sc));
+    walk.chev.setColorAt(k, c.setHex(0x36e0ff).multiplyScalar(1 - .6 * k / 24));
+  }
+  walk.chev.instanceMatrix.needsUpdate = true; walk.chev.instanceColor.needsUpdate = true;
+  return {s, x, y, cls: walk.cellAt(x, y), head: ((Math.atan2(lx - x, ly - y) * 180 / Math.PI) + 360) % 360};
+}
+
+// ---------------------------------------------------------------- draw one frame at time t
+function renderGL(R, sc = scene, camera = cam) {
+  const s = Math.min(W * SS / R.w, H * SS / R.h), gw = Math.max(2, Math.round(R.w * s)), gh = Math.max(2, Math.round(R.h * s));
+  renderer.setViewport(0, 0, gw, gh); renderer.setScissor(0, 0, gw, gh); renderer.setScissorTest(true);
+  for (const [o] of LW) { o.material.resolution.set(gw, gh); o.material.linewidth = o.userData.lw * (gw / R.w) * (R.w < W * .9 ? .85 : 1); }
+  renderer.render(sc, camera);
+  X.drawImage(GL, 0, H * SS - gh, gw, gh, R.x, R.y, R.w, R.h);
+}
+const LW = new Map([[pathGlow, 13], [pathCore, 3.2], [routeGlow, 11], [routeCore, 4.5], [droneLines, 5]]);
+
+function drawFrame(t) {
+  t = clamp(t, 0, DUR);
+  X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1; X.globalCompositeOperation = 'source-over';
+  X.drawImage(BG, 0, 0);
+  for (const [o, w] of LW) o.userData.lw = w;                       // line widths in output pixels (renderGL scales them)
+  const st = sceneState(t);
+  // ---- the walk
+  let ws = null;
+  if (t >= 23.95 && st.pov) {
+    ws = walkState(t);
+    renderer.setViewport(0, 0, W * SS, H * SS); renderer.setScissor(0, 0, W * SS, H * SS); renderer.setScissorTest(true);
+    renderer.render(walk.ws, walk.wcam); X.drawImage(GL, 0, 0, W * SS, H * SS, 0, 0, W, H);
+  }
+  // ---- the map
+  if (st.main > 0) {
+    if (st.tablet > 0 || t >= 18 && t < 24) drawTabletBack(t, st);
+    if (st.main < 1) X.globalAlpha = st.main;
+    if (st.tablet > 0 || (t >= 18 && t < 24)) { X.save(); clipScreen(st); renderGL(st.R); X.restore(); }
+    else renderGL(st.R);
+    X.globalAlpha = 1;
+  }
+  drawOverlay(t, st, ws);
+  // ---- finishing: vignette, grain, flashes, fades
+  X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1;
+  X.drawImage(VIG, 0, 0);
+  X.save(); X.globalAlpha = .055; X.globalCompositeOperation = 'overlay'; const g = GRAIN[Math.floor(t * FPS) % 4];
+  X.translate((Math.floor(t * FPS) * 37) % 256, (Math.floor(t * FPS) * 71) % 256); X.fillStyle = X.createPattern(g, 'repeat'); X.fillRect(-256, -256, W + 512, H + 512); X.restore();
+  for (const [tf, a] of [[8.5, .22], [14.0, .32], [24.0, .9]]) { const d = t - tf; if (d >= -.02 && d < .35) { X.fillStyle = `rgba(255,255,255,${a * Math.exp(-Math.max(0, d) * 12)})`; X.fillRect(0, 0, W, H); } }
+  const fin = seg(t, 0, .35) * (1 - seg(t, 29.65, 30)); if (fin < 1) { X.fillStyle = `rgba(0,0,0,${1 - fin})`; X.fillRect(0, 0, W, H); }
+}
+
+function screenRect(st) {                                             // the tablet's screen, zoomed with the push-in
+  const zc = [MAPR.x + MAPR.w / 2, MAPR.y + MAPR.h / 2]; return zoomR(TAB, st.tabZoom, zc[0], zc[1]);
+}
+function clipScreen(st) {
+  if (st.tablet <= 0) return;
+  const S = screenRect(st), r = 26 * st.tabZoom; X.beginPath(); X.roundRect(lerp(0, S.x, st.tablet), lerp(0, S.y, st.tablet), lerp(W, S.w, st.tablet), lerp(H, S.h, st.tablet), r * st.tablet); X.clip();
+}
+function drawTabletBack(t, st) {
+  if (st.tablet <= 0) return;
+  const S = screenRect(st), z = st.tabZoom, a = st.tablet, b = 30 * z;
+  X.save(); X.globalAlpha = a;
+  X.shadowColor = 'rgba(0,0,0,.7)'; X.shadowBlur = 60; X.shadowOffsetY = 24;
+  X.beginPath(); X.roundRect(S.x - b, S.y - b, S.w + 2 * b, S.h + 2 * b, 54 * z); X.fillStyle = '#0c0d11'; X.fill();
+  X.shadowColor = 'transparent'; X.lineWidth = 2 * z; X.strokeStyle = '#30333d'; X.stroke();
+  X.beginPath(); X.arc(S.x + S.w / 2, S.y - b / 2, 5 * z, 0, 7); X.fillStyle = '#1e2129'; X.fill();
+  X.beginPath(); X.roundRect(S.x, S.y, S.w, S.h, 26 * z); X.fillStyle = '#16181e'; X.fill();
+  X.restore();
+}
+
+function drawOverlay(t, st, ws) {
+  X.setTransform(1, 0, 0, 1, 0, 0);
+  const L = 110, BOT = 880;
+  // ---- 0-3: crater
+  if (t < 3.05) {
+    const a = win(t, .35, 2.75, .4, .35);
+    if (a > 0) {                                                     // the study box on the crater
+      const C = [[0, 0], [WM, 0], [WM, HM], [0, HM]].map(([x, y]) => project(P3(x, y, hAt(Math.min(x, WM - 1), Math.min(y, HM - 1)), 30), FULL));
+      X.save(); X.globalAlpha = a; X.beginPath(); C.forEach(([x, y], i) => i ? X.lineTo(x, y) : X.moveTo(x, y)); X.closePath();
+      X.lineWidth = 6; X.strokeStyle = 'rgba(54,224,255,.35)'; X.stroke(); X.lineWidth = 2.2; X.strokeStyle = '#36e0ff'; X.stroke();
+      const cx = Math.max(...C.map(c => c[0])), cy = Math.min(...C.map(c => c[1]));
+      X.beginPath(); X.moveTo(cx + 6, cy - 6); X.lineTo(cx + 46, cy - 46); X.lineTo(cx + 66, cy - 46); X.lineWidth = 1.6; X.strokeStyle = 'rgba(255,255,255,.75)'; X.stroke(); X.restore();
+      txt(`Our study box · ${BOXKM[0]} × ${BOXKM[1]} km`, cx + 74, cy - 46, 22, 600, '#fff', a, {base: 'middle'});
+      txt('Mount Sharp, Gale crater', cx + 74, cy - 18, 18, 500, 'rgba(255,255,255,.75)', a, {base: 'middle'});
+    }
+    block(t, .25, 2.95, {x: L, y: BOT - 70, kicker: 'MARS · GALE CRATER', title: 'Where is the ground firm?'});
+    source(t, .3, 3.0, 'Crater: MOLA-HRSC blended DEM 200 m (USGS) · height ×2');
+  }
+  // ---- 3-7: real data
+  if (t >= 3.0 && t < 7.0) {
+    const y = block(t, 3.15, 6.95, {x: L, y: BOT - 110, kicker: 'REAL DATA, THIS PLACE', title: 'Real maps of Mount Sharp'});
+    const chips = [['USGS 1 m heights', '#c9b8a8'], ['USGS 25 cm orbital photo', '#d9d9d9'], ['NASA natural colour', '#b07a5c'], ["Curiosity's real path", '#ffffff']];
+    let x = L; chips.forEach(([s, c], i) => { const a = win(t, 3.5 + i * .5, 6.95, .35, .28); if (a > 0) x += pill(x + 0 * (1 - a), (y || BOT) + 30, s, {dot: c, alpha: a, size: 21}) + 12; });
+    source(t, 3.1, 7.0, 'USGS MSL Gale DEM 1 m & orthophoto 25 cm · colours: NASA PIA26693 · rover path: NASA/JPL-Caltech · height ×2');
+  }
+  // ---- 7-8.5: GO / NO-GO with the box shares
+  if (t >= 7.0 && t < 8.6) {
+    const y = block(t, 7.1, 8.55, {x: L, y: BOT - 120, kicker: 'GO / NO-GO MAP · CREW ON FOOT', title: 'Safe, careful, or no-go'});
+    const a = win(t, 7.35, 8.55, .3, .25), k = seg(t, 7.35, 8.2, eio), bw = 760, bx = L, by = (y || BOT) + 28;
+    if (a > 0) {
+      let x = bx; X.save(); X.globalAlpha = a;
+      for (const c of ['GO', 'CAUTION', 'NO-GO', 'UNKNOWN']) {
+        const w = bw * BOX[c] * k; X.fillStyle = COL[c]; X.fillRect(x, by, w, 14); x += w;
+      }
+      X.restore(); x = bx;
+      for (const c of ['GO', 'CAUTION', 'NO-GO']) { const w = bw * BOX[c]; txt(`${c} ${pct(BOX[c] * k)} %`, x, by + 44, 22, 700, COL[c], a, {blur: 10}); x += w; }
+      txt('of the box', bx + bw + 16, by + 12, 18, 500, 'rgba(255,255,255,.7)', a, {base: 'middle'});
+    }
+    source(t, 7.1, 8.6, 'Team GO/NO-GO rules on USGS heights, geology, the rover path and AI stops · data/combined_report.json');
+  }
+  // ---- 8.5-15: layers, AI, drone, slam
+  if (t >= 8.5 && t < 15.0) {
+    const labA = 1 - seg(t, T_SLAM - .1, T_SLAM + .2);
+    for (const s of sheets) {                                        // name tags on each sheet, at its right-most corner
+      const a = seg(t, T_SEP(s.i) + .35, T_SEP(s.i) + .75, eout) * labA * (t > 9.95 && t < 13.4 ? (s.key === 'gt' ? 1 : .32) : 1);
+      if (a <= 0) continue;
+      const by = s.mat.uniforms.baseY.value + (s.relief ? (ZMAX - ZMID) * s.mat.uniforms.exag.value * .35 : 0);
+      const C = [[0, 0], [WM, 0], [WM, HM], [0, HM]].map(([x, y]) => project(new THREE.Vector3(x - WM / 2, by, (HM - y) - HM / 2), FULL));
+      const [cx, cy] = C.reduce((m, c) => c[0] > m[0] ? c : m);
+      const lx = Math.min(cx + 70, W - 470);
+      X.save(); X.globalAlpha = a; X.beginPath(); X.arc(cx, cy, 5, 0, 7); X.fillStyle = '#fff'; X.fill();
+      X.beginPath(); X.moveTo(cx + 8, cy); X.lineTo(lx - 10, cy); X.lineWidth = 1.5; X.strokeStyle = 'rgba(255,255,255,.6)'; X.stroke(); X.restore();
+      txt(s.title, lx, cy - 4, 25, 700, '#fff', a, {blur: 10}); txt(s.src, lx, cy + 22, 18, 500, 'rgba(255,255,255,.72)', a, {blur: 8});
+    }
+    block(t, 8.65, 9.95, {x: L, y: 170, kicker: 'HOW IT IS MADE', title: 'Layer by layer', sub: 'Heights, photo, slope, roughness,\ngeology, ground truth'});
+    // AI: the stop on the ground-truth sheet and Curiosity's own photo, read by the team AI
+    if (t > 9.9 && t < 11.95) {
+      const a = win(t, 10.0, 11.85, .35, .3), gy = sheets[N - 1].mat.uniforms.baseY.value;
+      const [sx, sy] = project(stopV(gy), FULL), pulse = (t * 2) % 1;
+      X.save(); X.globalAlpha = a; X.beginPath(); X.arc(sx, sy, 8 + 26 * pulse, 0, 7); X.lineWidth = 3; X.strokeStyle = `rgba(255,255,255,${1 - pulse})`; X.stroke();
+      X.beginPath(); X.arc(sx, sy, 7, 0, 7); X.fillStyle = '#fff'; X.fill();
+      const kx = seg(t, 10.05, 10.55, eout), cw = 520, ch = 520 + 118, cx = W - 110 - cw + 80 * (1 - kx), cy = 150;
+      X.beginPath(); X.moveTo(sx + 10, sy); X.lineTo(cx - 8, cy + 170); X.lineWidth = 1.6; X.strokeStyle = 'rgba(255,255,255,.65)'; X.stroke();
+      X.shadowColor = 'rgba(0,0,0,.6)'; X.shadowBlur = 40; X.beginPath(); X.roundRect(cx - 14, cy - 14, cw + 28, ch + 28, 18); X.fillStyle = 'rgba(14,16,22,.9)'; X.fill(); X.shadowColor = 'transparent';
+      X.save(); X.beginPath(); X.roundRect(cx, cy, cw, cw, 10); X.clip(); X.drawImage(aiImg, 0, 0, aiImg.width, aiImg.height, cx, cy, cw, cw); X.restore();
+      X.restore();
+      txt(`Curiosity Navcam · sol ${AI.stop.sol}`, cx + 2, cy + cw + 38, 22, 700, '#fff', a, {shadow: false});
+      let x = cx + 2; for (const [k2, c] of Object.entries(AI.overlay_colours)) { if (k2 === 'bedrock') continue; x += pill(x, cy + cw + 82, k2 === 'sand' ? `sand ${Math.round(AI.stop.sand * 100)} %` : k2, {dot: `rgb(${c.join(',')})`, size: 18, alpha: a, padX: 12}) + 10; }
+      block(t, 10.0, 11.85, {x: L, y: 170, kicker: 'AI', title: "AI reads Curiosity's\nown photos", sub: `Sand found with IoU ${AI.iou.sand.toFixed(3)}\n(AI4Mars expert test set)`});
+      source(t, 10.0, 11.9, `Photo: NASA/JPL-Caltech (Navcam ${AI.stop.photo_id}) · colours: team AI · scores: Ai_model/results/metrics.json`);
+    }
+    if (t > 11.7 && t < 13.5) {
+      const yb = block(t, 11.8, 13.4, {x: L, y: 170, kicker: 'SCOUT DRONE', sim: true, title: 'A drone checks ahead', sub: `${DRONE.landed} of ${DRONE.flights} safe landings · ${DRONE.map_error_cm} cm median\nmap error, flights on Curiosity's real route`});
+      // legend
+      let x = L; const a = win(t, 12.1, 13.4, .3, .25); for (const [k2, lab] of [['clear', 'clear'], ['slope_caution', 'steep'], ['obstacle', 'obstacle'], ['sand', 'sand']]) x += pill(x, (yb || 400) + 34, lab, {dot: `rgb(${HZ[k2].map(v => Math.round(v * 255)).join(',')})`, size: 18, alpha: a, padX: 12}) + 10;
+      source(t, 11.8, 13.45, 'Team drone simulator: simulated flights over the USGS 1 m DEM · Drone/sim/results/verify_latest.md');
+    }
+    // slam
+    const a = win(t, 13.95, 14.98, .12, .3);
+    if (a > 0) {
+      const k = seg(t, 13.95, 14.25, backOut);
+      X.save(); X.translate(W / 2, 470); X.scale(lerp(1.25, 1, k), lerp(1.25, 1, k));
+      txt('Worst layer wins', 0, 0, 104, 900, '#fff', a, {align: 'center', ls: -1, blur: 26}); X.restore();
+      txt("Each 3 m cell takes the strictest of slope, roughness and terrain unit", W / 2, 545, 28, 500, 'rgba(240,242,246,.92)', a * seg(t, 14.1, 14.4), {align: 'center'});
+    }
+  }
+  // ---- 15-18: tested on Curiosity's path
+  if (t >= 15.0 && t < 18.0) {
+    const k = seg(t, 15.25, 16.3, eout), a = win(t, 15.2, 17.95, .3, .3);
+    txt("TESTED ON CURIOSITY'S REAL PATH", L, BOT - 214, 22, 700, COL.accent, a, {ls: 5});
+    const num = (PATH_NOGO * 100 * k).toFixed(1);
+    const w = txt(num, L, BOT - 70, 150, 900, '#fff', a, {ls: -3, blur: 30});
+    txt('% NO-GO', L + w + 14, BOT - 76, 56, 800, COL['NO-GO'], a, {blur: 20});
+    txt(`Curiosity drove it; our map marks only ${pct(PATH_NOGO)} % of it NO-GO`, L, BOT - 14, 28, 500, 'rgba(240,242,246,.92)', a * seg(t, 15.5, 16));
+    txt(`(checked before the map uses the rover's own track${TARGET ? `; target ≤ ${TARGET} %` : ''})`, L, BOT + 24, 22, 500, 'rgba(240,242,246,.7)', a * seg(t, 15.6, 16.1));
+    source(t, 15.1, 18.0, `Rover path: NASA/JPL-Caltech MSL traverse · share: data/combined_report.json (crew on foot)`);
+  }
+  // ---- 18-24: the tablet
+  if (t >= 18.0 && t < 24.0) drawTabletUI(t, st);
+  // ---- 24-26.4: the helmet
+  if (ws && t < 26.95) drawHelmet(t, ws);
+  // ---- 26.4-30: title
+  if (t >= 26.6) {
+    const a = seg(t, 26.7, 27.3, eout), y0 = 330;
+    X.save(); X.beginPath(); X.rect(0, y0 - 150, W, 175); X.clip();
+    txt('MARSOUINE', W / 2, y0 + 140 * (1 - a), 132, 900, '#fff', Math.min(1, a * 1.5), {align: 'center', ls: 22, blur: 34}); X.restore();
+    txt('Know the ground before you step.', W / 2, y0 + 70, 40, 600, 'rgba(240,242,246,.95)', seg(t, 27.25, 27.8, eout), {align: 'center'});
+    const b = seg(t, 27.9, 28.4, eout);
+    txt('Team y3m  ·  NASA Space Apps Challenge 2026', W / 2, y0 + 128, 26, 600, COL.accent, b, {align: 'center', ls: 3});
+    txt('Data: NASA/JPL-Caltech/MSSS · USGS Astrogeology · MOLA-HRSC (NASA, ESA/DLR/FU Berlin) · AI4Mars · Mars24 (NASA GISS)', W / 2, H - 46, 18, 500, 'rgba(255,255,255,.62)', seg(t, 28.3, 28.8), {align: 'center', blur: 8});
+  }
+}
+
+function drawTabletUI(t, st) {
+  const a = st.tablet;
+  block(t, 18.2, 18.98, {x: 110, y: 430, kicker: 'THE APP', title: 'Marsouine', sub: "on the astronaut's tablet", size: 70, subSize: 26});
+  const S = screenRect(st), z = st.tabZoom;
+  const fadeZoom = 1 - seg(t, 23.15, 23.6);
+  if (a > 0) {
+    X.save(); X.translate(S.x, S.y); X.scale(z, z); X.globalAlpha = a * fadeZoom;
+    // top bar
+    X.beginPath(); X.roundRect(0, 0, TAB.w, TOP, [26, 26, 0, 0]); X.fillStyle = 'rgba(12,14,19,.94)'; X.fill();
+    X.restore();
+    const tx = (x) => S.x + x * z, ty = (y) => S.y + y * z, A2 = a * fadeZoom;
+    txt('MARSOUINE', tx(26), ty(37), 22 * z, 800, '#fff', A2, {ls: 4 * z, shadow: false});
+    txt('EVA planner · crew on foot', tx(210), ty(36), 18 * z, 500, 'rgba(255,255,255,.65)', A2, {shadow: false});
+    // side panel
+    X.save(); X.globalAlpha = A2; X.fillStyle = 'rgba(16,18,24,.96)'; X.beginPath(); X.roundRect(S.x, S.y + TOP * z, SIDE * z, (TAB.h - TOP) * z, [0, 0, 0, 26 * z]); X.fill();
+    X.fillStyle = 'rgba(255,255,255,.08)'; X.fillRect(S.x + SIDE * z - 1, S.y + TOP * z, 1, (TAB.h - TOP) * z); X.restore();
+    const row = (y, pinC, letter, name, sol, k) => { if (k <= 0) return; X.save(); X.globalAlpha = A2 * k; X.beginPath(); X.arc(tx(42), ty(y), 15 * z, 0, 7); X.fillStyle = pinC; X.fill(); X.restore();
+      txt(letter, tx(42), ty(y + 1), 17 * z, 800, '#071016', A2 * k, {align: 'center', base: 'middle', shadow: false});
+      txt(name, tx(70), ty(y - 4), 20 * z, 700, '#fff', A2 * k, {shadow: false}); txt(sol, tx(70), ty(y + 18), 15 * z, 500, 'rgba(255,255,255,.6)', A2 * k, {shadow: false}); };
+    txt('ROUTE', tx(26), ty(TOP + 42), 15 * z, 700, 'rgba(255,255,255,.5)', A2, {ls: 3 * z, shadow: false});
+    row(TOP + 82, '#ffffff', 'A', short(RP.from), `sol ${RP.sol_from}`, seg(t, 19.0, 19.3));
+    row(TOP + 140, COL.route, 'B', short(RP.to), `sol ${RP.sol_to}`, seg(t, 19.5, 19.8));
+    const kS = seg(t, 20.2, 20.6); const stats = [[`${RP.route_m} m`, 'walk'], [`${pct(RP.pct_go, 0)} % GO`, `${pct(RP.pct_caution, 0)} % caution, ${pct(RP.pct_nogo, 0)} % no-go`], [`${Math.round(RP.slope_max_deg)}°`, 'steepest slope']];
+    stats.forEach(([v, l], i) => { const k = seg(t, 20.2 + i * .25, 20.6 + i * .25, eout); txt(v, tx(26), ty(TOP + 236 + i * 74), 34 * z, 800, i === 1 ? COL.GO : '#fff', A2 * k, {shadow: false}); txt(l, tx(26), ty(TOP + 262 + i * 74), 16 * z, 500, 'rgba(255,255,255,.6)', A2 * k, {shadow: false}); });
+    const kc = seg(t, 21.6, 22.1, eout);
+    if (kc > 0) {
+      txt('SECTION ON THIS TABLET', tx(26), ty(TOP + 500), 15 * z, 700, 'rgba(255,255,255,.5)', A2 * kc, {ls: 3 * z, shadow: false});
+      txt(`${(SECT.w * F.ewGround / 1000).toFixed(2)} × ${(SECT.h / 1000).toFixed(2)} km`, tx(26), ty(TOP + 540), 28 * z, 800, '#fff', A2 * kc, {shadow: false});
+      txt(`${pct(SEC.share(F, SECT), 0)} % of the box · ${SEC.DEFAULTS.margin} m around the route`, tx(26), ty(TOP + 566), 15 * z, 500, 'rgba(255,255,255,.6)', A2 * kc, {shadow: false});
+    }
+  }
+  // pins A and B on the map (they ride the lifted section)
+  const lift = st.lift || 0, R = st.R;
+  for (const [p, letter, c, t0] of [[ROUTE[0], 'A', '#ffffff', 19.0], [ROUTE[ROUTE.length - 1], 'B', COL.route, 19.5]]) {
+    const k = seg(t, t0, t0 + .45, backOut); if (k <= 0) continue;
+    const [px, py] = project(P3(p[0], p[1], hAt(p[0], p[1]), lift + 12), R);
+    const s = z * Math.min(1.4, Math.max(.5, k)), hgt = 46 * s;
+    X.save(); X.globalAlpha = Math.min(1, k * 2) * fadeZoom; X.translate(px, py - (1 - Math.min(1, k)) * 60);
+    X.beginPath(); X.ellipse(0, 0, 9 * s, 4 * s, 0, 0, 7); X.fillStyle = 'rgba(0,0,0,.45)'; X.fill();
+    X.beginPath(); X.moveTo(0, 0); X.bezierCurveTo(-6 * s, -hgt * .45, -18 * s, -hgt * .55, -18 * s, -hgt * .78); X.arc(0, -hgt * .78, 18 * s, Math.PI, 0); X.bezierCurveTo(18 * s, -hgt * .55, 6 * s, -hgt * .45, 0, 0);
+    X.fillStyle = c; X.fill(); X.lineWidth = 2; X.strokeStyle = 'rgba(0,0,0,.5)'; X.stroke(); X.restore();
+    txt(letter, px, py - (1 - Math.min(1, k)) * 60 - hgt * .78 + 1, 20 * s, 900, '#071016', Math.min(1, k * 2) * fadeZoom, {align: 'center', base: 'middle', shadow: false});
+  }
+  // the text column, left of the tablet
+  block(t, 19.0, 21.3, {x: 110, y: 430, kicker: 'PLAN', title: 'Pick A → B', sub: `It finds a safe way on the map:\n${RP.route_m} m, ${pct(RP.pct_go, 0)} % on GO ground`, size: 70, subSize: 26});
+  block(t, 21.4, 23.3, {x: 110, y: 430, kicker: 'SECTION', title: 'See only\nyour path', sub: 'The tablet keeps just the\nground around your route', size: 70, subSize: 26});
+  source(t, 18.3, 23.2, 'Route: team planner on the GO/NO-GO map · section: web/lib/sections.js · height ×2');
+}
+
+function drawHelmet(t, ws) {
+  const a = 1 - seg(t, 26.25, 26.8);
+  // visor: dark rounded frame with a soft inner edge
+  X.save(); X.globalAlpha = a;
+  const g = X.createRadialGradient(W / 2, H * .52, H * .42, W / 2, H * .52, W * .62); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(.75, 'rgba(0,0,0,.35)'); g.addColorStop(1, 'rgba(0,0,0,.92)');
+  X.fillStyle = g; X.fillRect(0, 0, W, H);
+  X.lineWidth = 2; X.strokeStyle = 'rgba(54,224,255,.35)'; X.beginPath(); X.roundRect(70, 60, W - 140, H - 120, 120); X.stroke();
+  X.restore();
+  const cls = ['UNKNOWN', 'GO', 'CAUTION', 'NO-GO'][ws.cls] || '–';
+  const rem = Math.max(0, routeLen - ws.s), dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+  const hud = [['GROUND', cls, COL[cls] || '#fff'], ['TO B', `${(rem / 1000).toFixed(2)} km`, '#fff'], ['HEADING', `${Math.round(ws.head)}° ${dirs[Math.round(ws.head / 45) % 8]}`, '#fff'], ['SPEED', '×20', COL.accent]];
+  hud.forEach(([k, v, c], i) => { const x = 150 + i * 230; txt(k, x, 132, 15, 700, 'rgba(255,255,255,.6)', a, {ls: 3, blur: 8}); txt(v, x, 168, 30, 800, c, a, {blur: 10}); });
+  simTag(W - 150 - measure('SIMULATED WALK', 16, 700, 2.5) - 24, 128, a, 'SIMULATED WALK');
+  block(t, 24.25, 26.3, {x: 150, y: BOT - 40, kicker: 'HELMET VIEW', title: 'Walk it before you go', sub: "An astronaut's eye view on the real 1 m terrain", size: 72});
+  source(t, 24.2, 26.4, 'Ground: USGS 1 m DEM · colours: NASA PIA26693 · far hills: MOLA-HRSC · sun: Mars24, 09:00 local');
+}
+
+// ---------------------------------------------------------------- player
+let T = clamp(+Q.get('t') || 0, 0, DUR), playing = false, last = 0;
+const scrub = $('#scrub'), playB = $('#play');
+function show(t) { T = t; drawFrame(t); scrub.value = t; $('#time').textContent = `${t.toFixed(2)} / ${DUR} s`; $('#shot').textContent = shotAt(t); }
+function tick(now) { if (!playing) return; const dt = (now - last) / 1000; last = now; let t = T + Math.min(dt, .1);
+  if (t >= DUR) { if (Q.get('loop') === '1') t = 0; else { t = DUR; setPlay(false); } } show(t); requestAnimationFrame(tick); }
+function setPlay(p) { playing = p; playB.textContent = p ? '❚❚' : '▶'; if (p) { if (T >= DUR) T = 0; last = performance.now(); requestAnimationFrame(tick); } }
+playB.onclick = () => setPlay(!playing);
+scrub.oninput = () => { setPlay(false); show(+scrub.value); };
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); setPlay(!playing); }
+  else if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') { setPlay(false); show(clamp(T + (e.code === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? 1 : 1 / FPS), 0, DUR)); }
+  else if (e.code === 'Home') { setPlay(false); show(0); }
+});
+function fit() { const ui = document.body.classList.contains('noui') ? 0 : 64, s = Math.min(innerWidth / W, (innerHeight - ui) / H); out.style.width = W * s + 'px'; out.style.height = H * s + 'px'; }
+addEventListener('resize', fit); fit();
+const say = (m, ms = 0) => { const el = $('#msg'); el.textContent = m; el.style.display = m ? 'block' : 'none'; if (ms) setTimeout(() => { if (el.textContent === m) el.style.display = 'none'; }, ms); };
+const save = (blob, name) => { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+$('#saveBtn').onclick = () => out.toBlob(b => save(b, `marsouine_film_t${T.toFixed(2)}.png`), 'image/png');
+const busy = b => { for (const id of ['#mp4Btn', '#webmBtn', '#saveBtn', '#play']) $(id).disabled = b; scrub.disabled = b; };
+
+// frame-exact MP4: WebCodecs (H.264) + mp4-muxer, loaded only when you export
+const MUXER = 'https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.2/build/mp4-muxer.mjs';
+async function exportMP4() {
+  if (!('VideoEncoder' in window)) { say('This browser has no WebCodecs video encoder. Use Chrome or Edge, or "Record WebM".', 7000); return; }
+  setPlay(false); busy(true);
+  try {
+    say('Loading the MP4 writer (mp4-muxer 5.2.2 from cdn.jsdelivr.net)…');
+    const {Muxer, ArrayBufferTarget} = await import(MUXER);
+    let cfg = null;
+    for (const codec of ['avc1.640028', 'avc1.4d0028', 'avc1.640032']) {
+      const c = {codec, width: W, height: H, bitrate: 14e6, framerate: FPS, avc: {format: 'avc'}};
+      if ((await VideoEncoder.isConfigSupported(c)).supported) { cfg = c; break; }
+    }
+    if (!cfg) throw new Error('no H.264 encoder for 1920 × 1080 here');
+    const muxer = new Muxer({target: new ArrayBufferTarget(), video: {codec: 'avc', width: W, height: H, frameRate: FPS}, fastStart: 'in-memory'});
+    let err = null;
+    const enc = new VideoEncoder({output: (chunk, m) => muxer.addVideoChunk(chunk, m), error: e => { err = e; }});
+    enc.configure(cfg);
+    const n = Math.round(DUR * FPS);
+    for (let i = 0; i < n; i++) {
+      if (err) throw err;
+      const t = i / FPS; drawFrame(t);
+      const vf = new VideoFrame(out, {timestamp: Math.round(i * 1e6 / FPS), duration: Math.round(1e6 / FPS)});
+      enc.encode(vf, {keyFrame: i % (FPS * 2) === 0}); vf.close();
+      if (enc.encodeQueueSize > 6) await new Promise(r => enc.addEventListener('dequeue', r, {once: true}));
+      if (i % 10 === 0) { say(`Rendering frame ${i + 1} / ${n} (${FPS} fps)…`); scrub.value = t; await new Promise(r => setTimeout(r)); }
+    }
+    await enc.flush(); muxer.finalize();
+    save(new Blob([muxer.target.buffer], {type: 'video/mp4'}), `marsouine_demo_30s_1080p${FPS}.mp4`);
+    say(`Saved marsouine_demo_30s_1080p${FPS}.mp4 (${cfg.codec}, no sound: add the music in your editor).`, 9000);
+  } catch (e) { console.error(e); say('MP4 export failed: ' + (e.message || e) + '. Try "Record WebM".', 9000); }
+  busy(false); show(T);
+}
+// fallback: record in real time with MediaRecorder (WebM)
+async function recordWebM() {
+  if (!out.captureStream || !window.MediaRecorder) { say('This browser cannot record a canvas.', 6000); return; }
+  setPlay(false); busy(true);
+  const type = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'].find(m => MediaRecorder.isTypeSupported(m));
+  const stream = out.captureStream(FPS), rec = new MediaRecorder(stream, {mimeType: type, videoBitsPerSecond: 14e6}), parts = [];
+  rec.ondataavailable = e => e.data.size && parts.push(e.data);
+  const done = new Promise(r => rec.onstop = r);
+  show(0); rec.start();
+  const t0 = performance.now();
+  await new Promise(r => { const step = () => { const t = (performance.now() - t0) / 1000; show(Math.min(t, DUR)); say(`Recording in real time… ${t.toFixed(1)} s`); if (t < DUR) requestAnimationFrame(step); else r(); }; requestAnimationFrame(step); });
+  rec.stop(); await done;
+  save(new Blob(parts, {type: 'video/webm'}), 'marsouine_demo_30s.webm'); say('Saved marsouine_demo_30s.webm (real-time recording: frames can drop if the computer is slow).', 9000);
+  busy(false);
+}
+$('#mp4Btn').onclick = exportMP4; $('#webmBtn').onclick = recordWebM;
+
+$('#loading').remove();
+show(T);
+if (Q.get('play') === '1') setPlay(true);
+window.__film = {drawFrame, show, DUR, FPS, SHOTS, SECT, sheets, cam, walk, renderer};
+</script>
+</body>
+</html>

@@ -35,6 +35,7 @@ Download URLs, byte ranges and MD5 sums are in `Map_layer/Layer2_Elevation/raw/f
 - **HiRISE camera**: McEwen, A. S., et al. (2007). Mars Reconnaissance Orbiter's High Resolution Imaging Science Experiment (HiRISE). *Journal of Geophysical Research*, 112, E05S02. https://doi.org/10.1029/2005JE002605
 - **HiRISE DTMs**: Kirk, R. L., et al. (2008). Ultrahigh resolution topographic mapping of Mars with MRO HiRISE stereo images. *Journal of Geophysical Research*, 113, E00A24. https://doi.org/10.1029/2007JE003000
 - **HiRISE DTM and orthoimages** DTEEC_019698_1750_019988_1750_U01 and ESP_019698_1750 RED_C, MRO HiRISE (NASA/JPL/University of Arizona). https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/
+- **Map of Lower Mount Sharp**, PIA18781 (11 Sept 2014), NASA/JPL-Caltech/Univ. of Arizona. https://science.nasa.gov/photojournal/map-of-lower-mount-sharp/ (geology context; copy in `Map_layer/martian_map/docs/research/`)
 - **Geologic context**: Tanaka, K. L., et al. (2014). Geologic map of Mars. USGS Scientific Investigations Map 3292. https://doi.org/10.3133/sim3292
 - **Mars Trek**, NASA. https://trek.nasa.gov/mars/ (viewer, not used as data)
 
@@ -67,7 +68,7 @@ Every source is also listed inside the folder: `docs/SOURCES.md`, `pipeline/sour
 - **Sun position**: NASA GISS Mars24 algorithm (Allison 1997; Allison & McEwen 2000, Planet. Space Sci. 48, 215–235). https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
 - **Far horizon**: HRSC/MOLA blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS), from Layer 2.
 - **Constants**: Mars ellipsoid (Seidelmann et al. 2002, IAU/IAG 2000 report); solar radius (IAU 2015 Resolution B3); astronomical unit (IAU 2012 Resolution B2).
-- **Simulated rocks and ripples**: the team drone simulation rules, `Drone/sim/scripts/02_route_flights.py`.
+- **Simulated rocks and ripples**: the team drone simulation rules, `Drone/sim/scripts/02_route_flights.py`. The rock shapes (`web/walk/rocks.glb`) and the close-up ground texture are made by the team script `pipeline/81_blender_detail.py` in Blender; no third-party 3D model is used.
 
 **Software:** QGIS 4.2.3; Python 3.12 with rasterio, geopandas, pyogrio, shapely, pyproj, SciPy, scikit-image (`MCP_Geometric` least-cost paths) and Pillow, pinned in `Map_layer/martian_map/requirements.lock.txt`; three.js 0.160.0 for the 3D viewer; Blender 5.3.0 (headless) for the walk view's simulated rocks and close-up texture.
 
@@ -78,7 +79,8 @@ Every source is also listed inside the folder: `docs/SOURCES.md`, `pipeline/sour
 - **Surface radiation (simulated helmet sensor range)**: Hassler, D. M., et al. (2014). Mars' surface radiation environment measured with the Mars Science Laboratory's Curiosity rover. *Science*, 343(6169), 1244797. https://doi.org/10.1126/science.1244797
 - **Air temperature (simulated helmet sensor range)**: Gómez-Elvira, J., et al. (2012). REMS: The environmental sensor suite for the Mars Science Laboratory rover. *Space Science Reviews*, 170, 583–640. https://doi.org/10.1007/s11214-012-9921-1
 - **Suit oxygen and EVA reserve**: NASA ISS Extravehicular Mobility Unit (EMU) planning values† (about 6.5–8 h of oxygen, 30 min reserve).
-- **Libraries**: React, Vite, qrcode-generator (MIT licence).
+- **Libraries**: React 18.3.1, Vite 5.4.21, qrcode-generator 1.5.2, esbuild 0.21.5 (all MIT licence); Leaflet 1.9.4 (BSD-2-Clause), https://leafletjs.com/ ; three.js r160 (MIT) for the 3D map inside the tablet. Versions and licences: [`CREDITS.md`](CREDITS.md).
+- **WebXR Device API** (phone AR portal), W3C. https://www.w3.org/TR/webxr/
 
 ## Scout drone (`Drone/`)
 

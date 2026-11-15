@@ -13,7 +13,14 @@ The map combines three readings of the same ground:
 | GIS map, GO/NO-GO and 3D | Where can we walk? All five map layers in QGIS, one GO/NO-GO layer per input, a combined GO/NO-GO map with routes, and a 3D viewer with the points of interest as numbered pins. | [`Map_layer/martian_map/`](Map_layer/martian_map/) |
 | Scout drone (simulated) | What lies between the stops, where no photo exists? A laser-ranging drone flies ahead. | [`Drone/`](Drone/) |
 
-The [`Application/`](Application/) folder is the tablet and helmet app that puts these together for the astronaut.
+The [`Application/`](Application/) folder is the tablet and helmet app that puts these together for the astronaut. An Android phone becomes a portal into the 3D terrain (WebXR AR, or compass + steps): the astronaut starts at A, and green chevrons on the ground lead to B.
+
+**Documentation:**
+- [`docs/README.md`](docs/README.md): index of every document.
+- [`docs/RUNNING.md`](docs/RUNNING.md): full run guide.
+- [`CREDITS.md`](CREDITS.md): credit lines and licences.
+- [`AI_USE.md`](AI_USE.md): use of AI.
+- [`docs/SPACE_APPS_SUBMISSION.md`](docs/SPACE_APPS_SUBMISSION.md): text for the Space Apps project page.
 
 ## Key results
 
@@ -45,14 +52,19 @@ python server.py        # then open http://localhost:8000 (or http://<this-PC-IP
 ```
 Ai_model/                    terrain segmentation notebook, metrics, per-stop results
 Map_layer/Layer2_Elevation/  elevation, slope, contours, exports for the web map, scripts
-Map_layer/martian_map/       all five map layers, GO/NO-GO layers and combined map, routes, 3D viewer, pipeline
+Map_layer/martian_map/       all five map layers, GO/NO-GO layers and combined map, routes, pipeline
+  web/                       3D viewer, layer animation, sections, astronaut walk view + phone portal
 Application/
   fg-app/                    React source of the tablet + helmet app
-  marsouine-app-built/      built app, ready to serve
+  marsouine-app-built/       built app, ready to serve (server.py: http 8000, https 8443 for the phone)
   data/                      stops.json + AI overlays (copied into the app)
 Drone/                       scout drone simulator, its pipeline and the GeoJSON hazard layer
+docs/                        documentation index, run guide, Space Apps submission text
 ASSUMPTIONS.md               every threshold the team chose (not NASA rules)
 REFERENCES.md                all data sources and papers
+CREDITS.md                   credit lines, Space Agency Partner data, software licences
+AI_USE.md, ai_use.json       where and how AI (SI) tools were used
+DEVELOPMENT_LOG_2026-11-15.md  how the 3D tablet map and the phone portal were built and tested
 ```
 
 ## Honest limits
@@ -64,9 +76,14 @@ REFERENCES.md                all data sources and papers
 
 ## Data and references
 
-All datasets, papers and web sources are listed in [`REFERENCES.md`](REFERENCES.md). Images from Curiosity and Perseverance are credited to NASA/JPL-Caltech. No NASA logos are used.
+All datasets, papers and web sources are listed in [`REFERENCES.md`](REFERENCES.md); credit lines and software licences are in [`CREDITS.md`](CREDITS.md). Images from Curiosity and Perseverance are credited to NASA/JPL-Caltech. No NASA logos are used, and nothing here implies NASA endorsement.
+
+**Space Agency Partner data:** ESA Mars Express HRSC, used through the USGS HRSC + MOLA blended DEM. It gives the Gale crater elevation and the walk view's horizon.
 
 ## Use of AI
 
 - The terrain model is our own (DeepLabV3+), trained by us on AI4Mars.
 - Claude (Anthropic) helped with code (Colab notebook, React app, drone simulator), with checking results, and with drafting text. Every number in this repository comes from our own runs.
+- The full statement, as the Space Apps 2026 rules ask, is in [`AI_USE.md`](AI_USE.md), with a machine-readable copy in [`ai_use.json`](ai_use.json). It says where and how SI tools were used, part by part.
+  - That includes the map pipeline, the 3D viewers, the walk view and phone portal, and the documentation.
+  - It also confirms that no image, video or audio was made by a generation model.

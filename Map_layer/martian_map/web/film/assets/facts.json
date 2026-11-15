@@ -1,0 +1,61 @@
+{
+ "made_by": "pipeline/90_film_assets.py",
+ "built_utc": "2026-11-15T14:25:27Z",
+ "ai": {
+  "stop": {
+   "sol": 4582,
+   "x": 1259.7,
+   "y": 1639.45,
+   "sand": 0.293,
+   "bedrock": 0.647,
+   "soil": 0.051,
+   "bigrock": 0.009,
+   "certainty": 0.726,
+   "note": "AI on Curiosity Navcam, sol 4582 (site 117, drive 492), sand threshold 0.3",
+   "photo": "ai_stop.jpg",
+   "photo_id": "NRB_804267166EDR_F1170492NCAM00354M_",
+   "photo_credit": "NASA/JPL-Caltech (Curiosity Navcam); colours = team AI"
+  },
+  "overlay_colours": {
+   "soil": [
+    150,
+    110,
+    60
+   ],
+   "bedrock": [
+    90,
+    90,
+    90
+   ],
+   "sand": [
+    240,
+    200,
+    60
+   ],
+   "big rock": [
+    200,
+    40,
+    40
+   ]
+  },
+  "overlay_zone": "the AI reads rows 40-85 % of the photo (the near ground)",
+  "iou": {
+   "soil": 0.981,
+   "bedrock": 0.941,
+   "sand": 0.966,
+   "big rock": 0.394
+  },
+  "mean_iou": 0.821,
+  "test_set": "AI4Mars expert test set (labels agreed by 3 experts)",
+  "source": "Ai_model/results/metrics.json (test_min3); Application/data/stops.json (sol 4582); colours from Ai_model/nasa_training.ipynb (COL)"
+ },
+ "drone": {
+  "landed": 223,
+  "flights": 234,
+  "map_error_cm": 4.4,
+  "run": "2026-11-15T00:39:51.967Z",
+  "what": "simulated scout drone flying Curiosity's real route (40-seed check)",
+  "source": "Drone/sim/results/verify_latest.md (Medians per set, real_route)"
+ },
+ "note": "Box shares, Curiosity's path share and connectivity are read by the film from web/data/combined_report.json; the route from web/overlays.json."
+}

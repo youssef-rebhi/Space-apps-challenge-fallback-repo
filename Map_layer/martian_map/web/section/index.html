@@ -395,7 +395,7 @@ function line(P, width, color, outline) {
 }
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 async function draw2D() {
-  if (p2d.classList.contains('hide') || !st.sec) return;
+  if (p2d.classList.contains('hide') || !st.sec || !st.grid) return;   // the class grid may not be loaded yet
   const dpr = devicePixelRatio || 1, w = p2d.clientWidth, h = p2d.clientHeight; if (!w || !h) return;
   c2d.width = Math.round(w * dpr); c2d.height = Math.round(h * dpr); V = view2d();
   const s = st.sec, G = st.grid, photo = st.show.photo ? await loadImg(BASE + LAY.photo.file) : null;
@@ -446,6 +446,7 @@ let drag = null;
 const mPx = (x, y) => [x / WM * mini.clientWidth, (HM - y) / HM * mini.clientHeight];
 const mXY = e => { const r = mini.getBoundingClientRect(); return [clamp((e.clientX - r.left) / r.width, 0, 1) * WM, (1 - clamp((e.clientY - r.top) / r.height, 0, 1)) * HM]; };
 async function drawMini() {
+  if (!st.grid || !st.sec) return;   // ResizeObserver can fire before the class grid is loaded
   const dpr = devicePixelRatio || 1, w = mini.clientWidth, h = mini.clientHeight; if (!w) return;
   mini.width = Math.round(w * dpr); mini.height = Math.round(h * dpr); xm.setTransform(dpr, 0, 0, dpr, 0, 0);
   const G = st.grid; xm.imageSmoothingEnabled = true; xm.clearRect(0, 0, w, h);
