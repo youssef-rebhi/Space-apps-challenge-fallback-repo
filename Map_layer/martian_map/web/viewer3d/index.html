@@ -49,6 +49,7 @@ ul{margin:4px 0;padding-left:16px}li{margin:2px 0}
 <aside id="left" class="panel">
   <h1>Martian Map: Mount Sharp boxwork</h1>
   <p class="sub">Gale crater, 137.36–137.40°E, 4.78–4.83°S. Every colour is a rule with a source; see the right panel.</p>
+  <div id="secbar" class="leg" style="display:none"></div>
   <h2>Who is going?</h2>
   <div class="seg" id="profile"><button data-p="foot" class="on">Crew on foot</button><button data-p="rover">Rover</button></div>
   <h2>Map on the terrain</h2><div id="layers"></div>
@@ -72,6 +73,7 @@ ul{margin:4px 0;padding-left:16px}li{margin:2px 0}
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import * as SEC from '../lib/sections.js';
 
 const BASE = '../';
 const J = async p => { const r = await fetch(BASE + p); if (!r.ok) throw new Error(p + ' ' + r.status); return r.json(); };
@@ -81,6 +83,11 @@ const [meta, ov, gates, report] = await Promise.all([J(manifest.terrain), J(mani
 const [WM, HM] = meta.size_m, ZMIN = meta.z.min;
 const CLS = {GO: 1, CAUTION: 2, 'NO-GO': 3, UNKNOWN: 0};
 const CATS = ov.poi_categories;   // POI category -> {label, color}, written by pipeline/60_web_export.py
+// ?section=... (web/lib/sections.js): show only one piece of the map, cut by four vertical planes
+const Qs = new URLSearchParams(location.search);
+let SECT = null, secOn = false, secErr = '';
+try { SECT = SEC.fromQuery(SEC.makeFrame(meta), Qs, {overlays: ov}, {profile: Qs.get('profile') === 'rover' ? 'rover' : 'foot'}); if (SECT?.kind === 'whole') SECT = null; secOn = !!SECT; }
+catch (e) { secErr = e.message; }
 let exag = meta.vertical_exaggeration.default, profile = 'foot', layerKey = 'combined_over_photo';
 
 // ---------- renderer, scene
@@ -95,6 +102,12 @@ camera.position.set(1050, 2500, 2350);   // opening view: from the south-east, f
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.target.set(300, 350, 420); controls.maxPolarAngle = Math.PI * 0.49; controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xffffff, 0x404040, 1.6));
+function sectionPlanes(sec) {                                  // keep |u| <= w/2 and |v| <= h/2 around the section centre (scene: +x east, +z south)
+  const {right, up} = SEC.axes(sec), c = new THREE.Vector3(sec.cx - WM / 2, 0, HM / 2 - sec.cy);
+  return [[new THREE.Vector3(right[0], 0, -right[1]), sec.w / 2], [new THREE.Vector3(up[0], 0, -up[1]), sec.h / 2]]
+    .flatMap(([n, half]) => [new THREE.Plane(n.clone().negate(), c.dot(n) + half), new THREE.Plane(n.clone(), -c.dot(n) + half)]);
+}
+const inSection = (x, y) => !secOn || SEC.contains(SECT, x, y);
 const sun = new THREE.DirectionalLight(0xffffff, 1.6); sun.position.set(-1, 1, -1).multiplyScalar(3000); scene.add(sun); // from the NW, like the hillshade
 
 // ---------- terrain
@@ -223,6 +236,7 @@ function buildOverlays() {
   // Layer 5 POIs: one numbered pin per site (POIs closer than 25 m share a pin), coloured by category,
   // with a ring draped on the terrain that marks the exact spot
   if ($('#tPois').checked) for (const s of ov.poi_sites) {
+    if (!inSection(s.x, s.y)) continue;
     const col = CATS[s.category].color, base = s.category === 'rover_position', zg = heightAt(s.x, s.y);
     const ground = P3(s.x, s.y, zg, 0), top = P3(s.x, s.y, zg, 75), len = top.y - ground.y;
     const stem = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, len, 8), new THREE.MeshBasicMaterial({color: col}));
@@ -238,6 +252,7 @@ function buildOverlays() {
     pinLabels.push({top, el, lb, left: false});
   }
   if ($('#tEva').checked) for (const e of ov.eva_stops) {
+    if (!inSection(e.x, e.y)) continue;
     const s = new THREE.Mesh(new THREE.SphereGeometry(3.5, 10, 8), new THREE.MeshBasicMaterial({color: {red: 0xd73027, orange: 0xff9e3d, green: 0x7ee2a0}[e.team_class]}));
     s.position.copy(P3(e.x, e.y, e.z, 4)); s.userData = {eva: e}; ovGroup.add(s); poiMeshes.push(s);
   }
@@ -316,6 +331,7 @@ addEventListener('pointermove', e => {
   if (!mesh) return; mouse.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(mouse, camera);
   const hit = ray.intersectObject(mesh)[0]; if (!hit) return;
   const x = hit.uv.x * WM, y = hit.uv.y * HM, L = current(), cls = classAt(L, x, y);
+  if (!inSection(x, y)) return;
   const lon = lerp(C.SW[0], C.SE[0], x / WM), lat = lerp(C.SW[1], C.NW[1], y / HM);
   $('#readout').innerHTML = `<div class="row"><span class="kv">lon, lat</span><span>${lon.toFixed(5)}°E, ${lat.toFixed(5)}°</span></div>
     <div class="row"><span class="kv">elevation</span><span>${heightAt(x, y).toFixed(1)} m</span></div>
@@ -349,6 +365,20 @@ document.addEventListener('click', e => { const h = e.target.closest('.panel > h
 if (innerWidth < 820 || innerHeight < 700) ['#legend', '#gates'].forEach(s => $(s).classList.add('min'));
 await loadHeights('height_4m.bin');
 renderLayerMenu(); showLayer(); renderRoutes(); renderGates();
+function setSectionOn(on) {
+  secOn = on && !!SECT; renderer.clippingPlanes = secOn ? sectionPlanes(SECT) : []; buildOverlays();
+  const q = new URLSearchParams(location.search); q.delete('profile');
+  $('#secbar').style.display = SECT || secErr ? 'block' : 'none';
+  $('#secbar').innerHTML = secErr ? `<span class="warn">Section not shown: ${secErr.replace(/[<>&]/g, '')}</span>` :
+    `<b>Section</b>: ${SECT.label.replace(/[<>&]/g, '')}, ${Math.round(SECT.w)} × ${Math.round(SECT.h)} m (${(SEC.share(SEC.makeFrame(meta), SECT) * 100).toFixed(1)}% of the box)<br>
+    <a href="#" id="secToggle">${secOn ? 'Show the whole map' : 'Show only the section'}</a> · <a href="../section/?${q.toString().replace(/[<>"]/g, '')}">Open as a map section</a>`;
+  if (SECT) $('#secToggle').onclick = e => { e.preventDefault(); setSectionOn(!secOn); };
+}
+if (SECT || secErr) setSectionOn(secOn);
+if (secOn) {                                                     // frame the section, keeping the opening view direction
+  const c = P3(SECT.cx, SECT.cy, heightAt(SECT.cx, SECT.cy)), dir = camera.position.clone().sub(controls.target).normalize();
+  controls.target.copy(c); camera.position.copy(c).addScaledVector(dir, Math.max(SECT.w, SECT.h) * 1.3 + 150); controls.update();
+}
 renderPoiList();
 $('#loading').remove();
 renderer.setAnimationLoop(now => { stepFly(now); controls.update(); renderer.render(scene, camera); declutter(); labels.render(scene, camera); });
