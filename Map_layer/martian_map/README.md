@@ -12,7 +12,34 @@ Every number in this workspace either comes from a NASA, USGS or published sourc
 |---|---|
 | **QGIS: everything** | Open [qgis/martian_map.qgz](qgis/martian_map.qgz). It opens on the box and uses relative paths, so the folder can be moved. |
 | **3D web viewer** | From this folder run `.venv/Scripts/python.exe -m http.server 8765 --directory web`, then open http://localhost:8765/viewer3d/ |
+| **Layer-by-layer animation** | Same server, then open http://localhost:8765/explode/. Click to take the map apart: 3D colored map → flat GO/NO-GO map + plain 3D map → slope, roughness, terrain units, ground truth + photo, elevation. It uses the existing files only. Options: `?step=0\|1\|2`, `&profile=rover`, `&theme=light`, `&ui=0`, `&autoplay=1`. "Record video" saves a .webm for slides. |
+| **Map sections (tablet)** | Same server, then open http://localhost:8765/section/. It shows only one piece of the map, in 3D and as the flat GO/NO-GO map, with the path, the POIs and the numbers for that piece. See [Map sections](#map-sections) below. |
 | **Quick look** | [docs/img/preview_combined_foot.jpg](docs/img/preview_combined_foot.jpg), [docs/img/qgis_master_preview.png](docs/img/qgis_master_preview.png) |
+
+## Map sections
+A section is one rectangle on the map: a centre, a width, a height and an optional turn. All layers share one grid, so one section cuts every layer at the same place (photo, 3D relief, slope, roughness, terrain units, ground truth, GO/NO-GO). No new files are made. The code is [web/lib/sections.js](web/lib/sections.js), a plain ES module with no three.js, so the team app can import it.
+
+| Make a section from | URL (`?section=...`) | Size |
+|---|---|---|
+| A route leg | `route:foot:4718-5050` (or `rover`) | path + margin |
+| Any path A → B (the app's `{lat, lon}` points) | `path:-4.7976,137.3864;-4.8057,137.3820` | path + margin |
+| The same in local metres | `pathxy:1500,1500;1600,1700` | path + margin |
+| A POI pin or POI id | `poi:3`, `poi:L5-0011` | `&r=` half side |
+| One point | `point:-4.80,137.38` or `xy:1660,445` | `&r=` half side |
+| A rectangle | `box:x0,y0,x1,y1` (metres) or `boxll:lat0,lon0,lat1,lon1` | as given |
+| An exact section | `sec:cx,cy,w,h,rot` | as given |
+| The whole box | `whole` | 2371 × 2964 m |
+
+- **Options:** `&margin=100` and `&min=300` set the margin and the smallest side in metres (A31, A32). `&r=200` sets the half side around a point (A33). `&heading=1` turns a path section so A is at the bottom and B at the top. `&aspect=4:3` fits a screen shape.
+- **Where it works:**
+  - `section/` shows the piece in 3D and 2D.
+  - `viewer3d/` cuts the full viewer to the section, with a "Show the whole map" switch.
+  - `explode/` takes only that piece apart, layer by layer.
+- **Section page options:**
+  - `&view=2d|3d`, `&profile=rover`, `&theme=light`;
+  - `&ui=0` gives a clean tablet view without the tool panel.
+- **From the tablet app (iframe):** send `postMessage({type: 'martian-map:section', path: [{lat, lon}, ...], profile: 'foot'})` to the page. You can also send `spec: 'route:foot:4718-5050'` or `point: {lat, lon}`. The page answers with `martian-map:section-ready` (the section and its numbers) or `martian-map:section-error`.
+- **Numbers on the section page:** they are computed from the map files: the class shares inside the section, and the length, class shares and climb along the path. For a pipeline route leg, the pipeline's own numbers are shown too.
 
 ## The four parts of the brief
 | Part | Result | Files |
@@ -76,7 +103,7 @@ martian_map/
   qgis/martian_map.qgz master QGIS project (L1-L5 + GO/NO-GO + routes); project_crs.wkt = saved project CRS
   layers/L1..L5/       approved layers, each with README.md, sources/, styles/
   gonogo/              conversion layers, combined maps, routes, reach, certainty, rules, calibration
-  web/                 terrain package, textures, overlays, layers.json manifest, viewer3d/, plotly/
+  web/                 terrain package, textures, overlays, layers.json manifest, viewer3d/, explode/ (layer animation), section/ + lib/sections.js (map sections), plotly/
   pipeline/            numbered scripts (run order in pipeline/README.md) + build_history/ (scripts as originally run)
   docs/                METHODS, SOURCES, ASSUMPTIONS, GONOGO_RULES, TOOLS, FILE_MAP.json, history/, research/, img/
   .venv/               Python 3.12 (uv), pinned in requirements.lock.txt
