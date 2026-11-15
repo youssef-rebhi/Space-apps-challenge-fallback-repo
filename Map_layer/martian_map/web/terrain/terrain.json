@@ -1,0 +1,110 @@
+{
+ "name": "Mount Sharp boxwork, Gale crater: 3D terrain package",
+ "frame": "USGS MSL Gale mosaic frame (eqc lon_0=0, Mars 2000 sphere R=3396190 m). NASA rover positions are native to it.",
+ "crs_proj4": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs",
+ "extent_eqc_m": [
+  8141972.492786024,
+  -286297.075189438,
+  8144343.492786024,
+  -283333.075189438
+ ],
+ "size_m": [
+  2371,
+  2964
+ ],
+ "corners_lonlat": {
+  "NW": [
+   137.3600007,
+   -4.7800004
+  ],
+  "NE": [
+   137.4000009,
+   -4.7800004
+  ],
+  "SW": [
+   137.3600007,
+   -4.8300048
+  ],
+  "SE": [
+   137.4000009,
+   -4.8300048
+  ]
+ },
+ "lonlat_bounds": [
+  137.3600007,
+  -4.8300048,
+  137.4000009,
+  -4.7800004
+ ],
+ "local_frame": "x = metres east of the west edge, y = metres north of the south edge (eqc grid metres), z = elevation in m. True east-west ground distance = eqc distance x cos(lat) = x 0.9965 (0.35 % shorter); north-south is exact.",
+ "z": {
+  "min": -3990.1103515625,
+  "max": -3350.553466796875,
+  "units": "m relative to the Mars areoid, from the USGS MSL Gale DEM (same numbers as the rover's elev_geoid). MOLA laser shots suggest true areoid heights ~15 m higher (docs/METHODS.md, Layer 2)."
+ },
+ "vertical_exaggeration": {
+  "default": 2.0,
+  "range": [
+   1,
+   5
+  ],
+  "note": "display only; slopes and GO/NO-GO use true heights"
+ },
+ "heightmaps": [
+  {
+   "file": "height_2m.bin",
+   "cols": 1186,
+   "rows": 1482,
+   "cell_m": [
+    1.9991568296795952,
+    2.0
+   ],
+   "dtype": "float32 little-endian",
+   "order": "row-major, first row = north edge, first column = west edge",
+   "units": "m (absolute elevation, same as terrain.z)"
+  },
+  {
+   "file": "height_4m.bin",
+   "cols": 593,
+   "rows": 741,
+   "cell_m": [
+    3.9983136593591904,
+    4.0
+   ],
+   "dtype": "float32 little-endian",
+   "order": "row-major, first row = north edge, first column = west edge",
+   "units": "m (absolute elevation, same as terrain.z)",
+   "png16": {
+    "file": "height_4m.png",
+    "decode": "z = zmin + v / 65535 * (zmax - zmin)"
+   }
+  }
+ ],
+ "textures": [
+  {
+   "id": "photo",
+   "file": "texture_photo.jpg",
+   "px": [
+    3277,
+    4096
+   ],
+   "label": "Photo (USGS 25 cm orthomosaic)",
+   "source": "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex"
+  },
+  {
+   "id": "hillshade",
+   "file": "texture_hillshade.jpg",
+   "px": [
+    1638,
+    2048
+   ],
+   "label": "Shaded relief (USGS DEM)",
+   "source": "Derived from the USGS MSL Gale DEM 1 m v3 (Layer 2)"
+  }
+ ],
+ "overlays": "overlays.json",
+ "sources": [
+  "USGS MSL Gale DEM Mosaic 1 m v3 (Parker & Calef / USGS Astrogeology)",
+  "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex"
+ ]
+}

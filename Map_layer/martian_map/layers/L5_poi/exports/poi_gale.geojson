@@ -1,0 +1,741 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "id": "0",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0001",
+    "name": "Bradbury Landing",
+    "name_status": "NASA_informal",
+    "category": "landing_site",
+    "scale": "gale",
+    "sol": 0.0,
+    "sol_end": null,
+    "lon": 137.441633,
+    "lat": -4.589467,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 3, site 2, drive 0",
+    "position_uncertainty_m": 10.0,
+    "elev_m_usgs": -4500.971,
+    "evidence": "observed",
+    "source_name": "NASA/JPL news: NASA Mars Rover Begins Driving at Bradbury Landing (Aug 2012)",
+    "source_url": "https://www.jpl.nasa.gov/news/nasa-mars-rover-begins-driving-at-bradbury-landing/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Curiosity's landing site inside Gale crater (5 Aug 2012 PDT), named by NASA after author Ray Bradbury. Position = first rover waypoint, before the first drive.",
+    "science_value": "Start of the mission; reference point for the whole traverse.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.441633,
+     -4.589467
+    ]
+   }
+  },
+  {
+   "id": "1",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0002",
+    "name": "John Klein (first drill hole)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "gale",
+    "sol": 182.0,
+    "sol_end": null,
+    "lon": 137.4491296,
+    "lat": -4.58948488,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 166, site 6, drive 0",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -4520.456,
+    "evidence": "observed",
+    "source_name": "NASA/JPL: NASA Curiosity Rover Collects First Martian Bedrock Sample",
+    "source_url": "https://www.jpl.nasa.gov/news/nasa-curiosity-rover-collects-first-martian-bedrock-sample/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "First rock drilled on Mars (sol 182, 8 Feb 2013) in Sheepbed mudstone, Yellowknife Bay. CheMin and SAM results pointed to an ancient wet environment that could have supported microbes.",
+    "science_value": "First evidence of a habitable ancient environment in Gale.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.4491296,
+     -4.58948488
+    ]
+   }
+  },
+  {
+   "id": "2",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0003",
+    "name": "Hidden Valley (sand hazard)",
+    "name_status": "NASA_informal",
+    "category": "hazard_lesson",
+    "scale": "gale",
+    "sol": 709.0,
+    "sol_end": 719.0,
+    "lon": 137.3827051,
+    "lat": -4.66028425,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 709, site 40, drive 366",
+    "position_uncertainty_m": 100.0,
+    "elev_m_usgs": -4458.431,
+    "evidence": "observed",
+    "source_name": "NASA/JPL news release 2014-279; NASA image 'Curiosity Tracks in Hidden Valley' (sol 709)",
+    "source_url": "https://mars.nasa.gov/resources/6493/curiosity-tracks-in-hidden-valley-on-mars/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Sandy valley floor where wheels slipped more than expected in Aug 2014 (Navcam sol 709); the team reversed and drove out to the northeast.",
+    "science_value": "Real lesson for route planning: sand-filled lows are a mobility hazard.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3827051,
+     -4.66028425
+    ]
+   }
+  },
+  {
+   "id": "3",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0004",
+    "name": "Elemental sulfur discovery (Gediz Vallis channel)",
+    "name_status": "NASA_informal",
+    "category": "discovery",
+    "scale": "gale",
+    "sol": 4200.0,
+    "sol_end": null,
+    "lon": 137.408864,
+    "lat": -4.78570678,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4200, site 107, drive 2484",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3688.38,
+    "evidence": "observed",
+    "source_name": "NASA/JPL: NASA's Curiosity Rover Discovers a Surprise in a Martian Rock (2024)",
+    "source_url": "https://www.jpl.nasa.gov/news/nasas-curiosity-rover-discovers-a-surprise-in-a-martian-rock/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "On 30 May 2024 the rover drove over and cracked a rock, revealing yellow crystals identified as elemental sulfur, the first found on Mars. Sol ~4200 is ESTIMATED (NASA gives 'Snow Lake' close-up on sol 4209 = 8 June, nine days later).",
+    "science_value": "First pure sulfur on Mars; shows the channel's unusual chemistry.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.408864,
+     -4.78570678
+    ]
+   }
+  },
+  {
+   "id": "4",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0005",
+    "name": "Sulfate unit to boxwork contact",
+    "name_status": "team",
+    "category": "discovery",
+    "scale": "box",
+    "sol": 4534.0,
+    "sol_end": null,
+    "lon": 137.3864361,
+    "lat": -4.79761763,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4534, site 116, drive 0",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3657.644,
+    "evidence": "observed",
+    "source_name": "Siebach et al., GSA 2025 abstract (per SESSION_HANDOFF.md); NASA blog sols 4804-4811 (boxwork Phase 1 began sol 4534)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4804-4811-kicking-off-the-final-phase-of-boxwork-exploration",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Where Curiosity left the layered sulfate unit and entered the boxwork region (sol 4534). NASA's blog dates boxwork campaign Phase 1 to sols 4534-4570. GSA 2025 abstract URL to be added (not verified here).",
+    "science_value": "Key geologic boundary; start of the boxwork campaign and of our EVA box route.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3864361,
+     -4.79761763
+    ]
+   }
+  },
+  {
+   "id": "5",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0006",
+    "name": "Altadena (first boxwork drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4564.0,
+    "sol_end": null,
+    "lon": 137.3835414,
+    "lat": -4.79984723,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4560, site 116, drive 1944",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3647.181,
+    "evidence": "observed",
+    "source_name": "NASA/JPL: NASA's Curiosity Mars Rover Starts Unpacking Boxwork Formations (23 Jun 2025); blog sols 4563-4565",
+    "source_url": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "First drill sample of the boxwork campaign, on a ridge edge, June 2025. Drill sol 4564 is INFERRED (blog: drilling on the second sol of the 4563-4565 plan; post-brush image sol 4561).",
+    "science_value": "Baseline composition of boxwork bedrock.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3835414,
+     -4.79984723
+    ]
+   }
+  },
+  {
+   "id": "6",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0007",
+    "name": "Monte Grande (boxwork hollow)",
+    "name_status": "NASA_informal",
+    "category": "science_target",
+    "scale": "box",
+    "sol": 4693.0,
+    "sol_end": null,
+    "lon": 137.3810353,
+    "lat": -4.80783916,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4687, site 119, drive 1722",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3610.432,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog, Sols 4695-4701: Searching for Answers at Monte Grande",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4695-4701-searching-for-answers-at-monte-grande/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Boxwork hollow studied in Oct 2025; Mastcam mosaics of its walls. Hollow drill target Valle de la Luna lies here.",
+    "science_value": "Example of a boxwork hollow: compare with ridges for how boxwork formed.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810353,
+     -4.80783916
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0008",
+    "name": "Valle de la Luna (44th drill hole)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4693.0,
+    "sol_end": null,
+    "lon": 137.3810353,
+    "lat": -4.80783916,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4687, site 119, drive 1722",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3610.432,
+    "evidence": "observed",
+    "source_name": "NASA blogs: Sols 4689-4694 'Drill in the Boxwork Unit is GO!' and Sols 4695-4701 (44th hole)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4689-4694-drill-in-the-boxwork-unit-is-go/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Drill target in the Monte Grande hollow, drilled around 18-19 Oct 2025 (Mastcam image of the hole on sol 4693); Curiosity's 44th hole. Exact drill sol not stated.",
+    "science_value": "Hollow sample for the ridge-vs-hollow comparison.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810353,
+     -4.80783916
+    ]
+   }
+  },
+  {
+   "id": "8",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0009",
+    "name": "Nevado Sajama (ridge-top drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4718.0,
+    "sol_end": null,
+    "lon": 137.3810041,
+    "lat": -4.80800755,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4711, site 120, drive 82",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3607.722,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog, Sols 4716-4722: Drilling Success at Nevado Sajama",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4716-4722-drilling-success-at-nevado-sajama/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Ridge-top drill target; drilling completed on sol 4718 (13 Nov 2025) after APXS, ChemCam and MAHLI checks.",
+    "science_value": "Ridge sample for the ridge-vs-hollow comparison.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810041,
+     -4.80800755
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0010",
+    "name": "Nevado Sajama 2 (second ridge drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4803.0,
+    "sol_end": null,
+    "lon": 137.3809924,
+    "lat": -4.80800539,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4789, site 120, drive 574",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3608.018,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog Sols 4804-4811: Kicking Off the Final Phase of Boxwork Exploration",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4804-4811-kicking-off-the-final-phase-of-boxwork-exploration",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Second drill at Nevado Sajama; MAHLI image sol 4803 (9 Feb 2026); final activities completed that week before the last boxwork phase.",
+    "science_value": "Repeat sample at the same ridge site.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3809924,
+     -4.80800539
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0011",
+    "name": "Nazca (49th drill hole)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 5050.0,
+    "sol_end": 5055.0,
+    "lon": 137.3876138,
+    "lat": -4.82466475,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 5045, site 125, drive 1326",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3487.995,
+    "evidence": "observed",
+    "source_name": "NASA blog title 'Curiosity Blog, Sols 5050-5055: It's Nazca, Our 49th Drill Hole' (title seen in site sidebar; page NOT read)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-5050-5055-its-nazca-our-49th-drill-hole/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "49th drill hole, sols 5050-5055 per the NASA blog title. Details NOT verified (page not read); position = rover waypoint at sol 5050.",
+    "science_value": "Bedrock sample just above the boxwork (per a later blog, to verify).",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3876138,
+     -4.82466475
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0012",
+    "name": "Curiosity position, sol 5073 (latest in data)",
+    "name_status": "team",
+    "category": "rover_position",
+    "scale": "box",
+    "sol": 5073.0,
+    "sol_end": null,
+    "lon": 137.388886,
+    "lat": -4.82602331,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 5073, site 125, drive 2490",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3472.085,
+    "evidence": "observed",
+    "source_name": "NASA MMGIS MSL waypoints (latest in our download)",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "source_class": "official_NASA_list",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Last waypoint in the waypoint file downloaded 14 Nov 2026 (sol 5073). Not live.",
+    "science_value": "Where the rover was most recently, per our data.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.388886,
+     -4.82602331
+    ]
+   }
+  },
+  {
+   "id": "12",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0013",
+    "name": "Aeolis Mons",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.8453,
+    "lat": -5.0834,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Mons, montes; diameter 88.991 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15000",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved mons name (approved 2012/05/16), 89.0 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.8453,
+     -5.0834
+    ]
+   }
+  },
+  {
+   "id": "13",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0014",
+    "name": "Aeolis Palus",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.4215,
+    "lat": -4.4652,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Palus, paludes; diameter 111.628 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15001",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved palus name (approved 2012/05/16), 111.6 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.4215,
+     -4.4652
+    ]
+   }
+  },
+  {
+   "id": "14",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0015",
+    "name": "Gale",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.811,
+    "lat": -5.3672,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Crater, craters; diameter 154.084 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/2071",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved crater name (approved 1991/01/01), 154.1 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.811,
+     -5.3672
+    ]
+   }
+  },
+  {
+   "id": "15",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0016",
+    "name": "Farah Vallis",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 136.79600000000002,
+    "lat": -6.0301,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Vallis, valles; diameter 76.373 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15109",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved vallis name (approved 2013/04/03), 76.4 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     136.79600000000002,
+     -6.0301
+    ]
+   }
+  },
+  {
+   "id": "16",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0017",
+    "name": "Peace Vallis",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.2273,
+    "lat": -4.2057,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Vallis, valles; diameter 35.236 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15036",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved vallis name (approved 2012/09/26), 35.2 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.2273,
+     -4.2057
+    ]
+   }
+  },
+  {
+   "id": "17",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0018",
+    "name": "Yellowknife",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.44,
+    "lat": -4.58,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Crater, craters; diameter 0.120 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15032",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved crater name (approved 2012/09/10), 0.1 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.44,
+     -4.58
+    ]
+   }
+  },
+  {
+   "id": "18",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0019",
+    "name": "Dulce Vallis",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 136.5395,
+    "lat": -4.8185,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Vallis, valles; diameter 32.464 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15330",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved vallis name (approved 2015/06/19), 32.5 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     136.5395,
+     -4.8185
+    ]
+   }
+  },
+  {
+   "id": "19",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0020",
+    "name": "Gediz Vallis",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.4362,
+    "lat": -4.8537,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Vallis, valles; diameter 8.295 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15571",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved vallis name (approved 2017/05/01), 8.3 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.4362,
+     -4.8537
+    ]
+   }
+  },
+  {
+   "id": "20",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0021",
+    "name": "Sakarya Vallis",
+    "name_status": "IAU",
+    "category": "named_feature",
+    "scale": "gale",
+    "sol": null,
+    "sol_end": null,
+    "lon": 137.33,
+    "lat": -5.100000000000001,
+    "position_method": "published_coord",
+    "position_note": "IAU feature centre; type Vallis, valles; diameter 26.000 km",
+    "position_uncertainty_m": null,
+    "elev_m_usgs": null,
+    "evidence": "inferred",
+    "source_name": "USGS/IAU Gazetteer of Planetary Nomenclature",
+    "source_url": "http://planetarynames.wr.usgs.gov/Feature/15941",
+    "source_class": "USGS",
+    "position_source_url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip",
+    "description": "IAU-approved vallis name (approved 2020/12/14), 26.0 km across. Label position from the gazetteer (older MDIM/THEMIS control; km-scale only).",
+    "science_value": "Official place name for maps and the assistant.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.33,
+     -5.100000000000001
+    ]
+   }
+  }
+ ],
+ "crs_note": "Coordinates: planetocentric lon/lat, east-positive, Mars sphere R=3396190 (NOT Earth WGS84). Frame: USGS MSL Gale mosaic frame."
+}

@@ -1,0 +1,16 @@
+[mola_463m_gale] 410x410 px, transfer ~38 MB
+  rows 410/410  19s
+[mola_463m_gale] done -> C:\Users\pc\Desktop\NASA_Space_Apps_Challenge\possible_output\raw\mola_463m_gale.tif
+[hrsc_mola_blend_200m_gale] 948x948 px, transfer ~202 MB
+  rows 512/948  51s
+  rows 948/948  93s
+[hrsc_mola_blend_200m_gale] done -> C:\Users\pc\Desktop\NASA_Space_Apps_Challenge\possible_output\raw\hrsc_mola_blend_200m_gale.tif
+[msl_gale_dem_1m_box] 2786x3379 px, transfer ~446 MB
+  rows 512/3379  41s
+  rows 1024/3379  66s
+  rows 1536/3379  92s
+  rows 2048/3379  120s
+  rows 2560/3379  144s
+  rows 3072/3379  170s
+  rows 3379/3379  194s
+[msl_gale_dem_1m_box] done -> C:\Users\pc\Desktop\NASA_Space_Apps_Challenge\possible_output\raw\msl_gale_dem_1m_box.tif

@@ -1,0 +1,714 @@
+[
+ {
+  "path": "data/raw/geology/hirise/DTEEC_019698_1750_019988_1750_U01.IMG",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/DTEEC_019698_1750_019988_1750_U01.IMG",
+  "bytes": 542721784,
+  "tier": "core",
+  "what": "HiRISE DTM, 1 m/px elevation, PDS3 (covers the whole box)",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise/ESP_019698_1750_RED_C_01_ORTHO.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_RED_C_01_ORTHO.JP2",
+  "bytes": 42000767,
+  "tier": "core",
+  "what": "HiRISE greyscale orthoimage, 1 m/px, aligned to the DTM",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise/ESP_019698_1750_IRB_C_01_ORTHO.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_IRB_C_01_ORTHO.JP2",
+  "bytes": 19728135,
+  "tier": "core",
+  "what": "HiRISE false-colour (IRB) orthoimage, 1 m/px, aligned to the DTM",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/rover/MSL_waypoints.json",
+  "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+  "bytes": 665124,
+  "tier": "core",
+  "what": "Curiosity waypoints, whole mission (GeoJSON)",
+  "source": "MSL Curiosity waypoints, NASA/JPL MMGIS"
+ },
+ {
+  "path": "data/raw/geology/rover/MSL_traverse.json",
+  "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json",
+  "bytes": 1357951,
+  "tier": "core",
+  "what": "Curiosity drive traverse, whole mission (GeoJSON)",
+  "source": "MSL Curiosity waypoints, NASA/JPL MMGIS"
+ },
+ {
+  "path": "data/raw/geology/rover/MSL_waypoints_current.json",
+  "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints_current.json",
+  "bytes": 550,
+  "tier": "core",
+  "what": "Curiosity current position (GeoJSON)",
+  "source": "MSL Curiosity waypoints, NASA/JPL MMGIS"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_readme.txt",
+  "url": "https://pubs.usgs.gov/sim/3292/downloads/sim3292_readme.txt",
+  "bytes": 5580,
+  "tier": "core",
+  "what": "SIM 3292 readme",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_metadata.xml",
+  "url": "https://pubs.usgs.gov/sim/3292/downloads/sim3292_metadata.xml",
+  "bytes": 14721,
+  "tier": "core",
+  "what": "SIM 3292 metadata",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_pamphlet.pdf",
+  "url": "https://pubs.usgs.gov/sim/3292/pdf/sim3292_pamphlet.pdf",
+  "bytes": 3415492,
+  "tier": "core",
+  "what": "SIM 3292 pamphlet (unit descriptions)",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_dmu_with_locality_images.pdf",
+  "url": "https://pubs.usgs.gov/sim/3292/pdf/sim3292_dmu_with_locality_images.pdf",
+  "bytes": 809770,
+  "tier": "core",
+  "what": "SIM 3292 description of map units with example images",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_map.pdf",
+  "url": "https://pubs.usgs.gov/sim/3292/pdf/sim3292_map.pdf",
+  "bytes": 36137826,
+  "tier": "core",
+  "what": "SIM 3292 map sheet",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/hirise/ESP_019698_1750_RED_A_01_ORTHO.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_RED_A_01_ORTHO.JP2",
+  "bytes": 461937284,
+  "tier": "detail",
+  "what": "HiRISE greyscale orthoimage, 25 cm/px",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise/ESP_019698_1750_IRB_A_01_ORTHO.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_IRB_A_01_ORTHO.JP2",
+  "bytes": 247597067,
+  "tier": "detail",
+  "what": "HiRISE false-colour (IRB) orthoimage, 25 cm/px",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise_backup/DTEEC_009149_1750_009294_1750_U01.IMG",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/PSP/ORB_009100_009199/PSP_009149_1750_PSP_009294_1750/DTEEC_009149_1750_009294_1750_U01.IMG",
+  "bytes": 390551132,
+  "tier": "detail",
+  "what": "Backup HiRISE DTM, 1 m/px (east half of the box)",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise_backup/PSP_009149_1750_RED_C_01_ORTHO.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/DTM/PSP/ORB_009100_009199/PSP_009149_1750_PSP_009294_1750/PSP_009149_1750_RED_C_01_ORTHO.JP2",
+  "bytes": 34009144,
+  "tier": "detail",
+  "what": "Backup HiRISE greyscale orthoimage, 1 m/px",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/usgs_sim3292/sim3292_database.zip",
+  "url": "https://pubs.usgs.gov/sim/3292/downloads/sim3292_database.zip",
+  "bytes": 808910442,
+  "tier": "detail",
+  "what": "SIM 3292 GIS database (geodatabase and shapefiles)",
+  "source": "Tanaka et al. 2014, USGS SIM 3292, Geologic Map of Mars, https://doi.org/10.3133/sim3292"
+ },
+ {
+  "path": "data/raw/geology/hirise_boxwork_context/PSP_001752_1750_RED.JP2",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/RDR/PSP/ORB_001700_001799/PSP_001752_1750/PSP_001752_1750_RED.JP2",
+  "bytes": 909402678,
+  "tier": "all",
+  "what": "NASA PIA26306 boxwork image, 25 cm/px, just west of the box",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/hirise_boxwork_context/PSP_001752_1750_RED.LBL",
+  "url": "https://hirise-pds.lpl.arizona.edu/PDS/RDR/PSP/ORB_001700_001799/PSP_001752_1750/PSP_001752_1750_RED.LBL",
+  "bytes": 8129,
+  "tier": "all",
+  "what": "Label for PSP_001752_1750_RED.JP2",
+  "source": "MRO HiRISE (NASA/JPL/University of Arizona), via NASA PDS"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p3.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p2.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p2.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p3.dbf/content",
+  "bytes": 198,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p1.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p1.shp/content",
+  "bytes": 5744,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p2.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p2.shp/content",
+  "bytes": 13624,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p2.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p2.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p2.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p2.dbf/content",
+  "bytes": 176,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p2.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p2.shx/content",
+  "bytes": 180,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p1.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p1.shx/content",
+  "bytes": 140,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p3.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/HiRISE-Sakarya-boundaries.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/HiRISE-Sakarya-boundaries.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p4.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p4.shp/content",
+  "bytes": 21388,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p1.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p1.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p4.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p4.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p4.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p4.dbf/content",
+  "bytes": 143,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p3.shx/content",
+  "bytes": 196,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p3.shp/content",
+  "bytes": 37064,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p6.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p6.shx/content",
+  "bytes": 124,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p7.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p7.dbf/content",
+  "bytes": 110,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p7.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p7.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p4.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p4.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p7.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p7.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p6.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p6.shp/content",
+  "bytes": 19532,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/marker-bed_trace.dbf/content",
+  "bytes": 473,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/marker-bed_trace.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/HiRISE-Sakarya-boundaries.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/HiRISE-Sakarya-boundaries.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir-Sub-Packages.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir-Sub-Packages.shx/content",
+  "bytes": 476,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p7.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p7.shp/content",
+  "bytes": 11204,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p7.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p7.shx/content",
+  "bytes": 132,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir-Sub-Packages.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir-Sub-Packages.shp/content",
+  "bytes": 1416,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Persaud_2021_Shapefiles-README.txt",
+  "url": "https://zenodo.org/api/records/5819267/files/Persaud_2021_Shapefiles-README.txt/content",
+  "bytes": 3371,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Sakarya-profiles.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/Sakarya-profiles.dbf/content",
+  "bytes": 1918,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p1.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p1.dbf/content",
+  "bytes": 121,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Sakarya-profiles.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/Sakarya-profiles.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/HiRISE-Sakarya-boundaries.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/HiRISE-Sakarya-boundaries.shx/content",
+  "bytes": 108,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir.shp/content",
+  "bytes": 2624,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/HiRISE-Sakarya-boundaries.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/HiRISE-Sakarya-boundaries.dbf/content",
+  "bytes": 77,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Sakarya-profiles.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/Sakarya-profiles.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir.shx/content",
+  "bytes": 940,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir-Sub-Packages.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir-Sub-Packages.dbf/content",
+  "bytes": 1587,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/marker-bed_trace.shx/content",
+  "bytes": 396,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/marker-bed_trace.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Sakarya-profiles.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/Sakarya-profiles.shp/content",
+  "bytes": 1176,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/HiRISE-Sakarya-boundaries.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/HiRISE-Sakarya-boundaries.shp/content",
+  "bytes": 3052,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir-Sub-Packages.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir-Sub-Packages.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p6.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p6.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p6.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p6.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir.dbf/content",
+  "bytes": 3385,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p6.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p6.dbf/content",
+  "bytes": 99,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p5.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p5.shx/content",
+  "bytes": 132,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p5.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/p5.shp/content",
+  "bytes": 21508,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p5.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p5.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Sakarya-profiles.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/Sakarya-profiles.shx/content",
+  "bytes": 260,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p5.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/p5.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p5.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/p5.dbf/content",
+  "bytes": 110,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p4.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/p4.shx/content",
+  "bytes": 156,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Dip_DipDir-Sub-Packages.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/Dip_DipDir-Sub-Packages.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/CDD.shx",
+  "url": "https://zenodo.org/api/records/5819267/files/CDD.shx/content",
+  "bytes": 172,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/CDD.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/CDD.shp/content",
+  "bytes": 48800,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/CDD.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/CDD.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/CDD.prj",
+  "url": "https://zenodo.org/api/records/5819267/files/CDD.prj/content",
+  "bytes": 315,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/CDD.dbf",
+  "url": "https://zenodo.org/api/records/5819267/files/CDD.dbf/content",
+  "bytes": 165,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p1.qpj",
+  "url": "https://zenodo.org/api/records/5819267/files/p1.qpj/content",
+  "bytes": 318,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.shp",
+  "url": "https://zenodo.org/api/records/5819267/files/marker-bed_trace.shp/content",
+  "bytes": 20468,
+  "tier": "core",
+  "what": "Zenodo record 5819267",
+  "source": "Persaud 2021, Unit map and dips/strikes of Sakarya Vallis, Gale crater, Zenodo, https://zenodo.org/records/5819267"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5808381_persaud_crism/Persaud_2021_Basemap-README.txt",
+  "url": "https://zenodo.org/api/records/5808381/files/Persaud_2021_Basemap-README.txt/content",
+  "bytes": 4807,
+  "tier": "core",
+  "what": "Zenodo record 5808381",
+  "source": "Persaud 2021, Multi-resolution basemap of NW Aeolis Mons (CRISM maps only), Zenodo, https://zenodo.org/records/5808381"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5808381_persaud_crism/basemap-CRISM_hydrated_mineralogy-georeferenced.tif",
+  "url": "https://zenodo.org/api/records/5808381/files/basemap-CRISM_hydrated_mineralogy-georeferenced.tif/content",
+  "bytes": 1382114,
+  "tier": "core",
+  "what": "Zenodo record 5808381",
+  "source": "Persaud 2021, Multi-resolution basemap of NW Aeolis Mons (CRISM maps only), Zenodo, https://zenodo.org/records/5808381"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5808381_persaud_crism/basemap-CRISM_mafics-georeferenced.tif",
+  "url": "https://zenodo.org/api/records/5808381/files/basemap-CRISM_mafics-georeferenced.tif/content",
+  "bytes": 1447594,
+  "tier": "core",
+  "what": "Zenodo record 5808381",
+  "source": "Persaud 2021, Multi-resolution basemap of NW Aeolis Mons (CRISM maps only), Zenodo, https://zenodo.org/records/5808381"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5808381_persaud_crism/basemap-CRISM_hydrated_sulfates_i-georeferenced.tif",
+  "url": "https://zenodo.org/api/records/5808381/files/basemap-CRISM_hydrated_sulfates_i-georeferenced.tif/content",
+  "bytes": 1421220,
+  "tier": "core",
+  "what": "Zenodo record 5808381",
+  "source": "Persaud 2021, Multi-resolution basemap of NW Aeolis Mons (CRISM maps only), Zenodo, https://zenodo.org/records/5808381"
+ },
+ {
+  "path": "data/raw/geology/references/zenodo_5808381_persaud_crism/basemap-CRISM_hydrated_sulfates_ii-georeferenced.tif",
+  "url": "https://zenodo.org/api/records/5808381/files/basemap-CRISM_hydrated_sulfates_ii-georeferenced.tif/content",
+  "bytes": 1382396,
+  "tier": "core",
+  "what": "Zenodo record 5808381",
+  "source": "Persaud 2021, Multi-resolution basemap of NW Aeolis Mons (CRISM maps only), Zenodo, https://zenodo.org/records/5808381"
+ }
+]
