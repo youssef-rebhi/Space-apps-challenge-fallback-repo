@@ -72,7 +72,7 @@ export default function Control() {
   return (
     <div className="control">
       <header>
-        <h1>Firm Ground · Mission Control</h1>
+        <h1>Marsouine · Mission Control</h1>
         <span className="tag">telemetry from the helmet · suit values SIMULATED</span>
         <a href={location.pathname} className="tag">← tablet</a>
       </header>

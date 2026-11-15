@@ -1,8 +1,8 @@
-# Firm Ground: development log, 15 November 2026
+# Marsouine: development log, 15 November 2026
 
-**Team y3m · NASA Space Apps 2026 · Martian Map / Firm Ground**
+**Team y3m · NASA Space Apps 2026 · Martian Map / Marsouine**
 
-This log covers two new pieces of the Firm Ground app, built on 15 November 2026:
+This log covers two new pieces of the Marsouine app, built on 15 November 2026:
 
 1. **The 3D GO / NO-GO layer map in the tablet app.** The team's coloured 3D map and its layer-by-layer animation now sit inside the tablet. You can place pins on it and plan routes on it.
 2. **The phone as a portal into Mars.** An Android phone walks the astronaut's 3D point-of-view map in two ways: with WebXR AR, or with the compass plus step counting. The phone is linked to the tablet and the helmet view.
@@ -63,9 +63,9 @@ Main folders inside the repo:
 | Path | Role |
 |---|---|
 | `Application/fg-app/src/` | React source of the tablet and helmet app |
-| `Application/fg-app/build.js` | build script (esbuild) writing into `Application/firmground-app-built/` |
+| `Application/fg-app/build.js` | build script (esbuild) writing into `Application/marsouine-app-built/` |
 | `Application/fg-app/scripts/map3d.mjs` | copies the 3D map files from `Map_layer` into the built app as `map3d/` |
-| `Application/firmground-app-built/` | the built app and `server.py`, which serves everything |
+| `Application/marsouine-app-built/` | the built app and `server.py`, which serves everything |
 | `Map_layer/martian_map/web/explode/` | the layer-by-layer animation page, also embedded in the tablet |
 | `Map_layer/martian_map/web/walk/` | the astronaut point-of-view walk view and the phone portal (`portal.js`) |
 | `Map_layer/martian_map/web/vendor/three/` | local copy of three.js r160 |
@@ -216,13 +216,13 @@ Other details of the portal:
 | `Application/fg-app/src/components/PairQR.jsx` | QR and typed code always use the phone's https address. "Open it in Google Chrome on the phone" hint. |
 | `Application/fg-app/src/components/Tablet.jsx` | sends A / B to the server as soon as they are picked |
 | `Application/fg-app/src/lib/grey.js` | `labelOf`: the route's first stop is **A (start)**, the last is **B (destination)** |
-| `.gitignore` | ignores `Application/firmground-app-built/certs/` (the https certificate and key) |
+| `.gitignore` | ignores `Application/marsouine-app-built/certs/` (the https certificate and key) |
 
 ---
 
 ## 5. Server changes (shared by both features)
 
-`Application/firmground-app-built/server.py` uses the Python standard library only.
+`Application/marsouine-app-built/server.py` uses the Python standard library only.
 
 | Change | Why |
 |---|---|
@@ -240,7 +240,7 @@ The https certificate is **self-signed** and made on the PC with OpenSSL (RSA 20
 ## 6. How to run it
 
 ```bash
-# 1. Build the app (writes into Application/firmground-app-built, copies map3d/)
+# 1. Build the app (writes into Application/marsouine-app-built, copies map3d/)
 cd Application/fg-app
 npm install            # only once
 node build.js
@@ -248,7 +248,7 @@ node build.js
 
 ```bash
 # 2. Start the server (http :8000 for the tablet, https :8443 for the phone when certs/ exists)
-cd Application/firmground-app-built
+cd Application/marsouine-app-built
 python server.py
 ```
 

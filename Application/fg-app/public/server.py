@@ -1,4 +1,4 @@
-# Firm Ground server: serves the app AND relays scout reports tablet -> helmet.
+# Marsouine server: serves the app AND relays scout reports tablet -> helmet.
 # Run from this folder:  python3 server.py   then open http://<this-PC-IP>:8000
 # Standard library only.
 import json, os, threading
@@ -42,5 +42,5 @@ class H(SimpleHTTPRequestHandler):
 
 if __name__ == "__main__":
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    print("Firm Ground on http://0.0.0.0:8000  (Ctrl+C to stop)")
+    print("Marsouine on http://0.0.0.0:8000  (Ctrl+C to stop)")
     ThreadingHTTPServer(("0.0.0.0", 8000), H).serve_forever()

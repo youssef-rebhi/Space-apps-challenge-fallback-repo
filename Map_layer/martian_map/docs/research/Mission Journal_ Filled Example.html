@@ -240,8 +240,8 @@ Science → USGS geologic map + CRISM minerals + boxwork targets</textarea></div
 If the planner on the real grid is too slow → we use a coarser grid (40 m cells).
 If HUD mode isn&#x27;t done → it becomes a mockup slide.
 3D fly-through and the second ML model are cut from the start unless we&#x27;re ahead at hour 24.</textarea></div>
-  <div class="q"><label for="p2-q4"><b>Q4</b>Team name + project name ideas</label><textarea id="p2-q4">Project names: Firm Ground · SandSense · Groundtruth Mars · Safe Steps · Boxwork Trail
-Favourite: Firm Ground (&quot;know the ground before you step on it&quot;)
+  <div class="q"><label for="p2-q4"><b>Q4</b>Team name + project name ideas</label><textarea id="p2-q4">Project names: Marsouine · SandSense · Groundtruth Mars · Safe Steps · Boxwork Trail
+Favourite: Marsouine (&quot;know the ground before you step on it&quot;)
 Team name: [vote]</textarea></div>
   <details class="st"><summary>Why is "3D fly-through" not a MUST?</summary><p>It's slow to build and risky, and rivals already have strong 3D. Our edge is the decision quality (AI ground truth), not the globe.</p></details>
   <div class="done">✔ Done when: every row of the role table has a name and the cut rules are written.</div>
@@ -342,7 +342,7 @@ Expected columns: image, label_mask, rover_mask, range_mask, has_labels (check n
 8–15 s · AI colours sand + big rocks on rover photos, dots appear on Mount Sharp · &quot;Our AI reads rover photos and maps what the ground is made of.&quot;
 15–22 s · route bends around sand to the boxwork, GO card · &quot;Astronauts get a safe route to the boxwork, with time, walk-back and what they&#x27;ll see.&quot;
 22–27 s · validation chart + mission names · &quot;Checked against orbital data from five NASA missions.&quot;
-27–30 s · title over boxwork view · &quot;Firm Ground. Know the ground before you step on it.&quot;</textarea></div>
+27–30 s · title over boxwork view · &quot;Marsouine. Know the ground before you step on it.&quot;</textarea></div>
   <div class="q"><label for="p4-q3"><b>Q3</b>Changes we made to the file formats</label><textarea id="p4-q3">Added a &quot;bigrock&quot; array to grid.json (big rock cells = forbidden).
 Added &quot;type&quot;: &quot;boxwork&quot; | &quot;stop&quot; to points so the map can draw targets differently.</textarea></div>
   <details class="st"><summary>Why write the video script before coding?</summary><p>The script decides which screens must exist. Anything not in the script is optional.</p></details>
@@ -734,7 +734,7 @@ Everything else stays on the tablet / habitat screen.</textarea></div>
 3. Our AI reads rover photos and maps what the ground is made of.
 4. Astronauts get a safe route to the boxwork, with time, walk-back and what they&#x27;ll see.
 5. Checked against orbital data from five NASA missions.
-6. Firm Ground. Know the ground before you step on it.</textarea></div>
+6. Marsouine. Know the ground before you step on it.</textarea></div>
   <div class="q"><label for="p14-q2"><b>Q2</b>Video link</label><textarea id="p14-q2"></textarea></div>
   <details class="st"><summary>What must be visible in the first 4 seconds?</summary><p>The hook: a real Mars image and the danger. Never the team logo.</p></details>
   <div class="done">✔ Done when: a friend watches it muted and can tell you what the app does.</div>
@@ -758,7 +758,7 @@ Everything else stays on the tablet / habitat screen.</textarea></div>
     <li><label><input type="checkbox" id="p15-t5"><span>Links: live app, video, GitHub. 2–3 clear screenshots.</span></label></li>
   </ul>
   <h3>Journal: draft the summary here</h3>
-  <div class="q"><label for="p15-q1"><b>Q1</b>High-level summary (~100 words)</label><textarea id="p15-q1" style="min-height:180px">The first astronauts on Mars will walk across ground no human has seen. Slope maps show where it&#x27;s steep, but not where it&#x27;s soft: in 2014 Curiosity backed out of a flat valley whose sand was too slippery. Firm Ground is a layered map of the boxwork region of Mount Sharp. An AI model trained on NASA&#x27;s AI4Mars reads real Curiosity photos and maps sand and big rocks at each stop; we check it against orbital evidence from HiRISE, THEMIS and the USGS dune database. Astronauts get a route to the boxwork with time, walk-back limit, a GO / NO-GO with reasons, and a preview of what they&#x27;ll see.</textarea></div>
+  <div class="q"><label for="p15-q1"><b>Q1</b>High-level summary (~100 words)</label><textarea id="p15-q1" style="min-height:180px">The first astronauts on Mars will walk across ground no human has seen. Slope maps show where it&#x27;s steep, but not where it&#x27;s soft: in 2014 Curiosity backed out of a flat valley whose sand was too slippery. Marsouine is a layered map of the boxwork region of Mount Sharp. An AI model trained on NASA&#x27;s AI4Mars reads real Curiosity photos and maps sand and big rocks at each stop; we check it against orbital evidence from HiRISE, THEMIS and the USGS dune database. Astronauts get a route to the boxwork with time, walk-back limit, a GO / NO-GO with reasons, and a preview of what they&#x27;ll see.</textarea></div>
   <div class="q"><label for="p15-q2"><b>Q2</b>NASA data list (dataset · mission · use)</label><textarea id="p15-q2" style="min-height:120px">MOLA elevation · Mars Global Surveyor · base terrain + slope
 CTX mosaic (via Mars Trek) · Mars Reconnaissance Orbiter · basemap
 HiRISE images / DTM · Mars Reconnaissance Orbiter · detail, boulders, slope

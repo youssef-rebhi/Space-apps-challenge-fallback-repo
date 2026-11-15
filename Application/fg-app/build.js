@@ -6,11 +6,11 @@ import { copyMap3d } from "./scripts/map3d.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const esbuildPath = path.join(__dirname, "node_modules", "esbuild", "bin", "esbuild");
-const outJs = path.join(__dirname, "..", "firmground-app-built", "assets", "index-BroThxlx.js");
-const outCss = path.join(__dirname, "..", "firmground-app-built", "assets", "index-BPlUwsGe.css");
-const generatedCss = path.join(__dirname, "..", "firmground-app-built", "assets", "index-BroThxlx.css");
+const outJs = path.join(__dirname, "..", "marsouine-app-built", "assets", "index-BroThxlx.js");
+const outCss = path.join(__dirname, "..", "marsouine-app-built", "assets", "index-BPlUwsGe.css");
+const generatedCss = path.join(__dirname, "..", "marsouine-app-built", "assets", "index-BroThxlx.css");
 
-console.log("Building Firm Ground frontend with esbuild...");
+console.log("Building Marsouine frontend with esbuild...");
 execFileSync(process.execPath, [
   esbuildPath,
   path.join(__dirname, "src", "main.jsx"),
@@ -27,5 +27,5 @@ if (fs.existsSync(generatedCss)) {
   console.log("Synced CSS bundle to index-BPlUwsGe.css");
 }
 // the 3D layer map shown in the tablet (copied from Map_layer/martian_map/web, see scripts/map3d.mjs)
-copyMap3d(path.join(__dirname, "..", "firmground-app-built", "map3d"));
+copyMap3d(path.join(__dirname, "..", "marsouine-app-built", "map3d"));
 console.log("Build complete.");

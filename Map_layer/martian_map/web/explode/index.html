@@ -13,7 +13,7 @@
   Reads only existing files: ../layers.json, ../terrain/terrain.json, ../terrain/height_4m.bin and the textures listed in layers.json.
   Gap, see-through, relief height and motion are display settings, not data.
   URL options: ?step=0|1|2  &profile=foot|rover  &theme=dark|light  &ui=0  &caption=0  &autoplay=1  &exag=1..5 (relief height, display only)
-  Firm Ground app (Application/fg-app, shown inside the tablet):
+  Marsouine app (Application/fg-app, shown inside the tablet):
     &embed=1                 no panels, no caption, clicks do not step; the app drives the steps with postMessage
     &route=lat,lon;lat,lon…  draws that route (and A / B pins) on the 3D map and on the 2D map sheets
     &rc=3cff8f               route colour (hex, no #)
@@ -76,7 +76,7 @@ border-left:3px solid var(--fam);cursor:pointer;pointer-events:auto;transition:o
 @media (max-width:900px){#settings{width:calc(100% - 24px)}#cap{top:auto;bottom:86px;width:calc(100vw - 24px)}#capMain{font-size:15px}#foot{display:none}
 #info{left:12px;width:auto;top:auto;bottom:80px;max-height:45vh}.tag{max-width:104px;padding:3px 6px;left:10px}.tag .s,.chips{display:none}
 .tag .t{white-space:normal;font-size:11px;line-height:1.25}}
-/* inside the Firm Ground app (?embed=1): app colours, no panels */
+/* inside the Marsouine app (?embed=1): app colours, no panels */
 body.embed{--bg1:#2b2119;--bg2:#0d0a08;--tagbg:rgba(18,14,11,.84);--line:#3a3029}
 body.embed #loading{font-size:13px;letter-spacing:.02em}
 .pinAB{width:22px;height:22px;margin-top:-18px;border-radius:50%;display:grid;place-items:center;font:800 12px system-ui,sans-serif;color:#000;
@@ -90,7 +90,7 @@ border:2px solid #000;box-shadow:0 1px 6px #000c;pointer-events:none}
 <div id="cap"><div id="capMain"></div><div id="capSub"></div></div>
 <aside id="settings" class="panel">
   <h1>Layer by layer</h1>
-  <p class="sub">Firm Ground · Mount Sharp boxwork, Gale crater. How our GO / NO-GO map is made, taken apart.</p>
+  <p class="sub">Marsouine · Mount Sharp boxwork, Gale crater. How our GO / NO-GO map is made, taken apart.</p>
   <h2>Who is going?</h2>
   <div class="seg" id="profile"><button data-p="foot">Crew on foot</button><button data-p="rover">Rover</button></div>
   <h2>Gap between sheets</h2><input type="range" id="gap" min="60" max="1200" step="10">
@@ -132,7 +132,7 @@ const $ = s => document.querySelector(s);
 const Q = new URLSearchParams(location.search);
 const EMBED = Q.get('embed') === '1';
 if (EMBED) { document.body.classList.add('embed'); $('#loading').textContent = 'Loading the 3D map…'; }
-const post = m => { if (EMBED && parent !== window) parent.postMessage({fg3d: 1, ...m}, location.origin); };   // to the Firm Ground app
+const post = m => { if (EMBED && parent !== window) parent.postMessage({fg3d: 1, ...m}, location.origin); };   // to the Marsouine app
 const J = async p => { const r = await fetch(BASE + p); if (!r.ok) throw new Error(p + ' ' + r.status); return r.json(); };
 const fail = e => { $('#loading').textContent = 'Could not load: ' + e.message + '. Serve the web/ folder (see README).'; post({type: 'error', msg: e.message}); throw e; };
 
@@ -805,7 +805,7 @@ $('#hide').onclick = () => setUI(false);
 $('#fs').onclick = toggleFS;
 if (Q.get('ui') === '0' || EMBED) setUI(false);
 if (Q.get('caption') === '0' || EMBED) document.body.classList.add('nocap');
-addEventListener('message', e => {                           // the Firm Ground app drives the steps
+addEventListener('message', e => {                           // the Marsouine app drives the steps
   const d = e.data;
   if (!EMBED || e.source !== parent || e.origin !== location.origin || !d || d.fg3d !== 1) return;
   if (d.type === 'next') next();

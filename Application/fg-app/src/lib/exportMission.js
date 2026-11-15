@@ -1,4 +1,4 @@
-// Export tools for Firm Ground Martian EVA mission packages: GeoJSON, GPX, and Printable Briefing.
+// Export tools for Marsouine Martian EVA mission packages: GeoJSON, GPX, and Printable Briefing.
 import { dist } from "./mission.js";
 import { hm, O2_H, RESERVE_MIN } from "./safety.js";
 
@@ -10,7 +10,7 @@ export function exportGeoJSON(routeOpt, waypoints = [], abortData = null, target
   features.push({
     type: "Feature",
     properties: {
-      name: routeOpt.label || "Firm Ground Planned Traverse",
+      name: routeOpt.label || "Marsouine Planned Traverse",
       type: "planned_traverse",
       distance_m: Math.round(routeOpt.len || 0),
       walk_minutes: Math.round(routeOpt.minutes || 0),
@@ -82,7 +82,7 @@ export function exportGeoJSON(routeOpt, waypoints = [], abortData = null, target
   const geojson = {
     type: "FeatureCollection",
     metadata: {
-      generator: "Firm Ground · Martian Map EVA System",
+      generator: "Marsouine · Martian Map EVA System",
       site: "Mount Sharp, Gale Crater, Mars (boxwork region)",
       timestamp: new Date().toISOString(),
       coordinate_system: "Mars IAU 2000 / USGS Gale DEM 1m",
@@ -90,16 +90,16 @@ export function exportGeoJSON(routeOpt, waypoints = [], abortData = null, target
     features,
   };
 
-  downloadFile("firmground_mission_traverse.geojson", JSON.stringify(geojson, null, 2), "application/geo+json");
+  downloadFile("marsouine_mission_traverse.geojson", JSON.stringify(geojson, null, 2), "application/geo+json");
 }
 
 export function exportGPX(routeOpt, waypoints = []) {
   if (!routeOpt || !routeOpt.pts || !routeOpt.pts.length) return;
 
   let gpx = `<?xml version="1.0" encoding="UTF-8"?>
-<gpx version="1.1" creator="Firm Ground Martian EVA Navigation" xmlns="http://www.topografix.com/GPX/1/1">
+<gpx version="1.1" creator="Marsouine Martian EVA Navigation" xmlns="http://www.topografix.com/GPX/1/1">
   <metadata>
-    <name>${escapeXml(routeOpt.label || "Firm Ground Martian Traverse")}</name>
+    <name>${escapeXml(routeOpt.label || "Marsouine Martian Traverse")}</name>
     <desc>Martian Surface EVA Traverse at Mount Sharp, Gale Crater</desc>
     <time>${new Date().toISOString()}</time>
   </metadata>
@@ -127,7 +127,7 @@ export function exportGPX(routeOpt, waypoints = []) {
   </trk>
 </gpx>`;
 
-  downloadFile("firmground_mission_traverse.gpx", gpx, "application/gpx+xml");
+  downloadFile("marsouine_mission_traverse.gpx", gpx, "application/gpx+xml");
 }
 
 export function printMissionBriefing({ routeOpt, waypoints = [], plan = null, elevStats = null, abortData = null, targets = [] }) {
@@ -146,7 +146,7 @@ export function printMissionBriefing({ routeOpt, waypoints = [], plan = null, el
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>EVA Mission Traverse Briefing · Firm Ground</title>
+  <title>EVA Mission Traverse Briefing · Marsouine</title>
   <style>
     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; margin: 24px; color: #111; line-height: 1.45; }
     h1 { margin-bottom: 2px; font-size: 22px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -176,7 +176,7 @@ export function printMissionBriefing({ routeOpt, waypoints = [], plan = null, el
     <button onclick="window.close()" style="padding: 8px 16px; margin-left: 8px; font-size: 14px; cursor: pointer;">Close</button>
   </div>
 
-  <h1>Firm Ground · Martian Surface EVA Briefing</h1>
+  <h1>Marsouine · Martian Surface EVA Briefing</h1>
   <div class="subtitle">Study Site: Gale Crater, Mount Sharp (Boxwork Region) · USGS 1 m DEM Reference</div>
 
   <div style="margin-bottom: 12px;">
@@ -248,7 +248,7 @@ export function printMissionBriefing({ routeOpt, waypoints = [], plan = null, el
   </ul>
 
   <div style="margin-top: 30px; font-size: 11px; color: #777; border-top: 1px solid #ddd; padding-top: 8px;">
-    Firm Ground Martian Map System · NASA Space Apps Challenge 2026 · Gale Crater Boxwork EVA Traverse
+    Marsouine Martian Map System · NASA Space Apps Challenge 2026 · Gale Crater Boxwork EVA Traverse
   </div>
 </body>
 </html>`;

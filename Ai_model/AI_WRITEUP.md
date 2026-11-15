@@ -1,4 +1,4 @@
-# Firm Ground · AI terrain reading (team y3m)
+# Marsouine · AI terrain reading (team y3m)
 
 ## What the AI does
 Curiosity is driving through the **boxwork** region of Mount Sharp, Gale crater. Mission maps can say where sand *might* be. We wanted to **measure** it. Our AI reads Curiosity's own Navcam photos of the boxwork route (sols 4534–4805) and tells, pixel by pixel, what the ground is: **soil, bedrock, sand or big rock**. Each rover stop then gets a colour for the astronaut:

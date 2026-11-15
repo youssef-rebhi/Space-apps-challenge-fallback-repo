@@ -323,7 +323,7 @@ export default function Tablet() {
   return (
     <div className="tablet">
       <header>
-        <h1>Firm Ground · Tablet</h1>
+        <h1>Marsouine · Tablet</h1>
         <span className="tag">Boxwork, Mount Sharp · {stops.length} stops · AI on Curiosity Navcam</span>
         <a className="tag" href="?view=control" target="_blank" rel="noreferrer">📡 Mission control</a>
         {astroLive

@@ -1,4 +1,4 @@
-# Firm Ground server: serves the app AND relays scout reports tablet -> helmet.
+# Marsouine server: serves the app AND relays scout reports tablet -> helmet.
 # Run from this folder:  python3 server.py   then open http://<this-PC-IP>:8000
 # Standard library only.
 import json, os, threading
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     port, sport = arg("--port", 8000), arg("--https-port", 8443)
     cert, key = os.path.join(HERE, "certs", "cert.pem"), os.path.join(HERE, "certs", "key.pem")
     servers = [ThreadingHTTPServer(("0.0.0.0", port), H)]
-    print(f"Firm Ground on http://0.0.0.0:{port}")
+    print(f"Marsouine on http://0.0.0.0:{port}")
     if os.path.exists(cert) and os.path.exists(key):
         try:
             s = ThreadingHTTPServer(("0.0.0.0", sport), H)

@@ -2,7 +2,7 @@
 // Same browser (two tabs): BroadcastChannel, instant, no server.
 // Two devices (tablet + phone helmet): run server.py instead of "python3 -m http.server";
 // it adds a tiny /api/events relay. With the plain server, only the same-browser link works.
-const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("firmground") : null;
+const bc = typeof BroadcastChannel !== "undefined" ? new BroadcastChannel("marsouine") : null;
 
 export function publish(ev) {
   const e = { ...ev, uid: Math.random().toString(36).slice(2), t: Date.now() };

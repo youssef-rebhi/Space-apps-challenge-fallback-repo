@@ -1,4 +1,4 @@
-# Firm Ground · Tablet + Helmet (React)
+# Marsouine · Tablet + Helmet (React)
 
 Two views in one small React app (Vite):
 
@@ -14,7 +14,7 @@ npm install
 # put the data: unzip firmground_stops_v2.zip into public/data/  (stops.json + overlays/)
 npm run dev        # http://localhost:5173
 npm run build      # static site in dist/ (deploy to Vercel / Netlify / GitHub Pages)
-node build.js      # or: rebuild straight into ../firmground-app-built (same asset names, keeps data/ and server.py)
+node build.js      # or: rebuild straight into ../marsouine-app-built (same asset names, keeps data/ and server.py)
 ```
 The phone camera needs **https** → test the camera on the deployed site.
 

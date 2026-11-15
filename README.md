@@ -1,8 +1,8 @@
-# Firm Ground · Martian Map (team y3m)
+# Marsouine · Martian Map (team y3m)
 
 NASA Space Apps Challenge 2026, challenge **"Interplanetary Survival Guide: Martian Map"**.
 
-Firm Ground is a map for an astronaut walking on Mars. It tells them, stop by stop, whether the ground ahead is firm, sandy or too steep, and how sure we are. The study site is the **boxwork region of Mount Sharp, Gale crater** (box 137.36–137.40°E, 4.78–4.83°S), along the route Curiosity drove between sols 4534 and 4805.
+Marsouine is a map for an astronaut walking on Mars. It tells them, stop by stop, whether the ground ahead is firm, sandy or too steep, and how sure we are. The study site is the **boxwork region of Mount Sharp, Gale crater** (box 137.36–137.40°E, 4.78–4.83°S), along the route Curiosity drove between sols 4534 and 4805.
 
 The map combines three readings of the same ground:
 
@@ -28,7 +28,7 @@ The [`Application/`](Application/) folder is the tablet and helmet app that puts
 
 **App (tablet + helmet):** see [`Application/README.md`](Application/README.md). Quick start with the pre-built copy:
 ```bash
-cd Application/firmground-app-built
+cd Application/marsouine-app-built
 python server.py        # then open http://localhost:8000 (or http://<this-PC-IP>:8000 on a phone)
 ```
 
@@ -48,7 +48,7 @@ Map_layer/Layer2_Elevation/  elevation, slope, contours, exports for the web map
 Map_layer/martian_map/       all five map layers, GO/NO-GO layers and combined map, routes, 3D viewer, pipeline
 Application/
   fg-app/                    React source of the tablet + helmet app
-  firmground-app-built/      built app, ready to serve
+  marsouine-app-built/      built app, ready to serve
   data/                      stops.json + AI overlays (copied into the app)
 Drone/                       scout drone simulator, its pipeline and the GeoJSON hazard layer
 ASSUMPTIONS.md               every threshold the team chose (not NASA rules)

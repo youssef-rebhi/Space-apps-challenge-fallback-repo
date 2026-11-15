@@ -60,7 +60,7 @@ export function map3dPlugin() {
   let outDir = "dist";
   const TYPES = { ".txt": "text/plain", "": "text/plain", ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".jpg": "image/jpeg", ".png": "image/png", ".bin": "application/octet-stream" };
   return {
-    name: "firmground-map3d",
+    name: "marsouine-map3d",
     configResolved(c) { outDir = path.resolve(c.root, c.build.outDir); },
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
