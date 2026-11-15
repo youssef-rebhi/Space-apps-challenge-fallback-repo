@@ -3,7 +3,7 @@ Input (read-only): data/clean/geology/dtm_box.tif (HiRISE DTEEC_019698_1750_0199
 1.0117 m, heights in m above the Mars 2000 areoid).
 Outputs: derived/elevation_box_hirise_1m.tif, derived/contours_box_{5,1}m.gpkg, docs/*.qml
 Run with QGIS python (needs osgeo.gdal/ogr):
-  "C:/Program Files/QGIS 4.2.3/bin/python-qgis.bat" scripts/02_box_elevation_contours.py
+  python-qgis scripts/02_box_elevation_contours.py
 """
 import os
 os.environ["GDAL_PAM_ENABLED"] = "NO"

@@ -1,7 +1,7 @@
 """Download windows of large remote USGS rasters (1-row-strip GeoTIFFs on S3)
 via HTTP range reads of full-width row bands, crop locally, write native-CRS
-GeoTIFFs into possible_output/raw/ and log every fetch to raw/fetch_log.json.
-Run: .venv/Scripts/python.exe -I scripts/01_fetch_windows.py
+GeoTIFFs into raw/ and log every fetch to raw/fetch_log.json.
+Run: python -I scripts/01_fetch_windows.py
 """
 import os, sys, json, time, hashlib, datetime as dt
 import numpy as np, rasterio

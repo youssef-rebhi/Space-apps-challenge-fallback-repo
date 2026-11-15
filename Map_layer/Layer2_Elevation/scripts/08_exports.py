@@ -4,7 +4,7 @@ exports/leaflet/*.png   coloured overlays + leaflet_bounds.json ([[S,W],[N,E]] p
 exports/plotly/*.json   300 x 300 grids for the Plotly 3D surface (box and whole crater)
 exports/rover/waypoints_box.geojson  waypoints in box (already in Gale frame)
 Also: derived/check_shifted_redc_vs_mosaic.json
-Run: .venv/Scripts/python.exe -I scripts/08_exports.py
+Run: python -I scripts/08_exports.py
 """
 import os, json, math
 import numpy as np, rasterio
