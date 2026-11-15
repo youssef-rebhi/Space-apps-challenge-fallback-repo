@@ -12,7 +12,7 @@ export const START_HOUR = 9;       // EVA starts 09:00 local Mars time (assumpti
 export const UNSURE = 0.75;        // below this certainty the AI asks for the scout first (assumption)
 
 // ---------- AI certainty ----------
-// If stops.json has "certainty" (from our model's probabilities, Colab cell), use it.
+// If stops.json has "certainty" (from our model's probabilities, Ai_model/nasa_training.ipynb), use it.
 // Otherwise ESTIMATE it from how far the stop is from our colour thresholds:
 // sand 8% is close to the 10% line → unsure; sand 0% → sure.
 export function certaintyOf(s, live) {
