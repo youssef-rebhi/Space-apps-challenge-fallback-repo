@@ -1,0 +1,5 @@
+# Raw data files: never convert line endings
+*.u16 binary
+*.f32 binary
+*.bin binary
+*.glb binary

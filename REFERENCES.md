@@ -61,7 +61,15 @@ Every source is also listed inside the folder: `docs/SOURCES.md`, `pipeline/sour
 - **Opportunity lost in the 2018 global dust storm**, NASA. https://science.nasa.gov/mission/mer-opportunity/
 - **MEDA wind sensor damaged by blowing sand**, EPSC-DPS 2025 abstract. https://meetingorganizer.copernicus.org/EPSC-DPS2025/EPSC-DPS2025-1461.html
 
-**Software:** QGIS 4.2.3; Python 3.12 with rasterio, geopandas, pyogrio, shapely, pyproj, SciPy, scikit-image (`MCP_Geometric` least-cost paths) and Pillow, pinned in `Map_layer/martian_map/requirements.lock.txt`; three.js 0.160.0 for the 3D viewer.
+**Astronaut walk view** (`Map_layer/martian_map/web/walk/`):
+- **Ground and sky colours**: NASA PIA26693 "Curiosity Surveys the Boxwork Region", natural-colour Mastcam panorama, 26 Sept 2025 (sol 4671), taken inside the map box. NASA/JPL-Caltech/MSSS. https://science.nasa.gov/photojournal/curiosity-surveys-the-boxwork-region/
+- **What "natural colour" means**: NASA PIA16800. https://science.nasa.gov/photojournal/raw-natural-and-white-balanced-views-of-martian-terrain
+- **Sun position**: NASA GISS Mars24 algorithm (Allison 1997; Allison & McEwen 2000, Planet. Space Sci. 48, 215–235). https://www.giss.nasa.gov/tools/mars24/help/algorithm.html
+- **Far horizon**: HRSC/MOLA blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS), from Layer 2.
+- **Constants**: Mars ellipsoid (Seidelmann et al. 2002, IAU/IAG 2000 report); solar radius (IAU 2015 Resolution B3); astronomical unit (IAU 2012 Resolution B2).
+- **Simulated rocks and ripples**: the team drone simulation rules, `Drone/sim/scripts/02_route_flights.py`.
+
+**Software:** QGIS 4.2.3; Python 3.12 with rasterio, geopandas, pyogrio, shapely, pyproj, SciPy, scikit-image (`MCP_Geometric` least-cost paths) and Pillow, pinned in `Map_layer/martian_map/requirements.lock.txt`; three.js 0.160.0 for the 3D viewer; Blender 5.3.0 (headless) for the walk view's simulated rocks and close-up texture.
 
 ## Application (`Application/`)
 
@@ -90,4 +98,4 @@ Every source is also listed inside the folder: `docs/SOURCES.md`, `pipeline/sour
 
 ## Image credits
 
-Curiosity and Perseverance images: NASA/JPL-Caltech. HiRISE: NASA/JPL/University of Arizona. THEMIS: NASA/JPL/Arizona State University. Elevation mosaics: USGS Astrogeology Science Center.
+Curiosity and Perseverance images: NASA/JPL-Caltech. Mastcam panorama PIA26693 (walk-view colours): NASA/JPL-Caltech/MSSS. HiRISE: NASA/JPL/University of Arizona. THEMIS: NASA/JPL/Arizona State University. Elevation mosaics: USGS Astrogeology Science Center.

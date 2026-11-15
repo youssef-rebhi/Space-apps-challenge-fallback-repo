@@ -14,6 +14,7 @@ Every number in this workspace either comes from a NASA, USGS or published sourc
 | **3D web viewer** | From this folder run `.venv/Scripts/python.exe -m http.server 8765 --directory web`, then open http://localhost:8765/viewer3d/ |
 | **Layer-by-layer animation** | Same server, then open http://localhost:8765/explode/. Click to take the map apart: 3D colored map → flat GO/NO-GO map + plain 3D map → slope, roughness, terrain units, ground truth + photo, elevation. It uses the existing files only. Options: `?step=0\|1\|2`, `&profile=rover`, `&theme=light`, `&ui=0`, `&autoplay=1`. "Record video" saves a .webm for slides. |
 | **Map sections (tablet)** | Same server, then open http://localhost:8765/section/. It shows only one piece of the map, in 3D and as the flat GO/NO-GO map, with the path, the POIs and the numbers for that piece. See [Map sections](#map-sections) below. |
+| **Astronaut walk view** | Same server, then open http://localhost:8765/walk/. Walk on the real terrain at eye height: W A S D or arrows, drag to look, F = ×20, click the mini-map to jump. NO-GO and unknown ground block you. Ground and sky colours come from NASA's natural-colour panorama PIA26693, taken in this box; rocks, ripples and close-up texture are simulated and labelled. Options: `?ltst=16.5` (local Mars time), `&x=..&y=..&yaw=..`. See [docs/METHODS.md](docs/METHODS.md#astronaut-walk-view-pipeline12-80-81-webwalk). |
 | **Quick look** | [docs/img/preview_combined_foot.jpg](docs/img/preview_combined_foot.jpg), [docs/img/qgis_master_preview.png](docs/img/qgis_master_preview.png) |
 
 ## Map sections
@@ -88,6 +89,8 @@ The **Layer 1 base map** (`layers/L1_basemap/usgs_msl_gale_ortho_25cm_box.tif`, 
 - **Get it:** run `.venv/Scripts/python.exe -I -X utf8 pipeline/10_fetch_basemap.py`. It takes about 16 minutes and reads 2.28 GB by HTTP range requests from the USGS file.
 - **Check it:** the script checks the pixel MD5 `7c2da177f95bd2ebcbd1d0bc80672978` (image values only). The approved file's MD5 is `d04ddd301f6333ef1bc726ee9b3c3582`; it matches only with the same library versions.
 - **Meanwhile:** the QGIS project opens without it; only that one layer shows as missing. The 3D viewer does not need it, because its photo texture is already in `web/terrain/`.
+
+NASA's colour panorama **PIA26693** (`walk/sources/PIA26693.png`, 179 MB) is not in git either. Run `pipeline/12_fetch_color_ref.py` to fetch it (MD5 checked). Only step 80 needs it; the walk view runs from `web/walk/` without it.
 
 ## From a git clone
 1. **Python:** run `uv venv --python 3.12 .venv`, then `uv pip install -r requirements.lock.txt --python .venv/Scripts/python.exe`. See [docs/TOOLS.md](docs/TOOLS.md).

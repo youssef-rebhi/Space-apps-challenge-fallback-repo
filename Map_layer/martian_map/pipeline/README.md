@@ -12,6 +12,9 @@ Run everything from `martian_map/`. Two Python environments are used:
 | 40 | `PY pipeline/40_gonogo_layers.py` | L2, L3, L4, L5, `sources_gonogo.json`, `live_gates_rules.json` | `gonogo/conv_*.tif`, `certainty.tif`, `gonogo_rules.json`, `live_gates.json`, `inputs/` | seconds |
 | 50 | `PY pipeline/50_combined_routes.py` | `gonogo/` | `combined_*.tif`, `routes.gpkg`, `routes_lonlat.geojson`, `reach_from_base_*.tif`, `calibration/combined_report.json` | seconds |
 | 60 | `PY pipeline/60_web_export.py` | everything above | `web/textures/`, `web/layers.json`, `web/overlays.json`, `web/data/`, `web/plotly/gonogo_300.json`, `docs/img/preview_combined_foot.jpg` | seconds |
+| 12 | `PY pipeline/12_fetch_color_ref.py` (only needed after a git clone; the file is not in git) | NASA PIA26693 | `walk/sources/PIA26693.png` (179 MB, MD5 checked), `fetch_log.json` | ~1 min |
+| 80 | `PY pipeline/80_walk_export.py` (uses `walk_color.py`) | L1, L2, regional DEM, `combined_foot.tif`, `overlays.json`, PIA26693 | `web/walk/`: `walk.json`, `height_1m.u16`, `color_1m.jpg`, `tiles/`, `walk_mask.png`, `sand_2m.png`, `far_400m.f32` | ~10 s |
+| 81 | `"C:/Program Files/Blender Foundation/Blender 5.3/blender.exe" -b --factory-startup -noaudio -P pipeline/81_blender_detail.py` | nothing (procedural, seed 4671) | `web/walk/rocks.glb`, `detail_normal.png`, `detail_ao.png`, `detail.json` | ~5 s |
 | 70 | `QPY pipeline/70_qgis_master.py` | everything above + the main project (read-only; in a git clone, the saved styles and `qgis/project_crs.wkt`) | `qgis/martian_map.qgz`, `layers/L3_geology/styles/*.qml`, `docs/img/qgis_master_preview.png` | ~1 min |
 
 **Helpers:**

@@ -1,0 +1,21 @@
+{
+ "made_by": "pipeline/81_blender_detail.py",
+ "blender": "5.3.0",
+ "seed": 4671,
+ "rocks": {
+  "file": "rocks.glb",
+  "count": 8,
+  "unit": "1 m wide, 1 m above ground",
+  "buried_share": 0.2
+ },
+ "detail": {
+  "normal": "detail_normal.png",
+  "ao": "detail_ao.png",
+  "ao_mean": 0.9593,
+  "px": 1024,
+  "tile_m": 4.0,
+  "relief_m": 0.03,
+  "layers": "cracked plates ~0.45 m, pebbles ~7 cm, fine grain"
+ },
+ "simulated": true
+}

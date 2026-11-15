@@ -67,6 +67,21 @@ The path median is 8.2°. Curiosity chose gentle ground through steep terrain, w
 - A legend with each layer's parameter, rule, basis, sources and shares (box and Curiosity's path).
 - A simulated live-gate panel that tints the map: red for NO-GO, grey for stale data.
 
+## Astronaut walk view (`pipeline/12`, `80`, `81`, `web/walk/`)
+A first-person view: you walk on the real terrain at eye height, and the GO/NO-GO map decides where you may go.
+
+**Real data, and how it is used:**
+- **Ground shape:** the USGS 1 m DEM for the whole box (`height_1m.u16`, 1 cm steps). Around the walker it is drawn at 1 m, further out at 4 m.
+- **Ground pattern:** the USGS 25 cm orthophoto, in 64 m tiles at full resolution.
+- **Colours:** the orthophoto is greyscale. NASA's natural-colour Mastcam panorama PIA26693 was taken inside this box on sol 4671 (26 Sept 2025). Each grey value takes the median colour of the panorama's ground pixels with the same brightness rank (A37). The sky colours come from the same panorama's sky.
+- **Where you may walk:** the combined GO/NO-GO map for a crew on foot. You may walk on GO and caution ground joined to the base; NO-GO and unknown ground block you, with a message (A39).
+- **Far horizon:** the HRSC/MOLA 200 m DEM to ±70 km (Mount Sharp, the crater floor), with Mars's curvature (A41).
+- **Sun:** NASA GISS's Mars24 algorithm gives the Sun's height and direction for today's season at any local time; the default is 09:00, the team's EVA start. The Sun's disc has its true size for today's Mars–Sun distance.
+
+**Simulated, and said so on screen:** rocks (team drone-sim density and sizes, A38), sand ripples in DEM hollows (team rule, A40) and a close-up texture of cracked plates, pebbles and grain (A43). Blender makes the rock shapes and the texture (step 81). None of it is measured; it only stops the ground looking smooth and blurry at the feet.
+
+**Checks:** Mars24 against both NASA worked examples (24 values); in the browser, no console errors, 60 frames per second with about 2.1 million triangles on Intel Iris Xe graphics, walking into NO-GO is blocked, and tiles load and unload without leftovers.
+
 ## Master QGIS project (`pipeline/70_qgis_master.py`)
 - 25 layers in 7 groups, with relative paths and a saved view on the box.
 - The geology style was copied from the team's main project, which was opened read-only (MD5 checked before and after).

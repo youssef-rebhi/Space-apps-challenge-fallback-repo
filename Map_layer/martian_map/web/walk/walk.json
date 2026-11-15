@@ -1,0 +1,153 @@
+{
+ "name": "Mount Sharp boxwork: astronaut walk view data",
+ "made_by": "pipeline/80_walk_export.py",
+ "frame": "same local frame as web/terrain/terrain.json: x east of the west edge, y north of the south edge, z elevation (m, Mars areoid as in the USGS DEM). Heights are true (no exaggeration).",
+ "size_m": [
+  2371,
+  2964
+ ],
+ "z": {
+  "min": -3990.1103515625,
+  "max": -3350.553466796875
+ },
+ "lat_center": -4.805,
+ "lat_note": "planetocentric (Mars 2000 sphere); the page converts it to planetographic for Mars24",
+ "height": {
+  "file": "height_1m.u16",
+  "cols": 2371,
+  "rows": 2964,
+  "cell_m": 1.0,
+  "dtype": "uint16 little-endian",
+  "order": "row-major, first row = north edge",
+  "decode": "z = zmin + v / 65535 * (zmax - zmin)",
+  "source": "USGS MSL Gale DEM Mosaic 1 m v3 (Layer 2)"
+ },
+ "color": {
+  "tiles": "tiles/c_{i}_{j}.jpg",
+  "i": "tile column from the west edge",
+  "j": "tile row from the north edge",
+  "nx": 38,
+  "ny": 47,
+  "tile_m": 64,
+  "tile_px": 256,
+  "overview": "color_1m.jpg",
+  "overview_px": [
+   2371,
+   2964
+  ],
+  "ortho_grid_shift_m": [
+   0.0072,
+   -0.0752
+  ],
+  "pattern_source": "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic 25 cm v3, USGS Astrogeology / PDS Annex (Layer 1, greyscale)",
+  "colour_source": {
+   "id": "PIA26693",
+   "title": "Curiosity Surveys the Boxwork Region",
+   "page": "https://science.nasa.gov/photojournal/curiosity-surveys-the-boxwork-region/",
+   "credit": "NASA/JPL-Caltech/MSSS",
+   "taken": "2025-09-26, sol 4671, 179 Mastcam images",
+   "nasa_colour_note": "This natural color view is approximately how the scene would appear to an average person if they were on Mars.",
+   "file_md5": "6a06db7742934e28757e8f87fc8b41d2",
+   "where": "Curiosity was inside this box on sol 4671 (Layer 4 waypoint 137.38127 E, 4.80827 S)"
+  },
+  "method": "each orbital grey value keeps its brightness rank in the box and takes the median colour of the panorama's ground pixels with the same rank (ASSUMPTION A37)",
+  "lut_info": {
+   "ground_pixels_used": 3074839,
+   "rank_window_min": 0.005
+  },
+  "ground_median_srgb": [
+   148,
+   111,
+   92
+  ],
+  "far_ground_srgb": [
+   147,
+   110,
+   91
+  ]
+ },
+ "sky": {
+  "horizon_srgb": [
+   193,
+   204,
+   218
+  ],
+  "top_srgb": [
+   180,
+   193,
+   211
+  ],
+  "sky_pixels_used": 289616,
+  "note": "the panorama's sky reaches only part-way up; colour above its top is the top colour"
+ },
+ "walk": {
+  "file": "walk_mask.png",
+  "cell_m": 3.0,
+  "cols": 790,
+  "rows": 988,
+  "covers_m": [
+   2370.0,
+   2964.0
+  ],
+  "channels": "R = class (0 UNKNOWN, 1 GO, 2 CAUTION, 3 NO-GO); G = 255 where you may walk",
+  "rule": "you may walk on GO or CAUTION ground that joins the base without crossing NO-GO or UNKNOWN (ASSUMPTION A39)",
+  "source": "gonogo/combined_foot.tif (crew on foot)",
+  "stats": {
+   "box_cells": 780520,
+   "walkable_pct": 81.2,
+   "walkable_go_pct": 55.4,
+   "walkable_caution_pct": 25.7,
+   "go_or_caution_not_joined_pct": 1.7,
+   "nogo_pct": 16.6,
+   "unknown_pct": 0.5
+  }
+ },
+ "base": {
+  "x": 1712.17,
+  "y": 236.0,
+  "z": -3472.0,
+  "label": "Base: Curiosity's position, sol 5073"
+ },
+ "far": {
+  "file": "far_400m.f32",
+  "cols": 351,
+  "rows": 351,
+  "step_m": 400,
+  "x0": -68814.5,
+  "y_top": 71482.0,
+  "order": "row-major, first row = north",
+  "dtype": "float32 little-endian",
+  "offset_to_dem_m": -3.21,
+  "source": "Mars MGS MOLA - MEX HRSC Blended DEM Global 200 m v2 (Fergason, Hare & Laura 2018, USGS), shifted by the median difference to the 1 m DEM inside the box"
+ },
+ "simulated": {
+  "note": "Detail finer than the real data (1 m shape, 25 cm photo) is made up so the ground looks real up close. It is not measured.",
+  "rocks": {
+   "rule": "team drone-sim rule (Drone/sim/scripts/02_route_flights.py): about 1 rock per 12 m of path, height gamma(2.2, 0.14) clipped to 0.15-0.7 m, width 0.5-1.2 m",
+   "per_m2": 0.098,
+   "per_m2_how": "1 per 12 m along a line / 0.85 m mean rock width (line-intercept) (ASSUMPTION A38)"
+  },
+  "ripples": {
+   "file": "sand_2m.png",
+   "cell_m": 2.0,
+   "cols": 1185,
+   "rows": 1482,
+   "wavelength_m": 2.5,
+   "amplitude_m": 0.06,
+   "box_pct": 5.7,
+   "rule": "team drone-sim rule: 2.5 m wavelength, 6 cm, in DEM hollows >= 10 cm below a ~20 m running median with slope < 8 deg, at least 4 m across (adapted from 1D to 2D, ASSUMPTION A40)"
+  }
+ },
+ "sun": {
+  "method": "Mars24 (NASA GISS; Allison & McEwen 2000), see web/walk/mars24.js",
+  "default_ltst_h": 9.0,
+  "default_ltst_note": "EVA start 09:00 local Mars time (team, safety.js START_HOUR)"
+ },
+ "walker": {
+  "speed_m_s": 0.8,
+  "speed_note": "team walking speed in a suit (safety.js SPEED)",
+  "eye_height_m": 1.7,
+  "eye_note": "ASSUMPTION A42 (display only)"
+ },
+ "built_utc": "2026-11-15T05:16:02Z"
+}
