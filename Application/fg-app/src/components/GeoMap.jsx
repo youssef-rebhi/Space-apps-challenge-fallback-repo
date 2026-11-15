@@ -3,7 +3,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { COLOURS } from "../lib/mission.js";
 import { GEO, loadGeo } from "../lib/geo.js";
-import { keyOf } from "../lib/grey.js";
+import { keyOf, labelOf } from "../lib/grey.js";
 
 // Real 2D map: pan + zoom. Background layers from the team's geo work (USGS MSL Gale DEM 1 m,
 // slope classes, whole Gale crater). Coordinates are Mars lon/lat (L.CRS.Simple, not Earth).
@@ -136,7 +136,7 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
       if (!sel && !route.includes(p) && !p.via) return;
       if (p.via && !sel) { L.circleMarker([p.lat, p.lon], { radius: 3, color: "#3cff8f", weight: 1, fillColor: "#fff", fillOpacity: 1, interactive: false }).addTo(grp); return; }
       L.circleMarker([p.lat, p.lon], { radius: sel ? 9 : 7, color: "#fff", weight: sel ? 3 : 2, dashArray: "3 2", fillColor: COLOURS[c], fillOpacity: 0.9, bubblingMouseEvents: false })
-        .on("click", () => onSelect(p)).bindTooltip("your point").addTo(grp);
+        .on("click", () => onSelect(p)).bindTooltip(labelOf(p, route)).addTo(grp);
     });
   }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, waypoints, abortPaths, droneCells, scoutSegs, route, selected, scouted, colourFor, ready, base, showStops]);
 

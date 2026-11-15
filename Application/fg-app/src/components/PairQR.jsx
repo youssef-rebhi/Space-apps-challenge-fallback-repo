@@ -20,6 +20,10 @@ export default function PairQR({ routePts, evaMin = 240, why = "" }) {
   const stops = routePts.map(token).join(",");
   const code = codeOf(stops + "|" + evaMin + "|" + why);
   const [stored, setStored] = useState(false);
+  // server.py tells which address the phone must open (its https address: phone sensors and AR need
+  // https). The QR code uses it whatever address this tablet page was opened with.
+  const [phoneBase, setPhoneBase] = useState(null);
+  useEffect(() => { fetch("api/phone-url").then((r) => (r.ok ? r.json() : null)).then((j) => j?.url && setPhoneBase(j.url)).catch(() => {}); }, []);
   useEffect(() => {
     if (routePts.length < 2) return;
     setStored(false);
@@ -30,7 +34,8 @@ export default function PairQR({ routePts, evaMin = 240, why = "" }) {
     return () => clearTimeout(t);
   }, [code]);
   if (routePts.length < 2) return <p className="muted">Add at least 2 stops to the route to pair the helmet.</p>;
-  const short = base() + "?h=" + code;
+  const short = (phoneBase || base()) + "?h=" + code;
+  const local = stored ? base() + "?h=" + code : helmetLink(routePts, evaMin);   // "Open helmet here" (this computer)
   const link = stored ? short : helmetLink(routePts, evaMin);
   const qr = qrcode(0, "L"); qr.addData(link); qr.make();
   return (
@@ -39,7 +44,8 @@ export default function PairQR({ routePts, evaMin = 240, why = "" }) {
       <div>
         <p>Scan with the helmet phone ⬅</p>
         {stored && <p>or type on the phone: <b className="paircode">{short.replace(/^https?:\/\//, "")}</b></p>}
-        <a href={link} target="_blank" rel="noreferrer">Open helmet here</a>
+        {phoneBase && <p className="muted">Open it in <b>Google Chrome</b> on the phone (AR needs Chrome).</p>}
+        <a href={local} target="_blank" rel="noreferrer">Open helmet here</a>
       </div>
     </div>
   );

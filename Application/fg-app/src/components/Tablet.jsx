@@ -288,7 +288,7 @@ export default function Tablet() {
         setLaser(false); setBusy(false);
         setScouted((m) => ({ ...m, [keyOf(target)]: { sol: src.sol, grey: noData, h, verdict: v, sand_pct: reading.sand_pct, bigrock_pct: reading.bigrock_pct ?? 0, env: envAt(0, src.sol), changed } }));
         say(`Scout report. ${v.label.replace(":", ".")}.`);
-        publish({ type: "scout", key: keyOf(target), sol: noData ? null : target.sol, near: src.sol, grey: noData, label: labelOf(target), lat: target.lat, lon: target.lon,
+        publish({ type: "scout", key: keyOf(target), sol: noData ? null : target.sol, near: src.sol, grey: noData, label: labelOf(target, routeStops), lat: target.lat, lon: target.lon,
           sand_pct: reading.sand_pct, bigrock_pct: reading.bigrock_pct ?? 0, verdict: v, changed });
       }, 1200);
     };
@@ -373,7 +373,7 @@ export default function Tablet() {
                   {targetOf(sel).auto && <small>Chosen by our team from our AI result ({targetOf(sel).basis}).</small>}
                 </div>
               )}
-              <h2 style={{ color: COLOURS[fc] }}>{sel.custom ? "Your point" : sel.grey ? "Unexplored area" : `Sol ${sel.sol}`}</h2>
+              <h2 style={{ color: COLOURS[fc] }}>{sel.custom ? (l => l[0].toUpperCase() + l.slice(1))(labelOf(sel, routeStops)) : sel.grey ? "Unexplored area" : `Sol ${sel.sol}`}</h2>
               {(sel.grey || (sel.custom && sel.aiFrom == null && !sel.droneRead))
                 ? <>
                     <p className="muted">No Curiosity photo here: the nearest one is {sel.metres} m away (sol {sel.nearest.sol}). Slope and height come from the team DEM; only the scout can tell what the ground is.</p>
@@ -405,7 +405,7 @@ export default function Tablet() {
           )}
           <div className="card">
             <h3>Route ({route.length} points)</h3>
-            <p className="muted">{route.length ? routeStops.reduce((acc, p) => { if (p.via) { const l = acc[acc.length - 1]; if (typeof l === "number") acc[acc.length - 1] = l + 1; else acc.push(1); } else acc.push(labelOf(p)); return acc; }, []).map((x) => (typeof x === "number" ? `(${x} path points)` : x)).join(" → ") : "Click a stop, or anywhere on the map, then ➕ Add to route."}</p>
+            <p className="muted">{route.length ? routeStops.reduce((acc, p) => { if (p.via) { const l = acc[acc.length - 1]; if (typeof l === "number") acc[acc.length - 1] = l + 1; else acc.push(1); } else acc.push(labelOf(p, routeStops)); return acc; }, []).map((x) => (typeof x === "number" ? `(${x} path points)` : x)).join(" → ") : "Click a stop, or anywhere on the map, then ➕ Add to route."}</p>
             {plan && (
               <div className={"gonogo " + (plan.go ? "go" : "nogo")}>
                 <b>{plan.go ? "GO" : "NO GO"}</b>

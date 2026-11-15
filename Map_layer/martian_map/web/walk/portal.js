@@ -31,17 +31,28 @@ export function startPortal(api) {
       <button id="pAR" hidden>Enter AR portal (best)</button>
       <button id="pCompass">Compass + steps mode</button>
       <p id="pinfo" class="pmuted">Checking what this phone can do…</p>
+      <p class="pmuted" id="pwhere"></p>
     </div>
     <div id="pbar" hidden>
       <span id="pground">–</span>
       <span id="pwalked">0 m</span>
       <button id="pboost">Boost ×${BOOST}</button>
+      <button id="pmapbtn">🗺 Move</button>
       <button id="precenter" hidden>Re-center</button>
       <button id="pexit">Exit</button>
     </div>
+    <div id="pmap"><div class="pcap">Where to stand: tap the map, or a site. Green or yellow = walkable.</div></div>
     <div id="pmsg"></div>
     <div id="psim" hidden><b>Simulated</b> rocks, ripples and close-up texture · real terrain (USGS), colours (NASA PIA26693), sun (Mars24) · GO/NO-GO from the team map</div>`;
   document.body.append(ui);
+  // Where to stand: the walk view's own mini-map and site buttons move into the portal screen, so they
+  // also show inside AR (only this layer is drawn over the AR view). Tapping them jumps the walker there.
+  $("pmap").append($("mini"), $("pois"));
+  const showWhere = () => { $("pwhere").textContent = `Start spot: x ${st.x.toFixed(0)} m, y ${st.y.toFixed(0)} m in the box. Tap the map below to start elsewhere.`; };
+  $("mini").addEventListener("click", () => setTimeout(showWhere, 0));
+  $("pois").addEventListener("click", () => setTimeout(showWhere, 0));
+  showWhere();
+  $("pmapbtn").onclick = () => { const open = !$("pmap").classList.toggle("closed"); $("pmapbtn").classList.toggle("on", open); };
 
   const flash = (t) => { const m = $("pmsg"); m.textContent = t; m.style.display = "block"; clearTimeout(flash.t); flash.t = setTimeout(() => (m.style.display = "none"), 2200); };
   P.say = flash;
@@ -50,52 +61,99 @@ export function startPortal(api) {
 
   const info = [];
   if (!window.isSecureContext) info.push("⚠ Not https: the phone will block the sensors. Open the https address.");
+  // Samsung Internet says it has WebXR AR, but its AR request never answered in our test (2026-11-15):
+  // AR needs Google Chrome on Android (ARCore).
+  if (/SamsungBrowser/i.test(navigator.userAgent)) info.push("⚠ This is Samsung Internet: AR does not start here. Open this page in Google Chrome for AR (Compass mode works here).");
   const xrOk = navigator.xr ? navigator.xr.isSessionSupported("immersive-ar").catch(() => false) : Promise.resolve(false);
   xrOk.then((ok) => {
     $("pAR").hidden = !ok;
     info.push(ok ? "AR tracking available (WebXR)." : "No WebXR AR on this browser: use Compass mode.");
     $("pinfo").textContent = info.join(" ");
   });
-  $("pAR").onclick = () => startAR().catch((e) => { $("pinfo").textContent = "AR did not start: " + (e?.message || e); });
+  // phone faults go to the laptop (server.py /api/events, type "debug"), so they can be read there
+  const report = (what, e) => {
+    const ev = { type: "debug", what, msg: String(e?.message || e), stack: String(e?.stack || "").slice(0, 900),
+      ua: navigator.userAgent, uid: Math.random().toString(36).slice(2), t: Date.now() };
+    fetch("/api/events", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(ev) }).catch(() => {});
+  };
+  P.report = report;
+  addEventListener("error", (ev) => report("window error", ev.error || ev.message));
+  addEventListener("unhandledrejection", (ev) => report("unhandled promise", ev.reason));
+  $("pAR").onclick = () => startAR().catch((e) => {
+    $("pinfo").textContent = "AR did not start: " + (e?.message || e) + " (sent to the laptop log)";
+  });
   $("pCompass").onclick = () => startCompass().catch((e) => { $("pinfo").textContent = "Compass mode did not start: " + (e?.message || e); });
 
   function showBar(mode) {
     $("pstart").hidden = true; $("pbar").hidden = false; $("psim").hidden = false;
+    $("pmap").classList.add("closed"); $("pmapbtn").classList.remove("on");   // map folds away; "🗺 Move" opens it
     $("precenter").hidden = mode !== "compass";
     P.mode = mode;
   }
   function exit() {
-    if (P.mode === "ar") renderer.xr.getSession()?.end();
+    if (P.mode === "ar") (P.session || renderer.xr.getSession())?.end().catch(() => {});
     stopCompass();
     P.mode = null; $("pstart").hidden = false; $("pbar").hidden = true; $("psim").hidden = true;
+    $("pmap").classList.remove("closed"); showWhere();
     camera.position.set(0, 0, 0); camera.quaternion.identity(); rig.quaternion.identity();
   }
 
   // ---------------------------------------------------------------- AR (WebXR) ----
   const prev = new THREE.Vector3(), cur = new THREE.Vector3(), d = new THREE.Vector3(), fwd = new THREE.Vector3();
   let havePrev = false;
+  // One AR start at a time (a second tap while Chrome is still starting AR gives "There is already
+  // an active, immersive XRSession"). A start that fails half-way ends its session, so a retry works.
+  let starting = false;
   async function startAR() {
-    const session = await navigator.xr.requestSession("immersive-ar", {
-      optionalFeatures: ["local-floor", "dom-overlay"], domOverlay: { root: ui },
-    });
-    // floor-level tracking if the phone has it; else the start pose, with the eye height of walk.json
-    let type = "local-floor";
-    try { await session.requestReferenceSpace("local-floor"); } catch { type = "local"; }
-    P.eyeOffset = type === "local" ? EYE : 0;
-    renderer.xr.enabled = true;
-    renderer.xr.setReferenceSpaceType(type);
-    renderer.xr.setFramebufferScaleFactor(0.8);       // lighter for a phone GPU (display choice)
-    await renderer.xr.setSession(session);
-    // the direction you face now = the direction the walk view was facing
-    rig.rotation.set(0, st.yaw, 0);
-    havePrev = false;
-    session.addEventListener("end", () => { renderer.xr.enabled = false; if (P.mode === "ar") exit(); });
-    showBar("ar");
-    flash(`AR portal on (${type}). Walk to move on Mars.`);
+    if (starting) return;
+    starting = true; $("pAR").disabled = true; $("pAR").textContent = "Starting AR…";
+    let session = null, stepName = "requestSession";
+    // progress to the laptop log; a step still running after 8 s is reported as stuck
+    const t0 = performance.now(), sec = () => ((performance.now() - t0) / 1000).toFixed(1);
+    const go = (name) => { stepName = name; report("AR step", `${name} (t=${sec()} s)`); clearTimeout(go.t); go.t = setTimeout(() => { report("AR stuck", `still at "${name}" after 8 s`); $("pinfo").textContent = `AR is stuck at: ${name}. Is there a Chrome prompt to accept, or an AR services update?`; }, 8000); };
+    report("AR step", `start: secure ${isSecureContext}, xrCompatible ${renderer.getContext().getContextAttributes()?.xrCompatible}`);
+    try {
+      if (P.session) { go("end old session"); try { await P.session.end(); } catch {} P.session = null; }
+      go("requestSession (Chrome may ask to allow AR / camera)");
+      session = await navigator.xr.requestSession("immersive-ar", {
+        optionalFeatures: ["local-floor", "dom-overlay"], domOverlay: { root: ui },
+      });
+      P.session = session;
+      session.addEventListener("end", () => { P.session = null; renderer.xr.enabled = false; if (P.mode === "ar") exit(); });
+      // floor-level tracking if the phone has it; else the start pose, with the eye height of walk.json
+      go("reference space");
+      let type = "local-floor";
+      try { await session.requestReferenceSpace("local-floor"); } catch { type = "local"; }
+      P.eyeOffset = type === "local" ? EYE : 0;
+      go("renderer.xr.setSession");
+      renderer.xr.enabled = true;
+      renderer.xr.setReferenceSpaceType(type);
+      renderer.xr.setFramebufferScaleFactor(0.8);       // lighter for a phone GPU (display choice)
+      await renderer.xr.setSession(session);
+      // the direction you face now = the direction the walk view was facing
+      rig.rotation.set(0, st.yaw, 0);
+      havePrev = false; arFault = false;
+      showBar("ar");
+      flash(`AR portal on (${type}). Walk to move on Mars.`);
+      clearTimeout(go.t);
+      report("AR started", `ok, reference space ${type}, dom-overlay ${!!session.domOverlayState}`);
+    } catch (e) {
+      clearTimeout(go.t);
+      report(`startAR failed at: ${stepName}`, e);
+      if (session) { try { await session.end(); } catch {} }
+      P.session = null; renderer.xr.enabled = false;
+      throw new Error(`${stepName}: ${e?.message || e}`);
+    } finally {
+      starting = false; $("pAR").disabled = false; $("pAR").textContent = "Enter AR portal (best)";
+    }
   }
+  let arFault = false;
 
   // called every frame in AR, before rendering; camera.position is the phone's pose in rig space
   P.arFrame = () => {
+    try { arStep(); } catch (e) { if (!arFault) { arFault = true; report("AR frame", e); flash("AR error: " + (e?.message || e)); } }
+  };
+  function arStep() {
     cur.copy(camera.position);
     if (havePrev) {
       d.subVectors(cur, prev).setY(0).applyQuaternion(rig.quaternion).multiplyScalar(P.boost);
@@ -113,7 +171,7 @@ export function startPortal(api) {
     // heading for the mini-map
     camera.getWorldDirection(fwd);
     st.yaw = Math.atan2(-fwd.x, -fwd.z);
-  };
+  }
 
   // ---------------------------------------------------------------- compass + steps ----
   const zee = new THREE.Vector3(0, 0, 1), euler = new THREE.Euler(), q0 = new THREE.Quaternion(),

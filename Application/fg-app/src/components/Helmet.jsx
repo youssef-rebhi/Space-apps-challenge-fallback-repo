@@ -48,7 +48,7 @@ export default function Helmet() {
       setNews({ text: `🔬 SCIENCE TARGET · ${t.name}`, colour: "green", at: Date.now() });
       say(`Science target. ${t.name}. ${t.why}`, S.voice);
     } else if (target.home) say("You are back at the start.", S.voice);
-    else if (!target.via) say(S.i >= S.route.length - 1 ? "Destination reached." : `Arrived at ${labelOf(target)}.`, S.voice);
+    else if (!target.via) say(S.i >= S.route.length - 1 ? "Destination reached." : `Arrived at ${labelOf(target, S.route)}.`, S.voice);
   };
   // move m metres along the safe path (falls back to a straight line if there is no path yet)
   const advance = (from, m, S) => {
@@ -267,7 +267,7 @@ export default function Helmet() {
   const o2Pct = Math.max(0, Math.round((o2 / (O2_H * 3600)) * 100));
   // ── copilot: next turn, danger ahead, off route ──
   const nav = path ? navigate(path, pos, Math.min(pIdx.current, path.pts.length - 1)) : null;
-  const turnTxt = nav ? (nav.turn ? turnWords(nav.turn) : `Keep straight for ${Math.round(d)} metres to ${labelOf(s)}.`) : "";
+  const turnTxt = nav ? (nav.turn ? turnWords(nav.turn) : `Keep straight for ${Math.round(d)} metres to ${labelOf(s, route)}.`) : "";
   const moving = running || phoneWalk;
   if (moving && nav?.turn && nav.turn.m < 40) {
     const k = "t" + legKey + ":" + nav.turn.k + (nav.turn.m < 6 ? "now" : "");
@@ -317,7 +317,7 @@ export default function Helmet() {
     detour: (a) => { const t = targets.find((x) => x.key === a.key); if (!t) return; const p0 = pointFrom(t.lat, t.lon, allStops, dist); setRoute((r) => [...r.slice(0, i), p0, ...r.slice(i)]); publish({ type: "auto", text: `Astronaut added a science detour: ${t.name}` }); },
   };
   const ctx = { stop: s, eff: effective(s, L), live: L, colour: c === "green" ? "go" : c === "orange" ? "careful" : c === "red" ? "don't go" : "no data",
-    cert: cert.v, certSrc: cert.src, advice: adv.text, adviceScout: adv.scout, o2Left: o2Usable, back, distNext: d, env, why, turnTxt, aheadTxt, get home() { return homeInfo(); }, goal: labelOf(goal), distGoal: goalM, sciNear: sciAsk, actions };
+    cert: cert.v, certSrc: cert.src, advice: adv.text, adviceScout: adv.scout, o2Left: o2Usable, back, distNext: d, env, why, turnTxt, aheadTxt, get home() { return homeInfo(); }, goal: labelOf(goal, route), distGoal: goalM, sciNear: sciAsk, actions };
   const warn = (c === "red" || c === "orange") && d < NEAR_M && !s.via;
   // science nearby (on or off the route), within 120 m
   const sciNear = targets.filter((t) => t.lat != null && allStops.length).map((t) => ({ t, s: pointFrom(t.lat, t.lon, allStops, dist) }))
@@ -330,7 +330,7 @@ export default function Helmet() {
   const nearHaz = droneHaz.find((h) => dist(h, pos) < 25);
   if (nearHaz && !announced.current.has("dh" + nearHaz.lat)) { announced.current.add("dh" + nearHaz.lat); say(`Drone warning. ${nearHaz.r === "steep" ? "Steep ground" : "Sand"} right here. Slow down.`, voice); }
   const gL = live[keyOf(goal)];
-  tele.current = { o2Pct, back, backBy, tempC: env.tempC, rad: env.radMsvDay, d: goalM, next: labelOf(goal), colour: finalColour(goal, gL), haz: hazardText(effective(goal, gL)), i: goalN - 1, n: realN, running, heading: Math.round(heading ?? brg), lat: pos.lat, lon: pos.lon, elapsed, cert: cert.v, route: route.map((r) => [r.lat, r.lon]) };
+  tele.current = { o2Pct, back, backBy, tempC: env.tempC, rad: env.radMsvDay, d: goalM, next: labelOf(goal, route), colour: finalColour(goal, gL), haz: hazardText(effective(goal, gL)), i: goalN - 1, n: realN, running, heading: Math.round(heading ?? brg), lat: pos.lat, lon: pos.lon, elapsed, cert: cert.v, route: route.map((r) => [r.lat, r.lon]) };
   const aKey = keyOf(s) + ":" + c;
   if (warn && !announced.current.has(aKey)) {
     announced.current.add(aKey);
@@ -354,10 +354,13 @@ export default function Helmet() {
     try {
       const t = await (await fetch("/mars/terrain/terrain.json")).json();
       const [lonW, latS] = t.corners_lonlat.SW, mPerDeg = (3396190 * Math.PI) / 180;
-      const P = st.current.pos || route[0];
-      const x = (P.lon - lonW) * mPerDeg, y = (P.lat - latS) * mPerDeg;
-      sessionStorage.setItem("fg-helmet-tele", JSON.stringify({ ...tele.current, goalLat: goal?.lat, goalLon: goal?.lon }));
-      const u = new URLSearchParams({ portal: 1, x: x.toFixed(1), y: y.toFixed(1), yaw: String(-(tele.current?.heading ?? 0)), back: location.href });
+      // the portal walk starts at A (the route's first stop) and goes to B (its last stop)
+      const A = route[0], B = route[route.length - 1];
+      const loc = (P) => [((P.lon - lonW) * mPerDeg).toFixed(1), ((P.lat - latS) * mPerDeg).toFixed(1)];
+      const [x, y] = loc(A), [bx, by] = loc(B);
+      sessionStorage.setItem("fg-helmet-tele", JSON.stringify({ ...tele.current, goalLat: B.lat, goalLon: B.lon, next: labelOf(B, route) }));
+      const yaw = -bearing(A, B);   // face B
+      const u = new URLSearchParams({ portal: 1, x, y, bx, by, yaw: String(Math.round(yaw)), back: location.href });
       location.href = "/mars/walk/?" + u;
     } catch { alert("3D portal not found: start the app with server.py from the repository (it serves Map_layer under /mars/)."); }
   }
@@ -385,7 +388,7 @@ export default function Helmet() {
       <div className="visor" />
       <div className="hud2">
         <Tape heading={heading ?? brg} target={brg} colour={COLOURS[c]} real={heading != null} />
-        <div className="status" style={{ color: COLOURS[status[1]] }}>{status[0]} · {running || phoneWalk ? "WALKING TO" : "NEXT"} {labelOf(goal).toUpperCase()}</div>
+        <div className="status" style={{ color: COLOURS[status[1]] }}>{status[0]} · {running || phoneWalk ? "WALKING TO" : "NEXT"} {labelOf(goal, route).toUpperCase()}</div>
         {news && <div className="news" style={{ borderColor: COLOURS[news.colour] }}>{news.text}</div>}
         {nav && (running || phoneWalk) && (
           <div className={"navbar" + (ahead?.k === 3 ? " stop" : ahead ? " care" : "")}>
@@ -408,7 +411,7 @@ export default function Helmet() {
         {Math.abs(rel) < 55 && (
           <div className="target" style={{ left: `${50 + (rel / 55) * 42}%`, color: COLOURS[c] }}>
             <svg viewBox="-20 -20 40 40"><path d="M0,-14 L12,0 L0,14 L-12,0 Z" fill="none" stroke="currentColor" strokeWidth="2.5" /><circle r="3" fill="currentColor" /></svg>
-            <span>{labelOf(s)} · {Math.round(d)} m</span>
+            <span>{labelOf(s, route)} · {Math.round(d)} m</span>
           </div>
         )}
         {Math.abs(rel) >= 55 && <div className={"edge " + (rel > 0 ? "r" : "l")} style={{ color: COLOURS[c] }}>{rel > 0 ? "▶" : "◀"}</div>}
@@ -428,7 +431,7 @@ export default function Helmet() {
         )}
         <div className="card2" style={{ borderColor: COLOURS[c] }}>
           <small>{gi === route.length - 1 ? "DESTINATION" : `NEXT · STOP ${goalN}/${realN}`}{siteNear(goal, targets, dist) ? " · 🔬 SCIENCE TARGET" : ""}</small>
-          <b>{goal.home ? "START (HOME)" : goal.via ? "PATH" : labelOf(goal).toUpperCase()}</b>
+          <b>{goal.home ? "START (HOME)" : goal.via ? "PATH" : labelOf(goal, route).toUpperCase()}</b>
           <span>{Math.round(goalM)} m · {Math.round(goalM / SPEED / 60)} MIN · <em style={{ color: COLOURS[finalColour(goal, live[keyOf(goal)])] }}>{hazardText(effective(goal, live[keyOf(goal)]))}</em>{goal.sand_pct != null ? ` · AI ${Math.round(certaintyOf(goal, live[keyOf(goal)]).v * 100)}%` : " · ground from orbit"}</span>
         </div>
       </div>
