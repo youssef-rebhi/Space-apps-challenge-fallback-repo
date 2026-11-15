@@ -8,15 +8,17 @@ import { keyOf } from "../lib/grey.js";
 // Real 2D map: pan + zoom. Background layers from the team's geo work (USGS MSL Gale DEM 1 m,
 // slope classes, whole Gale crater). Coordinates are Mars lon/lat (L.CRS.Simple, not Earth).
 const BASES = {
+  gonogo: { file: "gonogo_photo_box.webp", key: "gonogo_photo_box.webp", label: "GO / NO-GO over photo (team map)" },
+  photo: { file: "photo_box.webp", key: "photo_box.webp", label: "Photo (USGS orthophoto 25 cm)" },
   elevation: { file: "elevation_box.webp", key: "elevation_box.png", label: "Elevation (USGS Gale DEM 1 m)" },
   slope: { file: "slope_classes_box.png", key: "slope_classes_box.png", label: "Slope GO / caution / NO-GO" },
   crater: { file: "regional_gale_elevation.webp", key: "regional_gale_elevation.png", label: "Whole Gale crater" },
 };
 
-export default function GeoMap({ astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, droneCells = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
+export default function GeoMap({ targets = [], astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, droneCells = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
   const box = useRef(null), map = useRef(null), layers = useRef({}), geo = useRef(null), fitted = useRef(false);
   const fitStops = (m) => stops.length && m.fitBounds(L.latLngBounds(stops.map((s) => [s.lat, s.lon])), { padding: [50, 50] });
-  const [base, setBase] = useState("elevation");
+  const [base, setBase] = useState("gonogo");
   const [ready, setReady] = useState(false);
   const [showStops, setShowStops] = useState(false);
   const [showDrone, setShowDrone] = useState(false);
@@ -30,7 +32,7 @@ export default function GeoMap({ astro, trail = [], stops, greys, picks = [], pa
       geo.current = g;
       const m = L.map(box.current, { crs: L.CRS.Simple, zoomSnap: 0.25, attributionControl: true, minZoom: 6, maxZoom: 17 });
       m.attributionControl.setPrefix(false);
-      m.attributionControl.addAttribution("DEM: USGS MSL Gale 1 m · team geo layers · stops: Curiosity + our AI");
+      m.attributionControl.addAttribution("USGS MSL Gale DEM 1 m + orthophoto 25 cm · team GO/NO-GO map · stops: Curiosity + our AI");
       const b = g.bounds["elevation_box.png"].bounds;
       m.fitBounds(b);
       layers.current.base = L.imageOverlay(GEO + BASES.elevation.file, g.bounds[BASES.elevation.key].bounds, { opacity: 0.95 }).addTo(m);
@@ -86,6 +88,11 @@ export default function GeoMap({ astro, trail = [], stops, greys, picks = [], pa
       flush();
     }
     ["A", "B"].forEach((k) => { const P = ab[k]; if (P) L.marker([P.lat, P.lon], { icon: L.divIcon({ className: "abpin " + k, html: k, iconSize: [26, 26] }), interactive: false }).addTo(grp); });
+    targets.forEach((t) => {
+      if (t.lat == null) return;
+      L.marker([t.lat, t.lon], { icon: L.divIcon({ className: "sciIcon " + t.type, html: "🔬", iconSize: [26, 26] }), bubblingMouseEvents: false, zIndexOffset: 500 })
+        .on("click", () => pickRef.current?.(t.lat, t.lon)).bindTooltip(`${t.name}${t.nasa ? " · NASA science site" : " · science target"}`).addTo(grp);
+    });
     const rp = route;
     if (rp.length > 1) L.polyline(rp.map((s) => [s.lat, s.lon]), { color: "#7fb3ff", weight: 4, dashArray: "8 6" }).addTo(grp);
     (showStops ? stops : stops.filter((s) => route.includes(s) || (!selected?.custom && selected?.sol === s.sol))).forEach((s) => {
@@ -100,7 +107,7 @@ export default function GeoMap({ astro, trail = [], stops, greys, picks = [], pa
       L.circleMarker([p.lat, p.lon], { radius: sel ? 9 : 7, color: "#fff", weight: sel ? 3 : 2, dashArray: "3 2", fillColor: COLOURS[c], fillOpacity: 0.9, bubblingMouseEvents: false })
         .on("click", () => onSelect(p)).bindTooltip("your point").addTo(grp);
     });
-  }, [stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, droneCells, route, selected, scouted, colourFor, ready, base, showStops]);
+  }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, droneCells, route, selected, scouted, colourFor, ready, base, showStops]);
 
   // drone scan layer (SIMULATED, by the team's drone simulator): display only, not used for decisions
   const DRONE_STYLE = { clear: "#3ecf8e", sand: "#ffb020", slope_caution: "#b57cff", slope_nogo: "#6a1fd1", obstacle: "#ff5a5a", obstacle_point: "#ff5a5a" };
@@ -152,6 +159,7 @@ export default function GeoMap({ astro, trail = [], stops, greys, picks = [], pa
         <label className="muted chk"><input type="checkbox" checked={showDrone} onChange={(e) => setShowDrone(e.target.checked)} /> Drone scan (SIMULATED: real terrain, synthetic rocks &amp; sand)</label>
         <label className="muted chk"><input type="checkbox" checked={showStops} onChange={(e) => setShowStops(e.target.checked)} /> Show Curiosity photo stops (our AI)</label>
       </div>
+      {base === "gonogo" && <small className="muted legend4"><i style={{ background: "#1a9850" }} />GO <i style={{ background: "#f4c430" }} />CAUTION <i style={{ background: "#d73027" }} />NO-GO <i style={{ background: "#9e9e9e" }} />UNKNOWN · worst of slope, roughness, geology, Curiosity's path and our AI stops (team map, Map_layer/martian_map)</small>}
       {base === "slope" && <small className="muted">Slope classes: GO &lt; 15°, caution 15–25°, NO-GO ≥ 25° (team assumptions, 3 m DEM slope).</small>}
     </div>
   );

@@ -6,7 +6,7 @@ import { GEO, loadGeo, elevAt } from "../lib/geo.js";
 // team's elevation or slope map, lit by a low sun. Heights ×EXAG for display.
 // Drag = turn · Shift+drag or right-drag = tilt · wheel = zoom · click = check that spot (like 2D).
 const M_PER_DEG = 3396190 * Math.PI / 180;
-const SKINS = { elevation: { file: "elevation_box.webp", key: "elevation_box.png", label: "Elevation" }, slope: { file: "slope_classes_box.png", key: "slope_classes_box.png", label: "Slope GO / caution / NO-GO" } };
+const SKINS = { gonogo: { file: "gonogo_photo_box.webp", key: "gonogo_photo_box.webp", label: "GO / NO-GO over photo" }, photo: { file: "photo_box.webp", key: "photo_box.webp", label: "Photo" }, elevation: { file: "elevation_box.webp", key: "elevation_box.png", label: "Elevation" }, slope: { file: "slope_classes_box.png", key: "slope_classes_box.png", label: "Slope GO / caution / NO-GO" } };
 
 function sampler(src, bounds) {
   return new Promise((ok) => {
@@ -28,7 +28,7 @@ function sampler(src, bounds) {
 export default function Terrain3D({ stops, route, picks = [], pathPts, pathUnsure, selected, onSelect, onPick, colourFor, onFail }) {
   const cv = useRef(null), hits = useRef({ pins: [], cells: [] }), drag = useRef(null);
   const [g, setG] = useState(null);
-  const [skin, setSkin] = useState("elevation");
+  const [skin, setSkin] = useState("gonogo");
   const [tex, setTex] = useState({});
   const [view, setView] = useState({ yaw: -0.5, tilt: 0.9, zoom: 1, exag: 3 });
 

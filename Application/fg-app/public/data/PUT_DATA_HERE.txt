@@ -1,0 +1,3 @@
+Unzip firmground_stops_v2.zip here, so you get:
+  public/data/stops.json
+  public/data/overlays/*.jpg

@@ -1,6 +1,6 @@
 // Mission assistant. It answers ONLY from the mission data on screen (stops, AI, oxygen, sensors),
-// so it cannot invent facts. Rule-based for the demo; an LLM could be plugged in later
-// with this same context.
+// so it cannot invent facts. Rule-based for the demo; an LLM can be plugged in later
+// with this same context (see README).
 import { hazardText } from "./mission.js";
 import { hm } from "./safety.js";
 

@@ -1,5 +1,5 @@
 // Route options between A and B, like a maps app ("faster" / "safer" / "with science").
-// Grid: team slope classes (USGS MSL Gale DEM 1 m, slope on 3 m), 2×2 blocks ≈ 6 m, worst class wins.
+// Grid: team combined GO/NO-GO map (Map_layer/martian_map, 3 m cells), full 3 m cells (same grid as the map), worst class wins.
 // Extra data: Curiosity's path (proven ground) and our AI sand at the Curiosity stops.
 // All weights are TEAM ASSUMPTIONS, not NASA rules.
 import { dist } from "./mission.js";
@@ -8,7 +8,7 @@ export const PROFILES = {
   fastest: { label: "Shortest", colour: "#4da3ff", GO: 1, CAUTION: 1.6, UNKNOWN: 1.5, ROVER: 1, SAND_ORANGE: 1.5 },
   safest: { label: "Safest", colour: "#3cff8f", GO: 1, CAUTION: 5, UNKNOWN: 8, ROVER: 0.6, SAND_ORANGE: 6 },
 };
-export const RULES = "Never crossed: slope ≥ 25° and 15 m around stops where our AI found > 30% sand or big rocks.";
+export const RULES = "Grid: the team's combined GO/NO-GO map (slope, roughness, geology, Curiosity's path, our AI stops). Never crossed: NO-GO cells, incl. 15 m around stops with > 30% sand or big rocks.";
 const AI_NEAR_M = 30, SAND_R = 15, ROVER_R = 12, SPEED = 0.8;
 
 class Heap {
@@ -21,12 +21,13 @@ class Heap {
 let cache = null;
 function grid(geo, stops) {
   if (cache && cache.stops === stops && cache.geo === geo) return cache;
-  const G = geo.slopeAt.grid, F = 2, W = Math.floor(G.W / F), H = Math.floor(G.H / F), N = W * H;
+  const G = (geo.mapAt || geo.slopeAt).grid, F = geo.mapAt ? 1 : 2, W = Math.floor(G.W / F), H = Math.floor(G.H / F), N = W * H;
+  const RANK = [2, 0, 1, 3]; // worst-of order, as in the combined map: GO < CAUTION < UNKNOWN < NO-GO
   const cls = new Uint8Array(N), rover = new Uint8Array(N), red = new Uint8Array(N), orange = new Uint8Array(N), known = new Uint8Array(N);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    let worst = 0, unk = false;
-    for (let dy = 0; dy < F; dy++) for (let dx = 0; dx < F; dx++) { const k = G.data[(y * F + dy) * G.W + x * F + dx]; if (k === 0) unk = true; else if (k > worst) worst = k; }
-    cls[y * W + x] = worst || (unk ? 0 : 1);
+    let worst = 1;
+    for (let dy = 0; dy < F; dy++) for (let dx = 0; dx < F; dx++) { const k = G.data[(y * F + dy) * G.W + x * F + dx]; if (RANK[k] > RANK[worst]) worst = k; }
+    cls[y * W + x] = worst;
   }
   const lonOf = (x) => G.w + ((x + 0.5) / W) * (G.e - G.w), latOf = (y) => G.n - ((y + 0.5) / H) * (G.n - G.s);
   const cellOf = (lat, lon) => [Math.floor(((lon - G.w) / (G.e - G.w)) * W), Math.floor(((G.n - lat) / (G.n - G.s)) * H)];
@@ -51,7 +52,7 @@ function grid(geo, stops) {
 }
 
 export function inBox(geo, lat, lon) {
-  const G = geo.slopeAt.grid; return lat >= G.s && lat <= G.n && lon >= G.w && lon <= G.e;
+  const G = (geo.mapAt || geo.slopeAt).grid; return lat >= G.s && lat <= G.n && lon >= G.w && lon <= G.e;
 }
 
 function weightFn(C, P) {
@@ -102,7 +103,7 @@ function describe(C, cells, a, b, stops) {
 }
 
 // Main entry: options A → B. via = a stop to pass by for science (optional; "auto" picks the best detour).
-export function routeOptions(geo, stops, a, b, via = "auto") {
+export function routeOptions(geo, stops, a, b, via = "auto", targets = []) {
   const C = grid(geo, stops), out = [];
   for (const [id, P] of Object.entries(PROFILES)) {
     const cells = dijkstra(C, weightFn(C, P), a, b);
@@ -112,17 +113,28 @@ export function routeOptions(geo, stops, a, b, via = "auto") {
   const safeW = weightFn(C, PROFILES.safest);
   const passed = new Set(out.flatMap((o) => o.science));
   let cands;
-  if (via !== "auto") cands = stops.filter((s) => s.sol === +via);
-  else cands = stops.filter((s) => !passed.has(s.sol) && inBox(geo, s.lat, s.lon))
-    .map((s) => ({ s, detour: dist(a, s) + dist(s, b) - dist(a, b) })).sort((p, q) => p.detour - q.detour).slice(0, 4).map((x) => x.s);
+  if (via !== "auto") cands = targets.filter((t) => t.key === via).concat(stops.filter((s) => "s" + s.sol === via));
+  else {
+    // science targets first (ridges / hollows); without targets, any Curiosity stop
+    // only detours that are worth it: at most 400 m or half the direct distance (TEAM ASSUMPTION)
+    const maxDetour = Math.max(400, 0.5 * dist(a, b));
+    const near = (pool) => pool.filter((s) => inBox(geo, s.lat, s.lon))
+      .map((s) => ({ s, detour: dist(a, s) + dist(s, b) - dist(a, b) })).filter((x) => x.detour <= maxDetour)
+      .sort((p, q) => p.detour - q.detour).slice(0, 4).map((x) => x.s);
+    cands = near(targets.filter((t) => t.lat != null));
+    if (!cands.length) cands = near(stops.filter((s) => !passed.has(s.sol))); // else the nearest Curiosity science stop
+  }
   let best = null;
   for (const s of cands) {
     const c1 = dijkstra(C, safeW, a, s), c2 = c1 && dijkstra(C, safeW, s, b);
     if (!c1 || !c2) continue;
     const r = describe(C, [...c1, ...c2.slice(1)], a, b, stops);
-    if (!best || r.len < best.len) best = { ...r, viaSol: s.sol };
+    if (!best || r.len < best.len) best = { ...r, viaSol: s.key ? null : s.sol, viaPt: { lat: s.lat, lon: s.lon }, viaT: s.key ? s : null };
   }
-  if (best) out.push({ id: "science", label: `Science · via sol ${best.viaSol}`, colour: "#c58bff", ...best });
+  if (best) {
+    const t = best.viaT;
+    out.push({ id: "science", label: `Science · ${t ? t.name : `Curiosity stop sol ${best.viaSol}`}`, colour: "#c58bff", target: t, ...best });
+  }
   // tags like a maps app
   if (out.length) {
     const minLen = Math.min(...out.map((o) => o.len)), minRisk = Math.min(...out.map((o) => 3 * o.caution + o.unknownGround + 4 * o.sandNear));
@@ -132,9 +144,11 @@ export function routeOptions(geo, stops, a, b, via = "auto") {
       if (3 * o.caution + o.unknownGround + 4 * o.sandNear === minRisk) o.tags.push("least risk");
       if (o.id === "science") o.tags.push(`+${Math.round(o.len - minLen)} m for science`);
       o.warn = [];
-      if (o.caution > 20) o.warn.push(`${Math.round(o.caution)} m on 15–25° slopes`);
+      o.goPct = Math.round(100 * (1 - (o.caution + o.unknown) / o.len));
+      if (o.caution > 20) o.warn.push(`${Math.round(o.caution)} m on CAUTION ground (team map: slope 15–25°, rough, sand or hollow fill)`);
+      if (o.unknown > 5) o.warn.push(`${Math.round(o.unknown)} m on UNKNOWN cells: send the scout first`);
       if (o.sandNear > 5) o.warn.push(`${Math.round(o.sandNear)} m near sand our AI saw`);
-      if (o.unknownGround > 50) o.warn.push(`${Math.round(o.unknownGround)} m where the ground is not known (no AI photo)`);
+      if (o.unknownGround > 50) o.warn.push(`${Math.round(o.unknownGround)} m seen only from orbit (no Curiosity photo within 30 m)`);
     });
   }
   // drop a duplicate (same length within 2%)

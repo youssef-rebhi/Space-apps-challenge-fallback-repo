@@ -12,7 +12,7 @@ export async function loadStops() {
   try {
     const { loadGeo, elevAt } = await import("./geo.js");
     const g = await loadGeo();
-    stops.forEach((s) => { s.slope_class = g.slopeAt(s.lat, s.lon); s.elev = elevAt(g.elev, s.lat, s.lon); });
+    stops.forEach((s) => { s.map_class = g.mapAt ? g.mapAt(s.lat, s.lon) : null; s.slope_class = g.slopeAt(s.lat, s.lon); s.elev = elevAt(g.elev, s.lat, s.lon); });
   } catch { /* no geo layers: the app still works with the AI data only */ }
   return stops;
 }
@@ -20,7 +20,7 @@ export async function loadStops() {
 // Our 4 colours: green GO · orange careful · red don't go · grey no data
 export function colourOf(s) {
   if (!s) return "grey";
-  if (s.sand_pct == null) return s.slope_class === 3 ? "red" : "grey"; // no ground data; steep is still a NO-GO
+  if (s.sand_pct == null) return s.map_class === 3 || s.slope_class === 3 ? "red" : s.map_class === 2 ? "orange" : "grey"; // no ground data: the team map still says NO-GO / CAUTION
   if (s.sand_pct > 0.3 || s.bigrock_pct > 0.02 || s.slope_class === 3) return "red";
   if (s.sand_pct >= 0.1 || s.slope_class === 2) return "orange";
   return "green";

@@ -50,6 +50,51 @@
     "2": "orange caution",
     "3": "red NO-GO"
    }
+  },
+  "gonogo_foot.png": {
+   "bounds": [
+    [
+     -4.8300048,
+     137.3600007
+    ],
+    [
+     -4.7800004,
+     137.4000009
+    ]
+   ],
+   "source": "Youssef & Malek, Map_layer/martian_map (USGS MSL Gale DEM 1 m + orthophoto 25 cm v3, Layer 3 geology, Curiosity path, team AI stops)",
+   "classes": {
+    "0": "grey UNKNOWN (send the scout)",
+    "1": "green GO",
+    "2": "yellow CAUTION",
+    "3": "red NO-GO"
+   }
+  },
+  "photo_box.webp": {
+   "bounds": [
+    [
+     -4.8300048,
+     137.3600007
+    ],
+    [
+     -4.7800004,
+     137.4000009
+    ]
+   ],
+   "source": "Youssef & Malek, Map_layer/martian_map (USGS MSL Gale DEM 1 m + orthophoto 25 cm v3, Layer 3 geology, Curiosity path, team AI stops)"
+  },
+  "gonogo_photo_box.webp": {
+   "bounds": [
+    [
+     -4.8300048,
+     137.3600007
+    ],
+    [
+     -4.7800004,
+     137.4000009
+    ]
+   ],
+   "source": "Youssef & Malek, Map_layer/martian_map (USGS MSL Gale DEM 1 m + orthophoto 25 cm v3, Layer 3 geology, Curiosity path, team AI stops)"
   }
  }
 }

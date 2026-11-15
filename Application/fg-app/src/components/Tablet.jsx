@@ -3,7 +3,7 @@ import MiniMap from "./MiniMap.jsx";
 import Map3D from "./Map3D.jsx";
 import GeoMap from "./GeoMap.jsx";
 import Terrain3D from "./Terrain3D.jsx";
-import { SLOPE_TXT } from "../lib/geo.js";
+import { SLOPE_TXT, MAP_TXT } from "../lib/geo.js";
 import ScoutResult from "./ScoutResult.jsx";
 import PairQR from "./PairQR.jsx";
 import Assistant from "./Assistant.jsx";
@@ -14,6 +14,7 @@ import { dist } from "../lib/mission.js";
 import { safestPath, samplePath, WEIGHTS, droneScan, cellLatLon } from "../lib/pathfind.js";
 import Planner from "./Planner.jsx";
 import { samplePts } from "../lib/routes.js";
+import { scienceTargets, LABEL, siteNear, openOf, samplesOf, HUMAN } from "../lib/science.js";
 import { publish, subscribe } from "../lib/live.js";
 import { loadStops, colourOf, COLOURS, DATA, say } from "../lib/mission.js";
 import { hardnessOf, verdict, playZap } from "../lib/acoustic.js";
@@ -41,6 +42,9 @@ export default function Tablet() {
   // route planner A → B (several options)
   const [A, setA] = useState(null), [B, setB] = useState(null), [pickFor, setPickFor] = useState(null);
   const [options, setOptions] = useState([]), [chosen, setChosen] = useState(0);
+  const [targets, setTargets] = useState([]);
+  useEffect(() => { if (stops.length) scienceTargets(stops, dist).then(setTargets); }, [stops]);
+  const targetOf = (s) => (s && !s.grey ? siteNear(s, targets, dist) : null);
   // LIVE astronaut from the helmet (telemetry every second through server.py)
   const [astro, setAstro] = useState(null), [trail, setTrail] = useState([]);
   useEffect(() => subscribe((e) => {
@@ -66,9 +70,9 @@ export default function Tablet() {
   // click anywhere on the map → a point with the DEM slope/height; no AI photo there → scout it
   async function pick(lat, lon) {
     if (pickFor) { (pickFor === "A" ? setA : setB)({ lat, lon, label: "picked on map" }); setPickFor(null); setOptions([]); return; }
-    let slope_class = null, elev = null;
-    try { const g = await loadGeo(); slope_class = g.slopeAt(lat, lon); elev = elevAt(g.elev, lat, lon); } catch {}
-    const p = { ...pointFrom(lat, lon, stops, dist), slope_class, elev };
+    let slope_class = null, elev = null, map_class = null;
+    try { const g = await loadGeo(); slope_class = g.slopeAt(lat, lon); elev = elevAt(g.elev, lat, lon); map_class = g.mapAt ? g.mapAt(lat, lon) : null; } catch {}
+    const p = { ...pointFrom(lat, lon, stops, dist), slope_class, elev, map_class };
     setPicks((ps) => [...ps.filter((x) => route.includes(x.id)).slice(-60), p]);
     setSel(p);
   }
@@ -133,8 +137,8 @@ export default function Tablet() {
     };
     const a = mk(A, false), b = mk(B, false);
     const mids = samplePts(o.pts).slice(1, -1).map((q) => mk(q, true));
-    if (o.viaSol) {
-      const vs = stops.find((x) => x.sol === o.viaSol);
+    if (o.viaPt) {
+      const vs = o.viaSol ? stops.find((x) => x.sol === o.viaSol) : mk(o.viaPt, false);
       let bi = 0, bd = Infinity; mids.forEach((m, k) => { const d = dist(m, vs); if (d < bd) { bd = d; bi = k; } });
       if (mids.length) mids.splice(bi, 1, vs); else mids.push(vs);
     }
@@ -215,7 +219,7 @@ export default function Tablet() {
             ? (noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
                      : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
             : (noGeo ? <MiniMap stops={stops} greys={greys} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} />
-                     : <GeoMap astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} droneCells={droneCells} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
+                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} droneCells={droneCells} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
           <div className="legend">
             {["green", "orange", "red", "grey"].map((c) => (
               <span key={c}><i style={{ background: COLOURS[c] }} />{{ green: "GO · AI sure", orange: "careful · or AI unsure", red: "don't go", grey: "no ground data · send scout" }[c]}</span>
@@ -230,15 +234,27 @@ export default function Tablet() {
               {stops.map((q) => <option key={q.sol + "-" + q.lon} value={q.sol}>sol {q.sol} · {{ green: "GO", orange: "careful", red: "don't go", grey: "no data" }[colourFor(q)]} · sand {Math.round((q.sand_pct ?? 0) * 100)}%</option>)}
             </select>
           </label>
-          {!noGeo && <Planner stops={stops} A={A} B={B} setA={setA} setB={setB} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
+          {!noGeo && <Planner targets={targets} stops={stops} A={A} B={B} setA={setA} setB={setB} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
             options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} />}
           {sel && (
             <div className="card">
+              {targetOf(sel) && (
+                <div className="scibox">
+                  <b>🔬 Science target · {LABEL[targetOf(sel).type] || targetOf(sel).type}</b>
+                  <b>{targetOf(sel).name}</b>
+                  <span>{targetOf(sel).why}</span>
+                  <small><b>Still unknown:</b> {openOf(targetOf(sel)).join(" · ")}</small>
+                  <small><b>Take for the lab:</b> {samplesOf(targetOf(sel)).join(" · ")}</small>
+                  {targetOf(sel).nasa && <small>NASA site, Curiosity sol {targetOf(sel).sol} · position ±{targetOf(sel).pos_m} m · <a href={targetOf(sel).src} target="_blank" rel="noreferrer">NASA source</a></small>}
+                  {targetOf(sel).auto && <small>Chosen by our team from our AI result ({targetOf(sel).basis}).</small>}
+                </div>
+              )}
               <h2 style={{ color: COLOURS[fc] }}>{sel.custom ? "Your point" : sel.grey ? "Unexplored area" : `Sol ${sel.sol}`}</h2>
               {(sel.grey || (sel.custom && sel.aiFrom == null && !sel.droneRead))
                 ? <>
                     <p className="muted">No Curiosity photo here: the nearest one is {sel.metres} m away (sol {sel.nearest.sol}). Slope and height come from the team DEM; only the scout can tell what the ground is.</p>
                     {(sel.slope_class || sel.elev != null) && <p className="pcts">⛰ {sel.slope_class ? <b>{SLOPE_TXT[sel.slope_class]}</b> : "slope: no data"}{sel.elev != null && ` · height ${Math.round(sel.elev)} m`} <span className="muted">(team DEM)</span></p>}
+                    {sel.map_class != null && <p className="pcts">🗺 Team GO/NO-GO map: <b className={"mc" + sel.map_class}>{MAP_TXT[sel.map_class]}</b> <span className="muted">(slope, roughness, geology, Curiosity path)</span></p>}
                   </>
                 : <>
                     {sel.custom && sel.droneRead && <p className="muted">🚁 Ground from the drone scan (SIMULATED).</p>}
@@ -248,6 +264,7 @@ export default function Tablet() {
                       🟫 soil {pct(sel.soil_pct)} · ⬜ bedrock {pct(sel.bedrock_pct)} · 🟨 <b>sand {pct(sel.sand_pct)}</b> · 🟥 big rock {pct(sel.bigrock_pct)}
                     </p>
                     {(sel.slope_class || sel.elev != null) && <p className="pcts">⛰ {sel.slope_class ? <b>{SLOPE_TXT[sel.slope_class]}</b> : "slope: no data"}{sel.elev != null && ` · height ${Math.round(sel.elev)} m`} <span className="muted">(team DEM)</span></p>}
+                    {sel.map_class != null && <p className="pcts">🗺 Team GO/NO-GO map: <b className={"mc" + sel.map_class}>{MAP_TXT[sel.map_class]}</b> <span className="muted">(slope, roughness, geology, Curiosity path)</span></p>}
                   </>}
               <div className="certainty">
                 <div className="bar"><i style={{ width: `${Math.round(cert.v * 100)}%`, background: cert.v >= 0.75 ? COLOURS.green : COLOURS.orange }} /></div>

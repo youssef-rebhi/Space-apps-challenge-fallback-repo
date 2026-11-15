@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { loadStops, COLOURS, DATA, dist, stepToward, hazardText, say } from "../lib/mission.js";
-import { finalColour, certaintyOf, advice, envAt, o2LeftS, hm, RESERVE_MIN, O2_H } from "../lib/safety.js";
+import { finalColour as colourOfStop, finalColour, certaintyOf, advice, envAt, o2LeftS, hm, RESERVE_MIN, O2_H } from "../lib/safety.js";
 import Assistant from "./Assistant.jsx";
 import { subscribe, bearing, publish } from "../lib/live.js";
 import { effective } from "../lib/safety.js";
 import { keyOf, labelOf, pointFrom } from "../lib/grey.js";
+import { scienceTargets, HUMAN, LABEL, siteNear, openOf, samplesOf } from "../lib/science.js";
 
 // Team assumptions (ASSUMPTIONS.md)
 const STEP_M = 0.7, SCALE = 20, ARRIVE_M = 15; // phone walk: 0.7 m step ×20 on Mars (demo scale, assumption)
@@ -23,8 +24,20 @@ export default function Helmet() {
   const [motionOk, setMotionOk] = useState(false);
   const [motionLevel, setMotionLevel] = useState(0);
   const [motionPerm, setMotionPerm] = useState("");
-  const [droneHaz, setDroneHaz] = useState([]); // drone scan spots sent by the tablet (SIMULATED)
+  const [droneHaz, setDroneHaz] = useState([]);
+  const [targets, setTargets] = useState([]);
+  const [allStops, setAllStops] = useState([]);
+  const [sciOpen, setSciOpen] = useState(null);
+  const [sampled, setSampled] = useState({}); // drone scan spots sent by the tablet (SIMULATED)
   const stepRef = useRef(() => {});
+  // arrival: science targets get their own message
+  const arrive = (S, target) => {
+    const t = siteNear(target, S.targets || [], dist);
+    if (t) {
+      setNews({ text: `🔬 SCIENCE TARGET · ${t.name}`, colour: "green", at: Date.now() });
+      say(`Science target. ${t.name}. ${t.why}`, S.voice);
+    } else say(`Arrived at stop ${S.i + 1}. ${hazardText(target).toLowerCase()}.`, S.voice);
+  };
   // one step: towards the next stop (guided walk; the compass only turns the view)
   stepRef.current = () => {
     const S = st.current, target = S.route[S.i]; if (!target || !S.pos) return;
@@ -32,7 +45,7 @@ export default function Helmet() {
     const np = stepToward(S.pos, target, dd);
     setPos(np); setSteps((n) => n + 1);
     if (dist(np, target) < ARRIVE_M) {
-      say(`Arrived at stop ${S.i + 1}. ${hazardText(target).toLowerCase()}.`, S.voice);
+      arrive(S, target);
       if (S.i < S.route.length - 1) setI(S.i + 1);
     }
   };
@@ -59,9 +72,10 @@ export default function Helmet() {
       const r = r0.length ? r0 : all.slice(0, 5);
       // slope + height for picked points (team DEM)
       import("../lib/geo.js").then(async ({ loadGeo, elevAt }) => {
-        try { const g = await loadGeo(); r.forEach((p) => { if (p.custom) { p.slope_class = g.slopeAt(p.lat, p.lon); p.elev = elevAt(g.elev, p.lat, p.lon); } }); setRoute([...r]); } catch {}
+        try { const g = await loadGeo(); r.forEach((p) => { if (p.custom) { p.slope_class = g.slopeAt(p.lat, p.lon); p.map_class = g.mapAt ? g.mapAt(p.lat, p.lon) : null; p.elev = elevAt(g.elev, p.lat, p.lon); } }); setRoute([...r]); } catch {}
       });
       setRoute(r); setPos({ lat: r[0].lat, lon: r[0].lon }); setI(r.length > 1 ? 1 : 0);
+      scienceTargets(all, dist).then(setTargets); setAllStops(all);
     }).catch((e) => setErr(e.message));
   }, []);
 
@@ -164,7 +178,7 @@ export default function Helmet() {
       const np = stepToward(s.pos, target, SPEED * dt);
       setPos(np); setElapsed((e) => e + dt);
       if (dist(np, target) < 1) {
-        say(`Arrived at stop ${s.i + 1}. ${hazardText(target).toLowerCase()}.`, s.voice);
+        arrive(s, target);
         if (s.i < s.route.length - 1) setI(s.i + 1); else { setRunning(false); return; }
       }
       id = requestAnimationFrame(tick);
@@ -173,7 +187,7 @@ export default function Helmet() {
     return () => cancelAnimationFrame(id);
   }, [running]);
 
-  st.current = { route, i, pos, voice, heading, steps };
+  st.current = { route, i, pos, voice, heading, steps, targets };
   if (err) return <p className="err">⚠ {err}</p>;
   if (!route.length || !pos) return <p className="muted">Loading mission…</p>;
 
@@ -190,6 +204,14 @@ export default function Helmet() {
   const ctx = { stop: s, eff: effective(s, L), live: L, colour: c === "green" ? "go" : c === "orange" ? "careful" : c === "red" ? "don't go" : "no data",
     cert: cert.v, certSrc: cert.src, advice: adv.text, adviceScout: adv.scout, o2Left: o2Usable, back, distNext: d, env };
   const warn = (c === "red" || c === "orange") && d < NEAR_M;
+  // science nearby (on or off the route), within 120 m
+  const sciNear = targets.filter((t) => t.lat != null && allStops.length).map((t) => ({ t, s: pointFrom(t.lat, t.lon, allStops, dist) }))
+    .map((o) => ({ ...o, d: dist(pos, o.s), rel: ((bearing(pos, o.s) - (heading ?? brg) + 540) % 360) - 180 }))
+    .filter((o) => o.d < 120 && !sampled[o.t.key]).sort((a, b) => a.d - b.d)[0];
+  if (sciNear && !announced.current.has("sci" + sciNear.t.key)) {
+    announced.current.add("sci" + sciNear.t.key);
+    say(`Science nearby. ${sciNear.t.name}, ${Math.round(sciNear.d)} metres ${Math.abs(sciNear.rel) < 25 ? "ahead" : sciNear.rel > 0 ? "on your right" : "on your left"}.`, voice);
+  }
   const nearHaz = droneHaz.find((h) => dist(h, pos) < 25);
   if (nearHaz && !announced.current.has("dh" + nearHaz.lat)) { announced.current.add("dh" + nearHaz.lat); say(`Drone warning. ${nearHaz.r === "steep" ? "Steep ground" : "Sand"} right here. Slow down.`, voice); }
   tele.current = { o2Pct, back, backBy, tempC: env.tempC, rad: env.radMsvDay, d, next: labelOf(s), colour: c, haz, i, n: route.length, running, heading: Math.round(heading ?? brg), lat: pos.lat, lon: pos.lon, elapsed, cert: cert.v, route: route.map((r) => [r.lat, r.lon]) };
@@ -235,6 +257,11 @@ export default function Helmet() {
           </div>
         )}
         {Math.abs(rel) >= 55 && <div className={"edge " + (rel > 0 ? "r" : "l")} style={{ color: COLOURS[c] }}>{rel > 0 ? "▶" : "◀"}</div>}
+        {sciNear && (
+          <button className="scibanner" onClick={() => setSciOpen(sciNear)}>
+            🔬 SCIENCE {Math.round(sciNear.d)} m {Math.abs(sciNear.rel) < 25 ? "AHEAD" : sciNear.rel > 0 ? "→ RIGHT" : "← LEFT"} · {(LABEL[sciNear.t.type] || "science").toUpperCase()} · tap
+          </button>
+        )}
         {nearHaz && !(warn || back <= 0) && <div className="alert2" style={{ borderColor: "#ffb020", color: "#ffb020" }}>🚁 DRONE: {nearHaz.r === "steep" ? "STEEP" : "SAND"} WITHIN 25 m (SIM)</div>}
         {(warn || back <= 0) && <div className="alert2" style={{ borderColor: COLOURS[back <= 0 ? "red" : c], color: COLOURS[back <= 0 ? "red" : c] }}>{back <= 0 ? "⟲ TURN BACK NOW" : `⚠ ${haz} AHEAD`}</div>}
         {phoneWalk && (
@@ -245,7 +272,7 @@ export default function Helmet() {
           </div>
         )}
         <div className="card2" style={{ borderColor: COLOURS[c] }}>
-          <small>NEXT · STOP {i + 1}/{route.length}</small>
+          <small>NEXT · STOP {i + 1}/{route.length}{siteNear(s, targets, dist) ? " · 🔬 SCIENCE TARGET" : ""}</small>
           <b>{labelOf(s).toUpperCase()}</b>
           <span>{Math.round(d)} m · {eta} MIN · <em style={{ color: COLOURS[c] }}>{haz}</em> · AI {Math.round(cert.v * 100)}%</span>
         </div>
@@ -264,6 +291,24 @@ export default function Helmet() {
         <button onClick={() => setVoice((v) => !v)}>{voice ? "🔊 Voice on" : "🔇 Voice off"}</button>
         <button className={ask ? "on" : ""} onClick={() => setAsk((a) => !a)}>🤖 Ask</button>
       </div>
+      {sciOpen && (
+        <div className="sciPanel" role="dialog" aria-label="Science target">
+          <b>🔬 {sciOpen.t.name} · {Math.round(dist(pos, sciOpen.s))} m</b>
+          <small>{sciOpen.t.why}</small>
+          {sciOpen.t.nasa && <small className="muted">NASA site · Curiosity sol {sciOpen.t.sol} · position ±{sciOpen.t.pos_m} m</small>}
+          <i>Still unknown (NASA's open questions):</i>
+          <ul>{openOf(sciOpen.t).map((q) => <li key={q}>{q}</li>)}</ul>
+          <i>Take for the lab:</i>
+          <ul>{samplesOf(sciOpen.t).map((q) => <li key={q}>{q}</li>)}</ul>
+          <small>Why a person: {HUMAN}</small>
+          {colourOfStop(sciOpen.s) === "red" && <small className="wtxt">⚠ Our AI marks this spot DON'T GO: look from the edge, do not step in.</small>}
+          <div className="btns">
+            {!route.some((r) => dist(r, sciOpen.t) < 12) && <button onClick={() => { setRoute((r) => [...r.slice(0, i), sciOpen.s, ...r.slice(i)]); say("Detour added. Walk to the science target.", voice); setSciOpen(null); }}>➕ Detour here</button>}
+            <button onClick={() => { setSampled((m) => ({ ...m, [sciOpen.t.key]: true })); publish({ type: "sample", sol: sciOpen.t.sol, name: sciOpen.t.name, kind: sciOpen.t.type }); say("Sample logged.", voice); setSciOpen(null); }}>🧪 Samples taken</button>
+            <button onClick={() => setSciOpen(null)}>Close</button>
+          </div>
+        </div>
+      )}
       {ask && <div className="askPanel"><Assistant ctx={ctx} voice={voice} compact /></div>}
     </div>
   );

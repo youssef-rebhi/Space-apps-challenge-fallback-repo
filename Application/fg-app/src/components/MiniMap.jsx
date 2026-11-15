@@ -1,6 +1,6 @@
 import { colourOf, COLOURS } from "../lib/mission.js";
 
-// Simple SVG map of the rover stops (lon/lat → x/y). the team's Leaflet map is the full map;
+// Simple SVG map of the rover stops (lon/lat → x/y). Mohamed's Leaflet map is the real map;
 // this one is for the scout demo and works offline.
 export default function MiniMap({ stops, greys = [], route, selected, onSelect, drone, laser, scouted, colourFor = colourOf }) {
   if (!stops.length) return null;
