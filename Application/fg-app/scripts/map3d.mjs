@@ -26,6 +26,17 @@ export const MAP3D_FILES = [
   "textures/conv_roughness.png",
   "textures/conv_terrain.png",
   "textures/conv_groundtruth.png",
+  // three.js r160, local copy (no internet needed)
+  "vendor/three/LICENSE",
+  "vendor/three/README.txt",
+  "vendor/three/build/three.module.js",
+  "vendor/three/examples/jsm/controls/OrbitControls.js",
+  "vendor/three/examples/jsm/renderers/CSS2DRenderer.js",
+  "vendor/three/examples/jsm/lines/Line2.js",
+  "vendor/three/examples/jsm/lines/LineSegments2.js",
+  "vendor/three/examples/jsm/lines/LineGeometry.js",
+  "vendor/three/examples/jsm/lines/LineSegmentsGeometry.js",
+  "vendor/three/examples/jsm/lines/LineMaterial.js",
 ];
 
 export function copyMap3d(dest) {
@@ -47,7 +58,7 @@ export function copyMap3d(dest) {
 // vite plugin: /map3d/* from Map_layer during dev, copied into dist/map3d on build
 export function map3dPlugin() {
   let outDir = "dist";
-  const TYPES = { ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".jpg": "image/jpeg", ".png": "image/png", ".bin": "application/octet-stream" };
+  const TYPES = { ".txt": "text/plain", "": "text/plain", ".html": "text/html", ".js": "text/javascript", ".json": "application/json", ".jpg": "image/jpeg", ".png": "image/png", ".bin": "application/octet-stream" };
   return {
     name: "firmground-map3d",
     configResolved(c) { outDir = path.resolve(c.root, c.build.outDir); },

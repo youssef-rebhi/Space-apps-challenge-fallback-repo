@@ -38,7 +38,7 @@ export default function LayerMap3D({ routePts, routeColour, onFallback }) {
       else if (d.type === "error") setSt((s) => ({ ...s, err: d.msg || "could not load" }));
     };
     addEventListener("message", onMsg);
-    const t = setTimeout(() => setSt((s) => (s.ready ? s : { ...s, err: s.err || "the 3D map did not start (WebGL, or no internet for three.js)" })), 30000);
+    const t = setTimeout(() => setSt((s) => (s.ready ? s : { ...s, err: s.err || "the 3D map did not start (is WebGL on in this browser?)" })), 30000);
     return () => { removeEventListener("message", onMsg); clearTimeout(t); };
   }, [src]);
 
