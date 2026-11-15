@@ -347,6 +347,21 @@ export default function Helmet() {
     }, 0);
   }
 
+  // 3D Mars portal (Map_layer/martian_map/web/walk, served by server.py under /mars/): opens at the
+  // astronaut's spot and facing; it keeps sending this helmet's telemetry with its own position.
+  // Local metres <-> lon/lat: the box's eqc grid (lon_0 = 0, R = 3396190 m), SW corner from terrain.json.
+  async function openPortal() {
+    try {
+      const t = await (await fetch("/mars/terrain/terrain.json")).json();
+      const [lonW, latS] = t.corners_lonlat.SW, mPerDeg = (3396190 * Math.PI) / 180;
+      const P = st.current.pos || route[0];
+      const x = (P.lon - lonW) * mPerDeg, y = (P.lat - latS) * mPerDeg;
+      sessionStorage.setItem("fg-helmet-tele", JSON.stringify({ ...tele.current, goalLat: goal?.lat, goalLon: goal?.lon }));
+      const u = new URLSearchParams({ portal: 1, x: x.toFixed(1), y: y.toFixed(1), yaw: String(-(tele.current?.heading ?? 0)), back: location.href });
+      location.href = "/mars/walk/?" + u;
+    } catch { alert("3D portal not found: start the app with server.py from the repository (it serves Map_layer under /mars/)."); }
+  }
+
   async function toggleCam() {
     if (cam) { setCam(false); return; }
     try {
@@ -428,6 +443,7 @@ export default function Helmet() {
         {phoneWalk && <button onClick={() => stepRef.current()}>👣 Step</button>}
         {!phoneWalk && <button onClick={() => { setRunning((r) => !r); if (!running) say("Walk started. Follow the route.", voice); }}>{running ? "⏸ Pause" : "▶ Auto walk"}</button>}
         <button onClick={toggleCam}>{cam ? "🪐 Mars photo (simulated)" : "📷 AR camera"}</button>
+        <button onClick={openPortal}>🌄 3D Mars portal</button>
         <button onClick={() => setVoice((v) => !v)}>{voice ? "🔊 Voice on" : "🔇 Voice off"}</button>
         <button className={ask ? "on" : ""} onClick={() => setAsk((a) => !a)}>🤖 Ask</button>
         <button title="Demo: test the guardian (simulated fall)" onClick={() => raise("Fall detected (test)")}>🧪 Fall</button>

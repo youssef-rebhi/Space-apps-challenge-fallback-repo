@@ -40,10 +40,30 @@ class H(SimpleHTTPRequestHandler):
 
     def end_headers(self):  # rebuilds keep the same file names: the browser re-checks each file (a quick 304 if unchanged)
         self.send_header("Cache-Control", "no-cache"); super().end_headers()
+    # /mars/... = the Martian Map web views (3D walk view, phone portal) from Map_layer/martian_map/web
+    def translate_path(self, path):
+        if path.startswith("/mars/") and os.path.isdir(MARS_WEB):
+            rel = path[len("/mars/"):].split("?")[0].split("#")[0]
+            return os.path.join(MARS_WEB, *[p for p in rel.split("/") if p not in ("", ".", "..")])
+        return super().translate_path(path)
 
     def log_message(self, *a): pass
 
+HERE = os.path.dirname(os.path.abspath(__file__))
+MARS_WEB = os.path.normpath(os.path.join(HERE, "..", "..", "Map_layer", "martian_map", "web"))
+
 if __name__ == "__main__":
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    print("Firm Ground on http://0.0.0.0:8000  (Ctrl+C to stop)")
-    ThreadingHTTPServer(("0.0.0.0", 8000), H).serve_forever()
+    # python server.py           -> http://0.0.0.0:8000
+    # python server.py --https   -> https://0.0.0.0:8443 (phone sensors and WebXR need https).
+    #   Needs certs/cert.pem + certs/key.pem (self-signed, made on this PC, not in git).
+    import sys, ssl
+    os.chdir(HERE)
+    https = "--https" in sys.argv
+    port = int(sys.argv[sys.argv.index("--port") + 1]) if "--port" in sys.argv else (8443 if https else 8000)
+    srv = ThreadingHTTPServer(("0.0.0.0", port), H)
+    if https:
+        ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        ctx.load_cert_chain(os.path.join(HERE, "certs", "cert.pem"), os.path.join(HERE, "certs", "key.pem"))
+        srv.socket = ctx.wrap_socket(srv.socket, server_side=True)
+    print(f"Firm Ground on {'https' if https else 'http'}://0.0.0.0:{port}  (Ctrl+C to stop)")
+    srv.serve_forever()
