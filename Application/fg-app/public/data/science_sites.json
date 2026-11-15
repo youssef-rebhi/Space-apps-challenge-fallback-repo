@@ -1,0 +1,24 @@
+{
+ "source": "Youssef Rebhi, Map_layer/martian_map/layers/L5_poi/exports/poi_cards.json (NASA/JPL news and Curiosity blogs; positions = Curiosity waypoint on that sol). Nazca text checked by Malak's team on the NASA blog, 15 Nov 2026.",
+ "sites": [
+  { "id": "L5-0005", "name": "Sulfate unit to boxwork contact", "kind": "contact", "sol": 4534, "lat": -4.79761763, "lon": 137.3864361, "pos_m": 25,
+    "what": "Where Curiosity left the layered sulfate unit and entered the boxwork (sol 4534), the start of the boxwork campaign.",
+    "open": ["Why are boxwork patterns found here and nowhere else on Mount Sharp?", "How did such a wide network of ridges form?"],
+    "samples": ["Chip from each side of the contact (sulfate layer and boxwork bedrock)", "Photo of the contact with a scale bar"],
+    "src": "https://science.nasa.gov/blog/curiosity-blog-sols-4804-4811-kicking-off-the-final-phase-of-boxwork-exploration" },
+  { "id": "L5-0006", "name": "Altadena · first boxwork drill", "kind": "ridge", "sol": 4564, "lat": -4.79984723, "lon": 137.3835414, "pos_m": 5,
+    "what": "First drill sample of the boxwork campaign, on a ridge edge (June 2025): the baseline for boxwork bedrock.",
+    "src": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/" },
+  { "id": "L5-0007", "name": "Monte Grande hollow · Valle de la Luna drill (44th hole)", "kind": "hollow", "sol": 4693, "lat": -4.80783916, "lon": 137.3810353, "pos_m": 5,
+    "what": "Boxwork hollow studied in Oct 2025. Curiosity drilled its 44th hole here, Valle de la Luna, to compare hollow and ridge.",
+    "src": "https://science.nasa.gov/blog/curiosity-blog-sols-4695-4701-searching-for-answers-at-monte-grande/" },
+  { "id": "L5-0009", "name": "Nevado Sajama · ridge-top drill", "kind": "ridge", "sol": 4718, "lat": -4.80800755, "lon": 137.3810041, "pos_m": 5,
+    "what": "Ridge-top drill finished on sol 4718 (Nov 2025), drilled again on sol 4803: the ridge sample for the ridge-vs-hollow comparison.",
+    "src": "https://science.nasa.gov/blog/curiosity-blog-sols-4716-4722-drilling-success-at-nevado-sajama/" },
+  { "id": "L5-0011", "name": "Nazca · 49th drill hole", "kind": "crystals", "sol": 5050, "lat": -4.82466475, "lon": 137.3876138, "pos_m": 25,
+    "what": "Block packed with disc- and needle-shaped forms the team reads as possible crystals; drilled on sol 5050 (Oct 2026). If they are crystals, they record the old environment.",
+    "open": ["Are the discs and needles really crystal forms?", "Is today's mineral the original one, or did it change later?"],
+    "samples": ["Block with many discs and needles, whole if small", "Close-up photo of the discs with a scale bar", "Chip of the plain rock around them, to compare"],
+    "src": "https://science.nasa.gov/blog/curiosity-blog-sols-5043-5049-preparing-to-drill-at-nazca/" }
+ ]
+}

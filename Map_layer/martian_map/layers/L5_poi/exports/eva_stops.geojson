@@ -1,0 +1,1381 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "id": "0",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 1,
+    "sol": 4534,
+    "soil_pct": 0.095,
+    "bedrock_pct": 0.905,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_800008043EDR_F1160000NCAM00280M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4534 (site 116, drive 0), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3864361,
+     -4.79761763
+    ]
+   }
+  },
+  {
+   "id": "1",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 2,
+    "sol": 4537,
+    "soil_pct": 0.667,
+    "bedrock_pct": 0.326,
+    "sand_pct": 0.002,
+    "bigrock_pct": 0.004,
+    "image": "overlays/NRB_800271734EDR_F1160156NCAM00283M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4537 (site 116, drive 156), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3862,
+     -4.79778681
+    ]
+   }
+  },
+  {
+   "id": "2",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 3,
+    "sol": 4539,
+    "soil_pct": 0.201,
+    "bedrock_pct": 0.797,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.003,
+    "image": "overlays/NRB_800452081EDR_F1160408NCAM00286M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4539 (site 116, drive 408), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3859207,
+     -4.797816
+    ]
+   }
+  },
+  {
+   "id": "3",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 4,
+    "sol": 4544,
+    "soil_pct": 0.006,
+    "bedrock_pct": 0.854,
+    "sand_pct": 0.127,
+    "bigrock_pct": 0.014,
+    "image": "overlays/NRB_800890659EDR_F1160576NCAM00292M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4544 (site 116, drive 576), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3856636,
+     -4.79796004
+    ]
+   }
+  },
+  {
+   "id": "4",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 5,
+    "sol": 4548,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_801253482EDR_F1161260NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4548 (site 116, drive 1260), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3840451,
+     -4.79879294
+    ]
+   }
+  },
+  {
+   "id": "5",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 6,
+    "sol": 4554,
+    "soil_pct": 0.84,
+    "bedrock_pct": 0.16,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_801783699EDR_F1161806NCAM00258M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4554 (site 116, drive 1806), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3834371,
+     -4.79971414
+    ]
+   }
+  },
+  {
+   "id": "6",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 7,
+    "sol": 4558,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_802131753EDR_F1161890NCAM00262M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4558 (site 116, drive 1890), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3834991,
+     -4.79981165
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 8,
+    "sol": 4560,
+    "soil_pct": 0.005,
+    "bedrock_pct": 0.995,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_802308630EDR_F1161944NCAM00265M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4560 (site 116, drive 1944), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3835414,
+     -4.79984723
+    ]
+   }
+  },
+  {
+   "id": "8",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 9,
+    "sol": 4571,
+    "soil_pct": 0.0,
+    "bedrock_pct": 0.994,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.006,
+    "image": "overlays/NRB_803292589EDR_F1162214CCAM05570M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4571 (site 116, drive 2214), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.382987,
+     -4.80040688
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 10,
+    "sol": 4573,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_803472417EDR_F1162562NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4573 (site 116, drive 2562), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.382517,
+     -4.80116383
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 11,
+    "sol": 4575,
+    "soil_pct": 0.012,
+    "bedrock_pct": 0.988,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_803647298EDR_F1170000NCAM00274M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4575 (site 117, drive 0), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3821132,
+     -4.80190838
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 12,
+    "sol": 4578,
+    "soil_pct": 0.045,
+    "bedrock_pct": 0.955,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_803914514EDR_F1170168NCAM00277M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4578 (site 117, drive 168), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3817054,
+     -4.8019306
+    ]
+   }
+  },
+  {
+   "id": "12",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 13,
+    "sol": 4580,
+    "soil_pct": 0.823,
+    "bedrock_pct": 0.086,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.091,
+    "image": "overlays/NRB_804093388EDR_F1170420NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4580 (site 117, drive 420), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3812512,
+     -4.80232637
+    ]
+   }
+  },
+  {
+   "id": "13",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 14,
+    "sol": 4582,
+    "soil_pct": 0.051,
+    "bedrock_pct": 0.647,
+    "sand_pct": 0.293,
+    "bigrock_pct": 0.009,
+    "image": "overlays/NRB_804267166EDR_F1170492NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4582 (site 117, drive 492), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3812526,
+     -4.80234626
+    ]
+   }
+  },
+  {
+   "id": "14",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 15,
+    "sol": 4585,
+    "soil_pct": 0.993,
+    "bedrock_pct": 0.007,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_804533976EDR_F1170702NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4585 (site 117, drive 702), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.381053,
+     -4.80256772
+    ]
+   }
+  },
+  {
+   "id": "15",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 16,
+    "sol": 4587,
+    "soil_pct": 1.0,
+    "bedrock_pct": 0.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_804710717EDR_F1170840NCAM00289M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4587 (site 117, drive 840), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3807901,
+     -4.80273617
+    ]
+   }
+  },
+  {
+   "id": "16",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 17,
+    "sol": 4588,
+    "soil_pct": 0.991,
+    "bedrock_pct": 0.005,
+    "sand_pct": 0.004,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_804804014EDR_F1171008NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4588 (site 117, drive 1008), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3805951,
+     -4.80242965
+    ]
+   }
+  },
+  {
+   "id": "17",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 18,
+    "sol": 4594,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_805327863EDR_F1171434NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4594 (site 117, drive 1434), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3804319,
+     -4.802963
+    ]
+   }
+  },
+  {
+   "id": "18",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 19,
+    "sol": 4598,
+    "soil_pct": 0.251,
+    "bedrock_pct": 0.747,
+    "sand_pct": 0.002,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_805688327EDR_F1172166NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4598 (site 117, drive 2166), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3797556,
+     -4.80401601
+    ]
+   }
+  },
+  {
+   "id": "19",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 20,
+    "sol": 4600,
+    "soil_pct": 0.414,
+    "bedrock_pct": 0.567,
+    "sand_pct": 0.002,
+    "bigrock_pct": 0.017,
+    "image": "overlays/NRB_805867488EDR_F1172370NCAM00257M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4600 (site 117, drive 2370), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3796858,
+     -4.804189
+    ]
+   }
+  },
+  {
+   "id": "20",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 21,
+    "sol": 4605,
+    "soil_pct": 0.404,
+    "bedrock_pct": 0.596,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_806306501EDR_F1172538NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4605 (site 117, drive 2538), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3795572,
+     -4.80443344
+    ]
+   }
+  },
+  {
+   "id": "21",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 22,
+    "sol": 4609,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_806661823EDR_F1172730NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4609 (site 117, drive 2730), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3793204,
+     -4.80474015
+    ]
+   }
+  },
+  {
+   "id": "22",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 23,
+    "sol": 4612,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_806930549EDR_F1172850NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4612 (site 117, drive 2850), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3792959,
+     -4.80494509
+    ]
+   }
+  },
+  {
+   "id": "23",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 24,
+    "sol": 4614,
+    "soil_pct": 0.288,
+    "bedrock_pct": 0.705,
+    "sand_pct": 0.007,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_807111979EDR_F1180000NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4614 (site 118, drive 0), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3794477,
+     -4.80520603
+    ]
+   }
+  },
+  {
+   "id": "24",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 25,
+    "sol": 4616,
+    "soil_pct": 0.238,
+    "bedrock_pct": 0.618,
+    "sand_pct": 0.144,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_807286627EDR_F1180162NCAM00276M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4616 (site 118, drive 162), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3795247,
+     -4.80545276
+    ]
+   }
+  },
+  {
+   "id": "25",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 26,
+    "sol": 4618,
+    "soil_pct": 0.746,
+    "bedrock_pct": 0.238,
+    "sand_pct": 0.016,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_807464450EDR_F1180198ACS_00000M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4618 (site 118, drive 198), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3795358,
+     -4.80549507
+    ]
+   }
+  },
+  {
+   "id": "26",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 27,
+    "sol": 4621,
+    "soil_pct": 0.431,
+    "bedrock_pct": 0.569,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_807730653EDR_F1180372NCAM00283M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4621 (site 118, drive 372), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3795125,
+     -4.80541391
+    ]
+   }
+  },
+  {
+   "id": "27",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 28,
+    "sol": 4623,
+    "soil_pct": 0.43,
+    "bedrock_pct": 0.565,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.005,
+    "image": "overlays/NRB_807902005EDR_F1180534NCAM00286M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4623 (site 118, drive 534), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3799173,
+     -4.80548391
+    ]
+   }
+  },
+  {
+   "id": "28",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 29,
+    "sol": 4625,
+    "soil_pct": 0.108,
+    "bedrock_pct": 0.892,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_808085068EDR_F1180762NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4625 (site 118, drive 762), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3797583,
+     -4.80585913
+    ]
+   }
+  },
+  {
+   "id": "29",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 30,
+    "sol": 4628,
+    "soil_pct": 0.199,
+    "bedrock_pct": 0.801,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_808344680EDR_F1180924NCAM00293M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4628 (site 118, drive 924), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3794602,
+     -4.80599016
+    ]
+   }
+  },
+  {
+   "id": "30",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 31,
+    "sol": 4629,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_808441485EDR_F1181194NCAM00296M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4629 (site 118, drive 1194), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.379723,
+     -4.80616679
+    ]
+   }
+  },
+  {
+   "id": "31",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 32,
+    "sol": 4633,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_808788245EDR_F1181350NCAM00299M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4633 (site 118, drive 1350), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3796739,
+     -4.80645796
+    ]
+   }
+  },
+  {
+   "id": "32",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 33,
+    "sol": 4634,
+    "soil_pct": 0.581,
+    "bedrock_pct": 0.4,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.02,
+    "image": "overlays/NRB_808884389EDR_F1181608NCAM00252M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4634 (site 118, drive 1608), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3791167,
+     -4.80635617
+    ]
+   }
+  },
+  {
+   "id": "33",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 34,
+    "sol": 4636,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_809061520EDR_F1181752NCAM00255M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4636 (site 118, drive 1752), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3793381,
+     -4.80653823
+    ]
+   }
+  },
+  {
+   "id": "34",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 35,
+    "sol": 4639,
+    "soil_pct": 0.057,
+    "bedrock_pct": 0.943,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_809326157EDR_F1181776NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4639 (site 118, drive 1776), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3793171,
+     -4.80655332
+    ]
+   }
+  },
+  {
+   "id": "35",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 36,
+    "sol": 4641,
+    "soil_pct": 0.374,
+    "bedrock_pct": 0.626,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_809505645EDR_F1181944NCAM00262M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4641 (site 118, drive 1944), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3793537,
+     -4.80669051
+    ]
+   }
+  },
+  {
+   "id": "36",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 37,
+    "sol": 4647,
+    "soil_pct": 0.0,
+    "bedrock_pct": 0.999,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.001,
+    "image": "overlays/NRB_810036234EDR_F1182268NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4647 (site 118, drive 2268), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3798121,
+     -4.80689063
+    ]
+   }
+  },
+  {
+   "id": "37",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 38,
+    "sol": 4650,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_810299785EDR_F1182304NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4650 (site 118, drive 2304), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3798418,
+     -4.8068928
+    ]
+   }
+  },
+  {
+   "id": "38",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 39,
+    "sol": 4653,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_810569365EDR_F1182466NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4653 (site 118, drive 2466), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3798962,
+     -4.80708025
+    ]
+   }
+  },
+  {
+   "id": "39",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 40,
+    "sol": 4655,
+    "soil_pct": 0.01,
+    "bedrock_pct": 0.99,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_810748614EDR_F1182538NCAM00277M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4655 (site 118, drive 2538), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3798956,
+     -4.80716832
+    ]
+   }
+  },
+  {
+   "id": "40",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 41,
+    "sol": 4660,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_811180218EDR_F1182742NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4660 (site 118, drive 2742), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3800604,
+     -4.80745212
+    ]
+   }
+  },
+  {
+   "id": "41",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 42,
+    "sol": 4662,
+    "soil_pct": 0.014,
+    "bedrock_pct": 0.986,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_811355980EDR_F1182832NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4662 (site 118, drive 2832), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3801893,
+     -4.80762759
+    ]
+   }
+  },
+  {
+   "id": "42",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 43,
+    "sol": 4667,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_811807663EDR_F1190000NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4667 (site 119, drive 0), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3805074,
+     -4.80802327
+    ]
+   }
+  },
+  {
+   "id": "43",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 44,
+    "sol": 4671,
+    "soil_pct": 0.077,
+    "bedrock_pct": 0.908,
+    "sand_pct": 0.015,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_812160456EDR_F1190486NCAM00294M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4671 (site 119, drive 486), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3812695,
+     -4.80827103
+    ]
+   }
+  },
+  {
+   "id": "44",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 45,
+    "sol": 4677,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_812688125EDR_F1190924NCAM00250M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4677 (site 119, drive 924), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3816902,
+     -4.80871233
+    ]
+   }
+  },
+  {
+   "id": "45",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 46,
+    "sol": 4680,
+    "soil_pct": 0.006,
+    "bedrock_pct": 0.984,
+    "sand_pct": 0.01,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_812961537EDR_F1191344NCAM00253M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4680 (site 119, drive 1344), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3812465,
+     -4.80827147
+    ]
+   }
+  },
+  {
+   "id": "46",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 47,
+    "sol": 4684,
+    "soil_pct": 0.223,
+    "bedrock_pct": 0.776,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.001,
+    "image": "overlays/NLB_813314846EDR_F1191554NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4684 (site 119, drive 1554), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810178,
+     -4.80801097
+    ]
+   }
+  },
+  {
+   "id": "47",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 48,
+    "sol": 4687,
+    "soil_pct": 0.118,
+    "bedrock_pct": 0.882,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_813579716EDR_F1191722NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4687 (site 119, drive 1722), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810353,
+     -4.80783916
+    ]
+   }
+  },
+  {
+   "id": "48",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 49,
+    "sol": 4709,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_815538796EDR_F1200000NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4709 (site 120, drive 0), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810495,
+     -4.80799931
+    ]
+   }
+  },
+  {
+   "id": "49",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 50,
+    "sol": 4711,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_815715547EDR_F1200082NCAM00265M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4711 (site 120, drive 82), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810041,
+     -4.80800755
+    ]
+   }
+  },
+  {
+   "id": "50",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 51,
+    "sol": 4741,
+    "soil_pct": 0.776,
+    "bedrock_pct": 0.107,
+    "sand_pct": 0.117,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_818377443EDR_F1200232NCAM00269M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4741 (site 120, drive 232), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810137,
+     -4.80776275
+    ]
+   }
+  },
+  {
+   "id": "51",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 52,
+    "sol": 4748,
+    "soil_pct": 0.0,
+    "bedrock_pct": 1.0,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_818995814EDR_F1200346NCAM00272M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4748 (site 120, drive 346), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3811194,
+     -4.80790799
+    ]
+   }
+  },
+  {
+   "id": "52",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 53,
+    "sol": 4752,
+    "soil_pct": 0.072,
+    "bedrock_pct": 0.9,
+    "sand_pct": 0.017,
+    "bigrock_pct": 0.012,
+    "image": "overlays/NRB_819359427EDR_F1200538NCAM00275M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4752 (site 120, drive 538), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3809929,
+     -4.80803169
+    ]
+   }
+  },
+  {
+   "id": "53",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 54,
+    "sol": 4789,
+    "soil_pct": 0.013,
+    "bedrock_pct": 0.987,
+    "sand_pct": 0.0,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_822634011EDR_F1200574NCAM00278M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4789 (site 120, drive 574), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3809924,
+     -4.80800539
+    ]
+   }
+  },
+  {
+   "id": "54",
+   "type": "Feature",
+   "properties": {
+    "stop_no": 55,
+    "sol": 4805,
+    "soil_pct": 0.0,
+    "bedrock_pct": 0.981,
+    "sand_pct": 0.019,
+    "bigrock_pct": 0.0,
+    "image": "overlays/NRB_824058161EDR_F1200808NCAM00354M_.jpg",
+    "note": "AI on Curiosity Navcam, sol 4805 (site 120, drive 808), sand threshold 0.3",
+    "category": "eva_stop",
+    "source_name": "Team AI (Depo_nasa Ai_model stops_v2.json) on NASA Navcam images",
+    "source_url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "source_class": "team"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.38142,
+     -4.8078367
+    ]
+   }
+  }
+ ],
+ "crs_note": "Coordinates: planetocentric lon/lat, east-positive, Mars sphere R=3396190 (NOT Earth WGS84). Frame: USGS MSL Gale mosaic frame."
+}

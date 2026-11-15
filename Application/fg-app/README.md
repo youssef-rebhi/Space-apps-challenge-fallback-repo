@@ -1,0 +1,47 @@
+# Firm Ground · Tablet + Helmet (React)
+
+Two views in one small React app (Vite):
+
+- **Tablet** (`/`): map of Curiosity's boxwork stops coloured by our AI, stop card with the
+  AI-coloured Navcam photo, **🚁 Send scout** (simulated laser + microphone, inspired by NASA
+  Perseverance SuperCam), route builder and **QR pairing** to the helmet.
+- **Helmet** (`/?view=helmet&stops=4580,4589&eva=240`): HUD with the ground colour, turn-back time,
+  distance to next stop, hazard; Mars view (AI photo) or camera (AR preview); VR-box split; voice alerts.
+
+## Run
+```bash
+npm install
+# put the data: unzip firmground_stops_v2.zip into public/data/  (stops.json + overlays/)
+npm run dev        # http://localhost:5173
+npm run build      # static site in dist/ (deploy to Vercel / Netlify / GitHub Pages)
+node build.js      # or: rebuild straight into ../firmground-app-built (same asset names, keeps data/ and server.py)
+```
+The phone camera needs **https** → test the camera on the deployed site.
+
+**3D map (on by default, switch it off for the 2D map):** the team's coloured GO / NO-GO 3D map and its
+layer-by-layer animation (`Map_layer/martian_map/web/explode/`), shown in `LayerMap3D.jsx`. Without a route
+it shows the whole box; with a chosen route it shows only the route's section, floating above the 2D map
+around it. One button: 1st click two maps, 2nd click all layers, 3rd click back together.
+A, B and multi-stop waypoints show on the 3D map too: press 📍 On map, then click the ground (3D or 2D map).
+Its files are copied from Map_layer at build time as `map3d/` (`scripts/map3d.mjs`, about 18 MB); `npm run dev`
+serves them straight from Map_layer. three.js is a local copy (`Map_layer/martian_map/web/vendor/three`), so no internet is needed.
+
+## Files
+| File | What |
+|---|---|
+| `src/lib/mission.js` | load stops, our 4-colour rule, Mars distance, voice |
+| `src/lib/acoustic.js` | SIMULATED scout sound (from our AI result) + zap sound |
+| `src/components/Tablet.jsx` | tablet page, scout animation, route |
+| `src/components/MiniMap.jsx` | SVG map of the stops (offline) |
+| `src/components/ScoutResult.jsx` | waveform + 30-shot energy + verdict |
+| `src/components/PairQR.jsx` | route → helmet link → QR code |
+| `src/components/Helmet.jsx` | helmet HUD + walk simulation |
+
+## Honest limits
+- The scout is **simulated**: no sound is measured. Its verdict comes from our AI's terrain result at that stop.
+- The walk is simulated (×20 speed, straight lines). AI colours are computed in advance, not live.
+- Thresholds are team assumptions: sand >30% or big rock >2% = red, sand 10–30% = orange, 0.8 m/s, return ×1.2.
+
+## Credits
+React, Vite, qrcode-generator (MIT). Scout concept inspired by NASA/JPL-Caltech/LANL/CNES Perseverance SuperCam
+("SuperCam can hear hardness"). Code drafted with help from Claude (Anthropic), reviewed and tested by the team.

@@ -1,0 +1,23 @@
+{
+  "layer": "Layer 5 - Points of interest",
+  "status": "stub: reachability checked 2026-11-14, nothing extracted",
+  "crs": "+proj=longlat +R=3396190 (planetocentric, east-positive); frame = USGS MSL Gale mosaic frame (see ../METADATA.md section D)",
+  "sources": [
+    {"id": "mmgis_waypoints", "class": "official_NASA_list", "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json", "http": 200, "local": "../../data/raw/geology/rover/MSL_waypoints.json", "gives": "positions per sol (no names)"},
+    {"id": "nasa_location_map_config", "class": "NASA", "url": "https://mars.nasa.gov/maps/location/api/configure/get?mission=Curiosity", "http": 200, "local": "raw/nasa_location_map_config.json"},
+    {"id": "mmgis_surface_sites", "class": "NASA", "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_SurfaceSites.json", "http": 200, "local": "raw/probe_MSL_SurfaceSites.json", "gives": "4 named panorama polygons"},
+    {"id": "mmgis_labels_tiles", "class": "NASA", "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/MSL_WebGIS_PlaceText/{z}/{x}/{y}.png", "http": null, "gives": "raster labels only"},
+    {"id": "iau_gazetteer_mars_center_pts", "class": "USGS", "url": "https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip", "http": 200, "size_bytes": 5421247, "local": null},
+    {"id": "pia23179_proposed_path", "class": "official_NASA_list", "url": "https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp", "http": 200},
+    {"id": "pia26306_boxwork", "class": "NASA", "url": "https://photojournal.jpl.nasa.gov/catalog/PIA26306", "http": 200},
+    {"id": "pia26017_difficult_climb", "class": "NASA", "url": "https://www.jpl.nasa.gov/images/pia26017-a-map-of-curiositys-difficult-climb/", "http": 403, "verified": false},
+    {"id": "nasa_raw_images_api", "class": "NASA", "url": "https://mars.nasa.gov/api/v1/raw_image_items/", "http": 200},
+    {"id": "pds_analysts_notebook", "class": "PDS", "url": "https://an.rsl.wustl.edu/msl/mslbrowser/", "http": 200, "export_verified": false},
+    {"id": "pds_chemin", "class": "PDS", "url": "https://pds-geosciences.wustl.edu/missions/msl/chemin.htm", "http": 200},
+    {"id": "pds_apxs_supplement_3054_3712", "class": "PDS", "url": "https://pds-geosciences.wustl.edu/msl/urn-nasa-pds-msl_apxs_supplement_sols_3054_3712/", "http": 200, "note": "ends before our box (sols 4384+)"},
+    {"id": "svs_first14_sampling_sites", "class": "NASA", "url": "https://svs.gsfc.nasa.gov/30810", "http": 200},
+    {"id": "drilling_look_back_part2", "class": "peer_reviewed", "url": "https://www-robotics.jpl.nasa.gov/media/documents/1-s2.0-S0019103520302657-main_look_back_drilling_on_curiosity_part_ii.pdf", "http": 200},
+    {"id": "planetary_society_drill_holes", "class": "third_party", "url": "https://www.planetary.org/space-images/sixteen-curiosity-drill-holes", "http": 200, "use": "cross-check only"},
+    {"id": "team_ai_stops_v2", "class": "team", "local": "C:/Users/pc/Desktop/Depo_nasa/Ai_model/results/stops_v2.json", "note": "55 boxwork stops; CRS/frame to check"}
+  ]
+}

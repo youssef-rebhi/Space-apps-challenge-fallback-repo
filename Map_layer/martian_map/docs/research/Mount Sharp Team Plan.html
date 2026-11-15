@@ -1,0 +1,887 @@
+<title>Mount Sharp Team Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+/* Layout: one reading column (~1040px) of field-manual sections; tables and code scroll inside their own boxes. */
+:root {
+  --bg: #F2F3F5;
+  --surface: #FFFFFF;
+  --ink: #1A1F29;
+  --muted: #586172;
+  --rule: #D8DCE3;
+  --accent: #A9461A;
+  --accent-soft: #F5E2D7;
+  --info: #2D5C9F;
+  --info-soft: #E1EAF6;
+  --ok: #2B7348;
+  --ok-soft: #DDF0E4;
+  --warn: #93600F;
+  --warn-soft: #F6EAD3;
+  --code-bg: #ECEEF2;
+  --go: #2E8B4A;
+  --caution: #D9731C;
+  --nogo: #D43D3D;
+  --unknown: #8E959D;
+  --f-display: "Space Grotesk", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --f-mono: "JetBrains Mono", "Cascadia Mono", Consolas, ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #10141B; --surface: #171C25; --ink: #E6E9EF; --muted: #9AA3B3; --rule: #2A313D;
+    --accent: #E68A57; --accent-soft: #3A2418; --info: #84AAE8; --info-soft: #1C2A40;
+    --ok: #67C28C; --ok-soft: #173023; --warn: #E2AE57; --warn-soft: #36290F; --code-bg: #1E2430;
+    --go: #4FB46F; --caution: #EE9A4E; --nogo: #EE6A5F; --unknown: #7D848D;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #10141B; --surface: #171C25; --ink: #E6E9EF; --muted: #9AA3B3; --rule: #2A313D;
+  --accent: #E68A57; --accent-soft: #3A2418; --info: #84AAE8; --info-soft: #1C2A40;
+  --ok: #67C28C; --ok-soft: #173023; --warn: #E2AE57; --warn-soft: #36290F; --code-bg: #1E2430;
+  --go: #4FB46F; --caution: #EE9A4E; --nogo: #EE6A5F; --unknown: #7D848D;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+a { color: var(--info); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+h1, h2, h3 { font-family: var(--f-display); text-wrap: balance; line-height: 1.2; margin: 0; }
+h1 { font-size: clamp(30px, 5vw, 44px); font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 600; }
+h3 { font-size: 17px; font-weight: 600; }
+p { margin: 0; max-width: 68ch; }
+ul, ol { margin: 0; padding-left: 1.25em; display: grid; gap: 6px; }
+li { max-width: 68ch; }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+pre { margin: 0; background: var(--code-bg); border-radius: 8px; padding: 14px 16px; overflow-x: auto; font-family: var(--f-mono); font-size: 12.5px; line-height: 1.55; }
+pre .c { color: var(--muted); }
+
+header.top { padding-block: 40px 20px; display: grid; gap: 14px; }
+.eyebrow { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 17px; color: var(--ink); }
+.aoi { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--f-mono); font-size: 12.5px; color: var(--muted); padding: 10px 14px; background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; }
+.aoi b { color: var(--ink); font-weight: 500; }
+nav.toc { display: flex; flex-wrap: wrap; gap: 6px; padding-block: 6px 8px; }
+nav.toc a { font-size: 13px; text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); padding: 4px 10px; border-radius: 999px; }
+nav.toc a:hover { border-color: var(--accent); color: var(--accent); }
+
+section { padding-block: 36px; border-top: 1px solid var(--rule); display: grid; gap: 18px; }
+.sh { display: grid; gap: 6px; }
+.sh .tag { font-family: var(--f-mono); font-size: 12px; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; align-items: start; }
+.two > * { min-width: 0; }
+@media (max-width: 780px) { .two { grid-template-columns: minmax(0, 1fr); } }
+.stack { display: grid; gap: 12px; }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 10px; min-width: 0; }
+.note { font-size: 13.5px; color: var(--muted); }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; display: grid; gap: 6px; }
+.verdict { background: var(--ok-soft); border: 1px solid var(--rule); border-radius: 10px; padding: 14px 18px; display: grid; gap: 6px; }
+.verdict b.k { color: var(--ok); font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.tbl { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; vertical-align: top; padding: 9px 12px; border-bottom: 1px solid var(--rule); }
+th { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.n { white-space: nowrap; }
+tfoot td { font-weight: 600; }
+
+.pill { display: inline-block; font-family: var(--f-mono); font-size: 11px; font-weight: 500; padding: 1px 7px; border-radius: 999px; white-space: nowrap; letter-spacing: 0.02em; }
+.p-must { background: var(--accent-soft); color: var(--accent); }
+.p-should { background: var(--info-soft); color: var(--info); }
+.p-ok { background: var(--ok-soft); color: var(--ok); }
+.p-check { background: var(--warn-soft); color: var(--warn); }
+.p-new { background: var(--info-soft); color: var(--info); }
+
+/* four-colour swatches: colour + icon, never colour alone */
+.sw { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; white-space: nowrap; }
+.sw i { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 5px; font-style: normal; font-size: 12px; font-weight: 700; color: #FFFFFF; flex: none; }
+.sw.go i { background: var(--go); }
+.sw.caution i { background: var(--caution); }
+.sw.nogo i { background: var(--nogo); }
+.sw.unknown i { background: var(--unknown); }
+
+/* locator map */
+figure.loc { margin: 0; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; position: relative; }
+figure.loc svg { width: 100%; height: auto; display: block; max-width: 100%; }
+figure.loc figcaption { font-size: 12.5px; color: var(--muted); padding: 6px 4px 0; }
+.g-grid { stroke: var(--rule); stroke-width: 1; fill: none; }
+.g-lead { stroke: var(--muted); stroke-width: 1; fill: none; }
+.g-box { stroke: var(--muted); stroke-width: 1.5; fill: none; stroke-dasharray: 5 4; }
+.g-trk { stroke: var(--accent); stroke-width: 2; fill: none; stroke-linejoin: round; stroke-linecap: round; }
+.g-key { fill: var(--surface); stroke: var(--ink); stroke-width: 2; }
+.g-lbl { fill: var(--ink); font-family: var(--f-body); font-size: 12px; }
+.g-sub { fill: var(--muted); font-family: var(--f-mono); font-size: 10.5px; }
+.g-tick { fill: var(--muted); font-family: var(--f-mono); font-size: 10px; }
+.g-ink { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+.g-hover { fill: none; stroke: var(--ink); stroke-width: 2; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--bg); font-family: var(--f-mono); font-size: 11.5px; line-height: 1.45; padding: 6px 9px; border-radius: 6px; white-space: nowrap; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 14px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 16px 18px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.card .role { font-family: var(--f-mono); font-size: 11.5px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; }
+.card .rec { font-size: 13.5px; border-top: 1px dashed var(--rule); padding-top: 8px; }
+.card .rec b { color: var(--accent); }
+.card.done { background: var(--bg); }
+.card.done .role { color: var(--ok); }
+.kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 12px; font-size: 13.5px; }
+.kv dt { color: var(--muted); }
+.kv dd { margin: 0; }
+pre.mermaid { background: var(--surface); border: 1px solid var(--rule); font-family: var(--f-body); font-size: 13px; text-align: center; }
+.sources li { font-size: 13.5px; }
+footer { padding-block: 28px 48px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">NASA Space Apps 2026 · Martian Map challenge · team plan v2 · 14 Nov, with your team's decisions</div>
+  <h1>Mount Sharp Team Plan</h1>
+  <p class="lede">How five people turn the research in this folder into a tablet map (3D and 2D), a 2D helmet display, a robotic scout feeding live readings, and a voice assistant that warns and answers, all for a Marswalk to the boxwork on Mount Sharp, in 48 hours. It builds on your Field Manual, Mission Journal and 3D guide.</p>
+  <div class="aoi" aria-label="Area of interest">
+    <span>box <b>137.36–137.40°E</b>, <b>4.78–4.83°S</b></span>
+    <span>size <b>2.36 × 2.96 km</b></span>
+    <span>elevation <b>−3,735 to −3,472 m</b></span>
+    <span>Curiosity in box <b>sols 4384–5073</b> (183 waypoints)</span>
+    <span>into the boxwork <b>sol 4534</b></span>
+  </div>
+  <div class="callout">
+    <p><b>Rule for this project: no invented facts.</b> Every fact on screen names its NASA or published source. Every number the team chose (slope limits, oxygen reserve, penalties, hour estimates) is labeled as an assumption and listed in <code>ASSUMPTIONS.md</code>. This page follows the same rule. I checked the facts against the official challenge page and NASA, USGS and HiRISE sources on 14 Nov. I removed one claim from version 1 ("hollows 1–2 m deep") because no source I could find supports it.</p>
+  </div>
+  <nav class="toc" aria-label="Sections">
+    <a href="#start">A · Start here</a>
+    <a href="#brief">B · What NASA asks</a>
+    <a href="#tasks">C · Big tasks</a>
+    <a href="#workflow">D · Workflow</a>
+    <a href="#team">E · Team of five</a>
+    <a href="#geology">F · Geology layer</a>
+    <a href="#maps">G · 3D &amp; 2D</a>
+    <a href="#colours">H · Four colours</a>
+    <a href="#displays">I · Tablet &amp; helmet</a>
+    <a href="#scout">J · Scout &amp; live data</a>
+    <a href="#assistant">K · Assistant</a>
+    <a href="#data">L · Data &amp; tools</a>
+    <a href="#cleaning">M · Cleaning</a>
+    <a href="#help">N · Claude vs you</a>
+    <a href="#decisions">O · Decisions</a>
+    <a href="#sources">Sources</a>
+  </nav>
+</header>
+
+<!-- A -->
+<section id="start">
+  <div class="sh"><span class="tag">A · Start here</span><h2>Your box, checked against real rover data</h2></div>
+  <div class="two">
+    <figure class="loc" id="locfig">
+      <svg id="locsvg" viewBox="0 0 540 512" role="img" aria-label="Map of the area box with Curiosity's track from sol 4384 to sol 5073">
+        <g id="grid"></g>
+        <rect class="g-box" x="34" y="20" width="354.4" height="444.6"></rect>
+        <polyline class="g-trk" points="384.8,49.1 382.3,49.6 379.3,50.1 376.6,48.4 372.2,48.5 370.2,48.9 367.0,50.3 361.6,51.6 360.7,55.0 358.9,60.4 354.1,63.1 351.4,59.9 348.3,64.0 345.8,67.0 342.4,70.1 340.5,72.6 339.9,72.7 334.8,74.2 332.5,78.7 327.5,81.6 323.0,84.2 319.6,88.5 315.8,92.7 313.0,99.1 311.3,102.7 312.3,105.5 313.2,110.6 311.7,113.0 310.9,116.3 311.0,116.3 307.8,117.4 305.6,120.4 305.9,123.0 306.9,127.6 306.3,130.3 307.5,133.8 304.7,136.6 300.1,140.9 299.0,141.0 296.1,140.6 291.6,138.8 289.8,137.5 284.5,143.1 283.8,151.0 284.1,153.8 281.3,159.9 281.3,162.4 280.9,163.1 279.8,165.9 279.6,170.1 277.7,173.1 273.8,174.8 270.1,175.6 268.2,176.6 266.1,178.1 263.7,178.4 263.7,178.4 261.4,179.7 255.6,182.4 247.0,187.1 242.9,191.3 241.7,195.3 242.2,196.1 242.6,196.5 237.7,201.4 233.5,208.2 229.9,214.8 226.3,215.0 222.3,218.5 222.3,218.7 220.5,220.7 218.2,222.2 216.5,219.4 215.2,220.1 215.0,224.2 211.9,229.9 209.0,233.5 208.4,235.1 207.9,236.7 207.3,237.2 205.2,240.0 205.0,241.8 206.3,244.1 207.0,246.3 207.1,246.7 206.9,246.0 210.5,246.6 209.1,249.9 206.4,251.1 208.7,252.7 208.3,255.2 203.4,254.3 205.3,256.0 205.1,256.1 205.5,257.3 206.0,258.3 209.5,259.1 209.8,259.1 210.3,260.8 210.3,261.6 211.7,264.1 212.9,265.6 213.4,268.3 215.7,269.2 219.0,269.4 222.4,271.4 225.1,275.3 226.2,275.3 222.2,271.4 220.2,269.1 220.4,267.5 220.5,268.9 220.1,269.0 220.2,266.8 221.1,268.1 220.0,269.2 220.0,269.0 223.8,267.5 224.5,264.8 226.0,263.2 228.4,264.7 233.9,268.1 234.9,267.0 234.5,267.9 236.5,270.1 234.7,276.3 235.1,282.7 232.1,284.2 227.7,286.0 226.8,290.5 226.1,291.5 225.8,292.1 227.3,300.5 229.2,304.7 230.2,312.1 227.6,314.9 223.3,315.4 220.1,320.4 226.3,324.7 227.4,326.3 225.4,324.8 225.2,325.8 227.3,329.9 230.3,333.3 232.6,336.8 232.3,341.1 234.0,343.5 237.4,347.7 238.3,352.8 238.7,357.1 237.1,362.7 239.5,368.3 239.5,369.8 240.3,372.3 240.5,377.5 246.4,386.2 248.4,389.1 252.4,389.9 253.5,382.9 256.2,374.9 259.1,377.3 260.0,382.2 260.8,384.2 261.7,386.6 262.7,388.4 265.2,389.0 269.8,394.1 270.2,397.8 270.7,402.4 270.5,407.6 270.3,408.3 269.9,409.5 274.2,412.5 278.5,416.6 283.2,416.8 286.3,416.6 289.5,421.2 289.6,421.3 280.1,416.4 278.7,417.1 290.4,422.4 292.3,426.1 289.9,429.2"></polyline>
+        <g id="keypts">
+          <circle class="g-key" cx="384.8" cy="49.1" r="5"></circle>
+          <text class="g-lbl" x="398" y="46">sol 4384</text>
+          <text class="g-sub" x="398" y="60">enters box</text>
+          <path class="g-lead" d="M198 176 L258 176"></path>
+          <circle class="g-key" cx="268.2" cy="176.6" r="6"></circle>
+          <text class="g-lbl" x="194" y="172" text-anchor="end">sol 4534</text>
+          <text class="g-sub" x="194" y="186" text-anchor="end">sulfate unit → boxwork</text>
+          <circle class="g-key" cx="220.5" cy="268.9" r="6"></circle>
+          <text class="g-lbl" x="196" y="265" text-anchor="end">sols ~4575–4752</text>
+          <text class="g-sub" x="196" y="279" text-anchor="end">boxwork campaign</text>
+          <circle class="g-key" cx="289.9" cy="429.2" r="6"></circle>
+          <text class="g-lbl" x="303" y="426">sol 5073</text>
+          <text class="g-sub" x="303" y="440">rover today</text>
+        </g>
+        <g transform="translate(470,410)">
+          <path class="g-ink" d="M0 26 L0 0 M-6 9 L0 0 L6 9"></path>
+          <text class="g-tick" x="-3" y="40">N</text>
+        </g>
+        <g transform="translate(34,494)">
+          <path class="g-ink" d="M0 -5 L0 0 L75 0 L75 -5"></path>
+          <text class="g-tick" x="82" y="3">500 m</text>
+        </g>
+        <circle id="hov" class="g-hover" r="7" cx="-20" cy="-20"></circle>
+      </svg>
+      <div class="tip" id="tip" hidden></div>
+      <figcaption>Curiosity's track inside your box (NASA rover waypoint feed, downloaded 14 Nov 2026). Hover the line for sol and elevation. Planetocentric latitude, east longitude.</figcaption>
+    </figure>
+    <div class="stack">
+      <div class="panel">
+        <h3>Decided</h3>
+        <ul>
+          <li>Place: the boxwork region of lower Mount Sharp. This is NASA's own example in the brief. The box contains Curiosity's whole boxwork campaign.</li>
+          <li>Tablet shows <b>3D by default, with a switch to 2D</b>. The helmet shows <b>2D</b>.</li>
+          <li>Four colours everywhere: <span class="sw go"><i>✓</i>green GO</span>, <span class="sw caution"><i>!</i>orange caution</span>, <span class="sw nogo"><i>✕</i>red NO-GO</span>, <span class="sw unknown"><i>?</i>grey unknown</span> (section H).</li>
+          <li>A robotic scout (drone or ground robot) measures the ground ahead. Fresh on-site readings beat archived data (section J).</li>
+          <li>Oxygen is part of GO / NO-GO.</li>
+          <li>A screen-and-voice assistant (an LLM) warns and answers questions using only the app's data (section K).</li>
+          <li>The AI4Mars sand and rock model stays the core. 3D uses Plotly.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>The next 3 hours</h3>
+        <ol>
+          <li><b>Everyone, 30 min:</b> name the five roles (O1). Commit the file contract: <code>stops.json</code>, <code>grid.json</code> (now with <code>unit</code> and <code>evidence</code> arrays), <code>sensors.json</code>, <code>layers.json</code>, <code>geology.geojson</code>, <code>ASSUMPTIONS.md</code>.</li>
+          <li><b>P1 Geo:</b> download the HiRISE DTM (543 MB) and the waypoints, then run section M. Goal: slope on the map by H6.</li>
+          <li><b>P2 ML:</b> start AI4Mars training on Colab now.</li>
+          <li><b>P3 Tablet:</b> app skeleton with the 3D/2D switch, running on fake files.</li>
+          <li><b>P4 Planner:</b> write the four-colour rule (section H) and test it on a fake grid.</li>
+          <li><b>P5 Story:</b> 30-second script, plus 25 astronaut questions to test the assistant (section K).</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- B -->
+<section id="brief">
+  <div class="sh"><span class="tag">B · What NASA asks</span><h2>Every line of the official brief, mapped to a feature</h2>
+  <p>Read on the official challenge page on 14 Nov. The Resources tab still lists the same five items: Mars Trek, the USGS-NASA geologic mapping program, the Curiosity route animation, NASA Worldview and the Perseverance raw images. If a judge asks "did you answer the brief?", this table is the answer.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>The brief</th><th>Our answer</th><th>Section</th></tr></thead>
+    <tbody>
+      <tr><td>A layered, integrated view of a location or route, from multiple NASA science missions</td><td>Layers from MRO (HiRISE, CTX), MGS (MOLA), Mars Odyssey (THEMIS) and Curiosity (Navcam, REMS, RAD), plus USGS geology, combined into one four-colour answer</td><td>F, G, H</td></tr>
+      <tr><td>Existing tools (Mars Trek, USGS maps) are built for regional and global views, not single spacewalks</td><td>A walking-scale geology layer drawn for a 2.4 × 3 km box</td><td>F</td></tr>
+      <tr><td>Start from science goals; boxwork on Mount Sharp is NASA's example</td><td>Boxwork ridges and hollows as science stops, anchored to Curiosity's drill sites</td><td>F</td></tr>
+      <tr><td>At least three kinds of data (optical, thermal, spectral, topographic, geophysical, atmospheric, radiation, chemical)</td><td>Optical (HiRISE, Navcam), topographic (DTM), thermal (THEMIS, REMS ground temperature), atmospheric (REMS), radiation (RAD). Spectral (CRISM) is optional.</td><td>L</td></tr>
+      <tr><td>Astronaut safety first; radiation differs from Earth and the Moon, so consider space weather</td><td>Dose estimate from RAD, with spikes from solar particle events flagged. Red when over the dose limit.</td><td>H, J</td></tr>
+      <tr><td>Spacesuits and carried equipment limit mobility</td><td>Walking speed with a suit factor; oxygen check; big, glove-friendly controls</td><td>H, I</td></tr>
+      <tr><td>A route that avoids significant obstacles such as large rock formations</td><td>Planner. AI "big rock" class and boulder fields are red.</td><td>H</td></tr>
+      <tr><td>Format: a habitat display, a tablet carried outside, a helmet HUD, or another format</td><td>Tablet (3D/2D), the same app on a habitat screen in planning mode, and a 2D helmet view</td><td>I</td></tr>
+      <tr><td>Static map, interactive product, or a tool</td><td>Interactive app</td><td>G, I</td></tr>
+      <tr><td>Past data, predicted conditions, or no time frame</td><td>Stable layers (terrain, geology), past (rover data 2024–2026), live (scout readings, simulated in the demo)</td><td>J</td></tr>
+      <tr><td>Point-of-view images from surface missions, so the astronaut knows what to expect</td><td>Each stop card shows a real Curiosity photo with the AI overlay</td><td>I</td></tr>
+      <tr><td>Rovers or other robotic systems to help; astronauts working in pairs</td><td>Robotic scout; pressurized-rover mode in the planner. Pairs: an optional partner-distance number in the helmet.</td><td>I, J</td></tr>
+      <tr><td>Look at how NASA maps other worlds, for inspiration</td><td>One slide on what you borrowed (Field Manual ch. 13 lists the lunar map winners)</td><td>W10</td></tr>
+      <tr><td>Background: astronauts use critical thinking to solve problems in real time</td><td>The assistant supports the astronaut's judgement. It never makes the GO / NO-GO call.</td><td>K</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- C -->
+<section id="tasks">
+  <div class="sh"><span class="tag">C · The challenge in big tasks</span><h2>Fourteen workstreams, about 120–150 person-hours</h2>
+  <p>Hours are my estimate for people who already know Python or JavaScript. Re-check them at the H8 checkpoint.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Workstream</th><th>Done when</th><th>Priority</th><th>Person-h</th><th>Owner</th></tr></thead>
+    <tbody>
+      <tr><td class="n">W0</td><td>Decisions &amp; contracts</td><td>Roles, box, CRS, file formats and <code>ASSUMPTIONS.md</code> committed</td><td><span class="pill p-must">MUST</span></td><td class="n">8</td><td>all</td></tr>
+      <tr><td class="n">W1</td><td>Terrain foundation</td><td>Clean DTM; slope, hillshade and ridge layers; rover track on the map</td><td><span class="pill p-must">MUST</span></td><td class="n">6–8</td><td>P1</td></tr>
+      <tr><td class="n">W2</td><td>Geology layer</td><td>Walking-scale unit map with legend and unit cards; the USGS global map as context</td><td><span class="pill p-must">MUST</span></td><td class="n">8–10</td><td>P1 + P5</td></tr>
+      <tr><td class="n">W3</td><td>AI terrain model</td><td>AI4Mars model, IoU table, <code>stops.json</code> with point-of-view overlays</td><td><span class="pill p-must">MUST</span></td><td class="n">14–18</td><td>P2</td></tr>
+      <tr><td class="n">W4</td><td>Tablet app</td><td>3D/2D switch, layer panel, legends, stop cards, deployed</td><td><span class="pill p-must">MUST</span></td><td class="n">12–16</td><td>P3</td></tr>
+      <tr><td class="n">W5</td><td>Planner &amp; four-colour rules</td><td>A → B, on foot or rover, four colours, GO / NO-GO with reasons, oxygen check</td><td><span class="pill p-must">MUST</span></td><td class="n">12–14</td><td>P4</td></tr>
+      <tr><td class="n">W6</td><td>3D view (Plotly)</td><td>DTM surface in the four colours with the route, inside the tablet app</td><td><span class="pill p-must">MUST</span></td><td class="n">4–6</td><td>P1 data, P3 embed</td></tr>
+      <tr><td class="n">W7</td><td>Helmet 2D view</td><td>Visor page with a mini-map, key numbers and assistant subtitles</td><td><span class="pill p-must">MUST</span></td><td class="n">6–8</td><td>P4</td></tr>
+      <tr><td class="n">W8</td><td>Conditions panel</td><td>Mars local time, season (Ls), weather, dose estimate</td><td><span class="pill p-should">SHOULD</span></td><td class="n">3–4</td><td>P5</td></tr>
+      <tr><td class="n">W9</td><td>Validation</td><td>Orbit vs ground 2×2 table; geology contact vs the sol 4534 crossing</td><td><span class="pill p-should">SHOULD</span></td><td class="n">3–4</td><td>P2 + P1</td></tr>
+      <tr><td class="n">W10</td><td>Story &amp; submission</td><td>Video ≤ 30 s or ≤ 7 slides, project page, references, rehearsed pitch</td><td><span class="pill p-must">MUST</span></td><td class="n">12–16</td><td>P5 + all</td></tr>
+      <tr><td class="n">W11</td><td>Integration &amp; test</td><td>Freeze at H32, tested on the tablet, demo state ready</td><td><span class="pill p-must">MUST</span></td><td class="n">8–10</td><td>all</td></tr>
+      <tr><td class="n">W12</td><td>Scout &amp; live data <span class="pill p-new">new</span></td><td>Curiosity data replayed as scout readings; one live event that turns a cell red and reroutes</td><td><span class="pill p-must">MUST</span></td><td class="n">5–7</td><td>P2 + P4</td></tr>
+      <tr><td class="n">W13</td><td>Assistant <span class="pill p-new">new</span></td><td>Voice and screen Q&amp;A grounded in app data; spoken warnings; passes the 25-question test</td><td><span class="pill p-must">MUST</span></td><td class="n">6–10</td><td>P3 UI, P5 prompt &amp; tests</td></tr>
+    </tbody>
+    <tfoot><tr><td></td><td colspan="3">Total</td><td class="n">≈ 117–149</td><td></td></tr></tfoot>
+  </table></div>
+  <div class="callout">
+    <p><b>This is tight.</b> Five people with about 30 productive hours each give about 150 person-hours, so there is almost no buffer. Write the cut order now. If you are behind at H30, cut in this order: (1) assistant extras (photo input, extra tools), (2) the validation chart (keep one number), (3) weather in the conditions panel (keep the Mars clock and dose), (4) partner distance in the helmet.</p>
+    <p>Never cut: the 2D map, the four colours, the planner with GO / NO-GO, the stop photos, the helmet view and the live scout event.</p>
+  </div>
+</section>
+
+<!-- D -->
+<section id="workflow">
+  <div class="sh"><span class="tag">D · Workflow</span><h2>What comes first, and what blocks what</h2>
+  <p>Thick borders mark the critical path. A delay there delays the submission.</p></div>
+<pre class="mermaid">
+flowchart LR
+  W0["W0 Decisions + file contracts"] --> AOI["Box + CRS frozen"]
+  AOI --> W1["W1 Clean DTM: slope, hillshade, ridges"]
+  AOI --> WP["Rover waypoints"]
+  AOI --> SK["W4 App skeleton on fake files"]
+  W1 --> W2["W2 Geology units"]
+  W1 --> GRID["grid.json"]
+  W2 --> GRID
+  TR["W3 AI4Mars training"] --> INF["Navcam inference"]
+  WP --> INF
+  INF --> ST["stops.json + POV images"]
+  ST --> W12["W12 Scout readings + live event"]
+  GRID --> W5["W5 Four colours + planner + GO/NO-GO"]
+  W12 --> W5
+  SK --> APP["W4 Tablet app, 3D/2D"]
+  W1 --> W6["W6 Plotly 3D"]
+  W6 --> APP
+  ST --> APP
+  W5 --> APP
+  W5 --> W7["W7 Helmet 2D view"]
+  W5 --> W13["W13 Assistant"]
+  W13 --> APP
+  W13 --> W7
+  APP --> FZ["Freeze H32"]
+  W7 --> FZ
+  FZ --> W10["W10 Video, page, pitch"] --> SUB["Submit"]
+  classDef crit stroke:#C2561A,stroke-width:3px
+  class W0,AOI,W1,GRID,W5,APP,FZ,W10,SUB crit
+</pre>
+  <div class="tbl"><table>
+    <thead><tr><th>Hours</th><th>What happens</th><th>Checkpoint</th></tr></thead>
+    <tbody>
+      <tr><td class="n">H0–H2</td><td>W0. Roles, box, CRS, file contract, demo script.</td><td>Contract files committed</td></tr>
+      <tr><td class="n">H2–H8</td><td>W1 terrain. W3 training starts. W4 skeleton with the 3D/2D switch deployed. W2 digitizing starts. The four-colour rule is tested on a fake grid.</td><td>H8: live URL shows the box with slope and rover track</td></tr>
+      <tr><td class="n">H8–H16</td><td>W2 geology v1. W5 planner on the real grid. W3 inference. W6 Plotly 3D in the app.</td><td>H16: click A → B gives a coloured route and a GO card</td></tr>
+      <tr><td class="n">H16–H24</td><td>W12 scout replay and live event. W13 assistant v1. W7 helmet view. Sleep in shifts.</td><td>H24: whole demo runs once end to end</td></tr>
+      <tr><td class="n">H24–H32</td><td>Assistant passes the 25-question test. W9 validation. Polish. Cut decision at H30.</td><td>H32: feature freeze</td></tr>
+      <tr><td class="n">H32–H40</td><td>Test as "Amira" on the tablet. Record the video. Write the project page.</td><td>Video under 30 s</td></tr>
+      <tr><td class="n">H40–H46</td><td>Rehearse 3 times. References complete. Check every link in a private window.</td><td>Submit at least 2 h early</td></tr>
+    </tbody>
+  </table></div>
+  <div class="panel">
+    <h3>The six things that matter most</h3>
+    <ol>
+      <li><b>Contracts before code.</b> One CRS, one box, fixed file formats. Frontend codes against fake files from minute one.</li>
+      <li><b>Clean the terrain right the first time.</b> Every later layer sits on the DTM grid.</li>
+      <li><b>Integrate early.</b> Something live by H8, end to end by H16.</li>
+      <li><b>Every layer must change a colour or a route.</b> Otherwise it is decoration.</li>
+      <li><b>Rules decide, the assistant explains.</b> Safety logic is plain code you can read and test. That is how you keep the assistant from making things up.</li>
+      <li><b>Freeze at H32.</b> Judges only see the video, the page and the repo.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- E -->
+<section id="team">
+  <div class="sh"><span class="tag">E · Team of five</span><h2>Five roles, one owner per workstream</h2>
+  <p>A suggestion: you are working on maps and geology, and Malak is the ML lead in your Journal. Swap names freely. O1 asks for them.</p></div>
+  <div class="cards">
+    <div class="card"><span class="role">P1 · Geo-data &amp; geology (suggested: you)</span><h3>Terrain, geology, 3D data</h3><p>W1, W2, W6 data export, <code>grid.json</code>. Needs QGIS and Python. About 22–26 h.</p></div>
+    <div class="card"><span class="role">P2 · ML lead (Malak?)</span><h3>AI ground truth and the scout</h3><p>W3, W12 replay data, W9. While the model trains, prepares the Curiosity readings the scout replays. About 24–28 h, much of it waiting.</p></div>
+    <div class="card"><span class="role">P3 · Tablet frontend</span><h3>The app people touch</h3><p>W4 with the 3D/2D switch, Plotly embed, stop cards, assistant panel and voice, deploy. About 22–26 h.</p></div>
+    <div class="card"><span class="role">P4 · Planner &amp; helmet</span><h3>Decisions and the visor</h3><p>W5 (four colours, oxygen, GO / NO-GO), W7 helmet view, W12 fusion rule. About 24–28 h.</p></div>
+    <div class="card"><span class="role">P5 · Story &amp; science</span><h3>Why it matters, and is it true</h3><p>W0, W8, W10, the assistant's prompt and its 25-question test, geology unit descriptions with sources. Fact-checks every slide. About 24–28 h.</p></div>
+  </div>
+</section>
+
+<!-- F -->
+<section id="geology">
+  <div class="sh"><span class="tag">F · The geology layer</span><h2>Why you draw your own map, and what's best</h2></div>
+  <div class="two">
+    <div class="stack">
+      <h3>What a geologic map is</h3>
+      <p>A geologic map splits the ground into <b>units</b>: areas of rock or sediment with the same origin and properties. Lines called <b>contacts</b> mark where one unit meets the next. For an astronaut it answers three questions: what am I standing on, how firm is it likely to be, and where is the science?</p>
+      <h3>Why the official maps don't help at walking scale</h3>
+      <p>Your challenge links the USGS-NASA Planetary Geologic Mapping Program. I queried its map database for your boxwork point (137.38°E, 4.80°S). These are all the maps that cover it:</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Map</th><th>Year</th><th>Scale</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>SIM 3292, Geologic Map of Mars (Tanaka et al.)</td><td class="n">2014</td><td class="n">1:20M</td><td>published</td></tr>
+          <tr><td>I-1111, Aeolis Quadrangle (Scott &amp; West)</td><td class="n">1978</td><td class="n">1:5M</td><td>published</td></tr>
+          <tr><td>I-2397, Elysium Paleolake Basin (Scott &amp; Chapman)</td><td class="n">1995</td><td class="n">1:5M</td><td>published</td></tr>
+          <tr><td>I-1802B, Eastern Equatorial Region (Greeley &amp; Guest)</td><td class="n">1987</td><td class="n">1:15M</td><td>published</td></tr>
+          <tr><td>I-1083 (1:25M, 1978) and I-2461 (1:30M, 1995)</td><td class="n">—</td><td class="n">global</td><td>published</td></tr>
+          <tr><td><b>Aeolis Mons (B. Thomson)</b></td><td class="n">—</td><td class="n">1:60K</td><td><span class="pill p-check">in progress</span> not released</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+    <div class="stack">
+      <h3>What the scale means</h3>
+      <p>Scale 1:20,000,000 means 1 mm on the map is 20 km on Mars. Your whole box (2.4 × 3 km) would be about 0.1 mm on that map, thinner than a pen line. Even the 1:5,000,000 maps shrink it to about half a millimetre. Using them for a Marswalk is like planning a walk across a park with a world atlas.</p>
+      <p>A walk needs about 1:5,000, where 1 mm is 5 m. At that scale a single boxwork ridge (up to about 5 m across) shows up. The official 1:60K map of Mount Sharp would be a big step closer, but it isn't published yet.</p>
+      <div class="verdict">
+        <b class="k">What's best</b>
+        <p><b>Draw your own small geology map of the box (about 1:5,000), anchor every unit to a published source, and show the official USGS map as the zoomed-out context.</b> In the pitch: "The official 1:60K map of Mount Sharp is in progress at USGS; ours is the walking-scale layer that would sit inside it." Ask a mentor whether any preliminary version of the Thomson map can be shared.</p>
+      </div>
+      <h3>What "draw your own" means</h3>
+      <p>In QGIS, put the 25 cm HiRISE image and the 1 m elevation model on screen. Trace the outline of each unit as a polygon, like tracing paper on a photo. Five units, about 6–8 hours. Each polygon stores its source and how sure you are. The brief says existing tools are built for regional views, not single spacewalks. This layer is your direct answer to that line.</p>
+    </div>
+  </div>
+
+  <h3>The legend, with sources</h3>
+  <p class="note">The "what the sources say" column is published fact. The hazard column is your team's assumption, so label it that way in the app. Add a unit only when a source or the image supports it.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Code</th><th>Unit</th><th>What the sources say</th><th>Hazard (our assumption)</th></tr></thead>
+    <tbody>
+      <tr><td class="n"><code>LSu</code></td><td>Layered Sulfate unit</td><td>The unit Curiosity left when it crossed into the boxwork interval on sol 4534 (Siebach et al., GSA 2025). Curiosity drove through it before sol 4534, in the north-east of your box.</td><td>low</td></tr>
+      <tr><td class="n"><code>BXr</code></td><td>Boxwork ridges (Altadena member, Mirador formation)</td><td>Ridges up to about 5 m across with dark central lines (GSA 2025). Ridges are phyllosilicate-rich (Seeger et al. 2026). The boxwork runs 10–20 km in total (NASA, PIA26306).</td><td>low · high science value</td></tr>
+      <tr><td class="n"><code>BXh</code></td><td>Boxwork hollows</td><td>10–20 m hollows between ridges, often filled with sediment (GSA 2025). Hollows contain siderite; the orbital interpretation is weaker rock eroded by wind (Seeger et al. 2026).</td><td>moderate (loose fill) · high science value</td></tr>
+      <tr><td class="n"><code>Aeo</code></td><td>Wind-blown sand and ripples</td><td>In Hidden Valley (2014, sols 709–710) Curiosity found the sand ripples too slippery and backed out (Field Manual ch. 04). Your AI model's sand class marks them on the ground.</td><td>high for a rover, moderate on foot</td></tr>
+      <tr><td class="n"><code>Flt</code></td><td>Boulder field</td><td>Boulders show in HiRISE at 25 cm/px; AI4Mars "big rock" means taller than 30 cm and at least 50 cm wide (Field Manual ch. 02).</td><td>high</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="two">
+    <div class="stack">
+      <h3>Ground-truth points</h3>
+      <p class="note">From NASA's Curiosity waypoint feed, downloaded today.</p>
+      <dl class="kv">
+        <dt class="mono">sol 4534</dt><dd><b>137.38644°E, 4.79762°S, −3,658 m.</b> Curiosity crossed from the Layered Sulfate unit into the boxwork interval (GSA 2025). Your <code>LSu</code>/<code>BX</code> contact must pass near here.</dd>
+        <dt class="mono">sols 4575–4752</dt><dd>Around 137.379–137.382°E, 4.802–4.809°S. Boxwork campaign stops, including drilling near sol 4709 (NASA Curiosity blog). Use them as science-stop pins.</dd>
+        <dt class="mono">sol 5073</dt><dd>137.38889°E, 4.82602°S. Curiosity's latest position (13 Nov 2026).</dd>
+      </dl>
+      <div class="callout"><p>Pitch line: "Our sulfate-to-boxwork boundary matches where Curiosity actually crossed it on sol 4534."</p></div>
+    </div>
+    <div class="stack">
+      <h3>Step by step</h3>
+      <ol>
+        <li>Download SIM 3292. Clip about 1° around Gale for the zoomed-out inset.</li>
+        <li>Clip the HiRISE image and DTM to the box (section M). Make a hillshade and the ridge layer (code below).</li>
+        <li>In QGIS, create <code>geology.gpkg</code> with <code>units</code> (polygons) and <code>contacts</code> (lines). Fields: <code>unit_code, unit_name, source, hazard, science, confidence</code>.</li>
+        <li>Turn on snapping and "avoid overlap" so neighbouring polygons share edges exactly.</li>
+        <li>Digitize at about 1:5,000, with a minimum unit of about 25 m. Don't trace every ridge by hand. The ridge layer does that.</li>
+        <li>Run the contact through the sol 4534 point. Mark uncertain contacts as approximate.</li>
+        <li>Fix Geometries, then run the Topology Checker: no gaps and no overlaps.</li>
+        <li>Export <code>geology.geojson</code> for the map. Rasterize <code>unit_code</code> onto the routing grid with nearest neighbour.</li>
+      </ol>
+    </div>
+  </div>
+<pre><span class="c"># Boxwork ridges and hollows from the 1 m DTM (topographic position index)
+# z = cleaned, gap-filled elevation in metres (section M)</span>
+from scipy.ndimage import gaussian_filter
+relief = z - gaussian_filter(z, sigma=12)   <span class="c"># removes the mountain's slope, keeps features ~5-20 m across</span>
+ridges  = relief >  0.4                     <span class="c"># threshold is a starting guess: tune it by eye against the 25 cm image</span>
+hollows = relief < -0.4</pre>
+</section>
+
+<!-- G -->
+<section id="maps">
+  <div class="sh"><span class="tag">G · 3D &amp; 2D on the tablet</span><h2>3D by default, 2D one tap away, same colours in both</h2></div>
+  <div class="two">
+    <div class="stack">
+      <h3>How the switch works</h3>
+      <ul>
+        <li><b>3D (default):</b> Plotly surface of the box from the DTM, coloured in the four colours, with the route on top. Follow your 3D guide: at most 300 × 300 points, height exaggerated ×3 and labelled on screen, built in Python, loaded as JSON.</li>
+        <li><b>2D:</b> Leaflet map with the layer panel. Tapping start and goal is more reliable on a flat map, so route editing happens in 2D. The 3D view shows the result.</li>
+        <li>Both views read the same <code>grid.json</code>, route and stops. Switching changes the picture, never the data.</li>
+        <li>2D layers, bottom to top: basemap · hillshade · geology units · four-colour grid · stops · route · labels.</li>
+      </ul>
+      <div class="tbl"><table>
+        <thead><tr><th>Job</th><th>Cell</th><th>Grid for the box</th></tr></thead>
+        <tbody>
+          <tr><td>2D display overlays</td><td class="n">2 m</td><td class="n">1,180 × 1,480 px</td></tr>
+          <tr><td>Routing and four colours</td><td class="n">10 m</td><td class="n">236 × 296 cells</td></tr>
+          <tr><td>3D surface</td><td class="n">≈ 10 m</td><td class="n">≤ 300 × 300 points</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note">When you shrink a layer: elevation takes the mean, classes take the most common value, and hazards take the maximum. Compute slope at full 1 m resolution, then keep the steepest value in each 10 m cell so steep steps don't disappear.</p>
+    </div>
+    <div class="stack">
+      <h3>The three.js option, explained</h3>
+      <p>three.js is a JavaScript library for drawing your own 3D scenes in the browser. Plotly draws a 3D chart for you. With three.js you build the terrain mesh from the DTM yourself, drape the HiRISE photo over it, draw the route as a 3D line and move a camera along it.</p>
+      <div class="tbl"><table>
+        <thead><tr><th></th><th>Plotly</th><th>three.js</th></tr></thead>
+        <tbody>
+          <tr><td>Build time</td><td>2–3 h (guide ready)</td><td>5–8 h</td></tr>
+          <tr><td>Four-colour surface</td><td>yes</td><td>yes</td></tr>
+          <tr><td>Real HiRISE photo on the terrain</td><td>only as grey values, and not together with the four colours</td><td>yes, with colours on top</td></tr>
+          <tr><td>First-person "walk the route" camera</td><td>no (orbit view)</td><td>yes</td></tr>
+          <tr><td>Hover to read elevation</td><td>built in</td><td>you write it</td></tr>
+          <tr><td>Risk on demo day</td><td>low</td><td>medium</td></tr>
+        </tbody>
+      </table></div>
+      <div class="verdict">
+        <b class="k">Is it useful for you?</b>
+        <p>Useful for one thing: a first-person walk along the route that shows what the astronaut will see. It is not needed for the MUST list. The brief's point-of-view request is already answered better by real Curiosity photos, because they are real images and a render is not.</p>
+        <p><b>Use Plotly now.</b> Add three.js only if 2D, the planner and Plotly all work by H24. If you build it, label it "rendered from HiRISE data, not a photo".</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- H -->
+<section id="colours">
+  <div class="sh"><span class="tag">H · The four colours</span><h2>One rule decides every colour: hazard × certainty</h2>
+  <p>The colours match your 3D guide (green confirmed safe, orange orbit only, red danger, grey no data) and extend it with live readings.</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Colour</th><th>Means</th><th>Rule</th><th>Examples</th></tr></thead>
+    <tbody>
+      <tr><td><span class="sw go"><i>✓</i>Green</span></td><td>GO, high certainty</td><td>No hazard found <b>and</b> the evidence is direct: a live scout or suit reading, or rover ground truth within about 30 m</td><td>A cell beside a Curiosity stop where the AI found bedrock and no sand; a cell the scout just checked</td></tr>
+      <tr><td><span class="sw caution"><i>!</i>Orange</span></td><td>Possible with extreme care, lower certainty</td><td>No hard limit broken, <b>but</b> either a moderate hazard or evidence that is only orbital or old</td><td>Slope 15–20°; sand on foot; a sediment-filled hollow; anywhere known only from orbit</td></tr>
+      <tr><td><span class="sw nogo"><i>✕</i>Red</span></td><td>NO-GO</td><td>Any hard limit broken, by any evidence</td><td>Slope over the limit; big rock; sand for a wheeled rover; soft ground measured by the scout; oxygen or dose limit exceeded</td></tr>
+      <tr><td><span class="sw unknown"><i>?</i>Grey</span></td><td>Unknown, not yet explored</td><td>No usable data</td><td>DTM gap; no ground truth and the orbital data is unclear. Send the scout here first.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="two">
+    <div class="stack">
+      <h3>Certainty ladder</h3>
+      <ol>
+        <li><b>Live:</b> scout or suit sensor, minutes old</li>
+        <li><b>Rover ground truth:</b> your AI on Curiosity photos, years old but taken on the ground</li>
+        <li><b>Orbital:</b> HiRISE, THEMIS, the DTM</li>
+        <li><b>None:</b> grey</li>
+      </ol>
+      <p>When sources disagree, <b>the newest, closest and most direct reading wins</b>. Live readings expire after a time you choose (an assumption), and the cell then falls back to the next level down. A route takes the worst colour of the cells it crosses.</p>
+      <p class="note">Bright light, a tinted visor or colour-vision deficiency can make red and green hard to tell apart. Every colour therefore also carries an icon (✓ ! ✕ ?). Give grey and orange cells hatching on the map.</p>
+    </div>
+<pre><span class="c">// Deterministic rule. The assistant explains it and never overrides it.
+// Every number here is an assumption: list it in ASSUMPTIONS.md.</span>
+const LIMIT = { slopeNoGo: 20, slopeCaution: 15 };
+
+function cellColour(c, traveller) {        <span class="c">// traveller: "foot" | "rover"</span>
+  if (c.evidence === "none") return "grey";
+  const noGo = c.slopeDeg > LIMIT.slopeNoGo || c.bigRock ||
+               (traveller === "rover" &amp;&amp; (c.sand || c.softMeasured));
+  if (noGo) return "red";
+  const caution = c.slopeDeg > LIMIT.slopeCaution || c.sand ||
+                  c.unit === "BXh" || c.evidence === "orbital";
+  return caution ? "orange" : "green";     <span class="c">// green needs live or rover evidence</span>
+}
+
+function goNoGo(route, suit) {             <span class="c">// route-level checks</span>
+  const why = [];
+  if (route.colours.includes("red")) why.push("route crosses a NO-GO cell");
+  if (suit.o2Min &lt; route.returnMin + suit.reserveMin)
+    why.push(`oxygen ${suit.o2Min} min &lt; return ${route.returnMin} + reserve ${suit.reserveMin}`);
+  if (route.doseMSv &gt; suit.doseLimitMSv) why.push("dose above limit");
+  return { status: why.length ? "NO-GO" : "GO", why };
+}</pre>
+  </div>
+</section>
+
+<!-- I -->
+<section id="displays">
+  <div class="sh"><span class="tag">I · Tablet &amp; helmet</span><h2>The tablet is for planning, the helmet is for walking</h2>
+  <p>Both read the same route and colour files. The helmet is a second view of one app, not a second app.</p></div>
+  <div class="two">
+    <div class="panel">
+      <h3>Tablet (3D default, 2D switch)</h3>
+      <ul>
+        <li>3D view of the box in the four colours, with the route</li>
+        <li>2D map with layers, legends and sources; route editing</li>
+        <li>On foot or pressurized rover</li>
+        <li>GO / NO-GO card with the reasons in one sentence</li>
+        <li>Elevation and hazard profile along the route</li>
+        <li>Stop cards: real Curiosity photo with the AI overlay ("what you'll see")</li>
+        <li>Geology unit card on tap, with its source</li>
+        <li>Scout readings with their age; conditions (Mars time, Ls, dose)</li>
+        <li>Assistant panel: type or speak a question</li>
+        <li>Suit mode: big buttons and high contrast for gloves</li>
+        <li>The same app on a big screen is the habitat display</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Helmet (2D)</h3>
+      <ul>
+        <li><b>Mini-map:</b> heading-up, about the next 200 m, in the four colours with icons, the route line and the next waypoint</li>
+        <li><b>Turn-back countdown</b></li>
+        <li><b>Oxygen margin:</b> minutes left minus time to walk back</li>
+        <li><b>Hazard ahead:</b> type and distance</li>
+        <li><b>Assistant:</b> spoken warnings and answers, shown as subtitles</li>
+        <li>Optional: distance to your partner, if astronauts work in pairs</li>
+      </ul>
+      <p class="note">Keep it sparse: no layer panel and no touch input. Every alert uses colour, icon, text and voice together.</p>
+      <p><b>Demo:</b> a full-screen "visor" web page over a real Curiosity image from a boxwork stop. A slider walks along the planned route and updates the mini-map and numbers. The live scout event (section J) fires during the walk. It works on any screen and records cleanly for the video.</p>
+    </div>
+  </div>
+</section>
+
+<!-- J -->
+<section id="scout">
+  <div class="sh"><span class="tag">J · Robotic scout &amp; live data</span><h2>Measure the ground ahead, and trust fresh readings over old maps</h2></div>
+  <div class="two">
+    <div class="stack">
+      <h3>NASA precedent</h3>
+      <p>NASA's Ingenuity helicopter was designed for up to five test flights. It flew 72 times and served "as an aerial scout for Perseverance scientists and rover drivers" (JPL). Its mission ended on 25 Jan 2024. On Flight 72, sand ripples that its navigation system struggled to track led to a rough landing that damaged its rotor blades.</p>
+      <p class="note">Lesson for your concept: a drone over featureless sand has its own hazard. Give it firm landing spots.</p>
+      <p>The brief itself asks whether your mission "might use rovers or other robotic systems".</p>
+      <h3>Who can measure what</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Question</th><th>Drone</th><th>Ground robot</th><th>Real NASA analog</th></tr></thead>
+        <tbody>
+          <tr><td>Rocks, ripples, ridge layout</td><td>yes (images)</td><td>yes</td><td>Curiosity Navcam + your AI model</td></tr>
+          <tr><td>Is the sand soft or firm?</td><td>only indirectly</td><td><b>yes</b>: wheel slip and sinkage</td><td>Curiosity's slip in Hidden Valley, sols 709–710</td></tr>
+          <tr><td>Loose or rocky ground, from temperature</td><td>with a thermal camera (concept)</td><td>yes</td><td>REMS ground temperature sensor, about a 100 m² footprint, used to estimate thermal inertia</td></tr>
+          <tr><td>Radiation dose</td><td>concept</td><td>yes</td><td>RAD</td></tr>
+          <tr><td>Air temperature, pressure</td><td>concept</td><td>yes</td><td>REMS</td></tr>
+        </tbody>
+      </table></div>
+      <div class="verdict"><b class="k">Recommendation</b><p>Use both in the concept: a drone for look-ahead images and a small ground robot to test firmness. Only contact can tell you whether sand is soft.</p></div>
+    </div>
+    <div class="stack">
+      <h3>How to demo it honestly</h3>
+      <ul>
+        <li><b>Curiosity plays the scout.</b> Its real photos (through your AI model) and its REMS and RAD readings at stops in your box become "scout readings". Label them "replayed Curiosity data".</li>
+        <li>Check which REMS and RAD records actually exist for sols 4384–5073 in the PDS archive before you promise them on screen.</li>
+        <li><b>One scripted live event:</b> mid-walk, the scout reports soft ground on the planned route. The cell turns red, the route recalculates, and the assistant says why. Label it "simulated event".</li>
+        <li><b>Oxygen:</b> simulated suit telemetry feeds the rule in section H. The walk-back idea comes from Apollo (Field Manual ch. 03). The reserve and rates are your assumptions; ask a mentor.</li>
+      </ul>
+<pre><span class="c">// sensors.json: one row per reading (the contract)</span>
+{ "t": "2026-11-15T09:42:00Z", "lat": -4.8061, "lon": 137.3802,
+  "source": "scout-ground", "kind": "wheel_slip",
+  "value": 0.42, "unit": "fraction",
+  "evidence": "live", "replayed_from": null }</pre>
+      <p class="note">Field values are examples. <code>replayed_from</code> names the Curiosity sol when a reading is replayed data, so nothing on screen pretends to be live.</p>
+    </div>
+  </div>
+</section>
+
+<!-- K -->
+<section id="assistant">
+  <div class="sh"><span class="tag">K · The assistant</span><h2>It warns and answers, on screen and by voice, without making things up</h2>
+  <p>It helps the astronaut think. It does not decide. NASA's brief stresses that astronauts bring critical thinking that robots can't.</p></div>
+  <div class="two">
+    <div class="panel">
+      <h3>Five design rules that stop it from making things up</h3>
+      <ol>
+        <li><b>It never decides.</b> Colours and GO / NO-GO come from the rule in section H. The assistant explains the result.</li>
+        <li><b>It answers only from app data, through tools:</b> <code>where_am_i()</code>, <code>cell_info(lat, lon)</code>, <code>route_summary()</code>, <code>sensor_readings(since)</code>, <code>assumptions()</code>, <code>source(dataset)</code>. If a tool returns nothing, it says "I don't know. That area is grey," and suggests the scout.</li>
+        <li><b>Every answer names its source and the age of the data,</b> for example "REMS, sol 4709" or "scout, 3 min ago".</li>
+        <li><b>Rules trigger warnings; the model only words them.</b> A warning still fires, as text and a sound, if the assistant is down.</li>
+        <li><b>Test it before the freeze.</b> P5 writes 25 astronaut questions, 5 of which have no answer in the app. It passes when it answers 20 correctly with sources and says "I don't know" to the 5.</li>
+      </ol>
+    </div>
+    <div class="panel">
+      <h3>How to build it this weekend</h3>
+      <ul>
+        <li><b>On Mars vs in the demo:</b> with a 4–22 minute one-way delay to Earth, the real system must run on a computer in the habitat or rover. In the demo it can call a cloud model through a small server function (Vercel or Netlify), so the API key is never in the browser.</li>
+        <li><b>Model:</b> any LLM with tool calling works. If you use the Claude API, the current default model is <code>claude-opus-5-5</code>, with tool use. Decide in O3.</li>
+        <li><b>Voice:</b> the browser's text-to-speech reads warnings and answers aloud. Browser speech recognition support varies, so test it on your tablet first and keep a push-to-talk text box as a fallback.</li>
+        <li><b>Helmet:</b> voice plus one subtitle line. <b>Tablet:</b> a chat panel that shows the sources.</li>
+        <li>Effort: 6–10 person-hours. The tool functions are thin wrappers over files the app already loads.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- L -->
+<section id="data">
+  <div class="sh"><span class="tag">L · Data &amp; tools</span><h2>Exact files for your box</h2>
+  <p>"Checked" means I downloaded the file or its index on 14 Nov and confirmed it covers the box. Your Field Manual chapter 05 covers the rest (AI4Mars, THEMIS, CRISM, Perseverance images).</p></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Dataset</th><th>What it is</th><th>Use</th><th>Status · link</th></tr></thead>
+    <tbody>
+      <tr><td>HiRISE DTM <code>DTEEC_019698_1750_019988_1750_U01</code></td><td>1 m elevation, PDS3 <code>.IMG</code>, 543 MB</td><td>Slope, ridges, routing, 3D</td><td><span class="pill p-ok">checked</span> covers the whole box · <a href="https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/DTEEC_019698_1750_019988_1750_U01.IMG">IMG</a></td></tr>
+      <tr><td>HiRISE orthoimage <code>ESP_019698_1750_RED_A_01_ORTHO</code> (25 cm) and <code>…RED_C_01_ORTHO</code> (1 m)</td><td>Greyscale image aligned to that DTM, JPEG 2000</td><td>Basemap, digitizing, boulders</td><td><span class="pill p-ok">checked</span> listed with the DTM · <a href="https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_RED_A_01_ORTHO.JP2">25 cm</a> · <a href="https://hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ESP_019698_1750_RED_C_01_ORTHO.JP2">1 m</a></td></tr>
+      <tr><td>Backup DTM <code>DTEEC_009149_1750_009294_1750_U01</code></td><td>1 m, 391 MB</td><td>Fills holes; covers the east half, including the boxwork stops</td><td><span class="pill p-ok">checked</span> · <a href="https://hirise-pds.lpl.arizona.edu/PDS/DTM/PSP/ORB_009100_009199/PSP_009149_1750_PSP_009294_1750/DTEEC_009149_1750_009294_1750_U01.IMG">IMG</a></td></tr>
+      <tr><td>Curiosity waypoints, traverse, current position</td><td>GeoJSON: 1,389 waypoints for the whole mission, 183 in the box</td><td>Rover track, stops, sol → place</td><td><span class="pill p-ok">checked</span> · <a href="https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json">waypoints</a> · <a href="https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json">traverse</a> · <a href="https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints_current.json">current</a></td></tr>
+      <tr><td>USGS-NASA geologic map database</td><td>Footprints and status of every USGS Mars map</td><td>Geology context (section F)</td><td><span class="pill p-ok">checked</span> · <a href="https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars">official resource</a></td></tr>
+      <tr><td>USGS SIM 3292 global geologic map</td><td>1:20M; geodatabase and shapefiles in a 790 MB ZIP</td><td>Zoomed-out geology inset</td><td><a href="https://pubs.usgs.gov/publication/sim3292">USGS</a></td></tr>
+      <tr><td>Mars Trek MOLA colour shaded relief</td><td>463 m WMTS tiles</td><td>Zoomed-out view</td><td><span class="pill p-ok">checked</span> · <a href="https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/WMTSCapabilities.xml">capabilities</a></td></tr>
+      <tr><td>Mars Trek CTX mosaic</td><td>About 5 m. Its capabilities file points to an Esri "OnMars" tile service.</td><td>Basemap around the box</td><td><span class="pill p-check">test</span> confirm tiles line up in Leaflet · <a href="https://trek.nasa.gov/tiles/Mars/EQ/CTX_beta01_uncontrolled_5m_Caltech/1.0.0/WMTSCapabilities.xml">capabilities</a></td></tr>
+      <tr><td>Curiosity REMS and RAD</td><td>Weather, ground temperature, radiation dose</td><td>Scout replay, conditions, dose</td><td><span class="pill p-check">check</span> which sols in 4384–5073 exist in the PDS (links in Field Manual ch. 05)</td></tr>
+      <tr><td>Curiosity route animation (official resource)</td><td>NASA's proposed path up Mount Sharp, with labelled regions</td><td>Inspiration; region names</td><td><a href="https://science.nasa.gov/resource/curiositys-proposed-path-up-mount-sharp/">NASA</a></td></tr>
+      <tr><td>Fraeman et al. 2016; Persaud 2021 basemap</td><td>Lower Mount Sharp units; georeferenced HiRISE, CTX and small CRISM mineral GeoTIFFs</td><td>Geology reference; possible mineral layer</td><td><span class="pill p-check">check coverage</span> · <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5101845">paper</a> (open in a browser) · <a href="https://zenodo.org/record/5808381">Zenodo</a></td></tr>
+    </tbody>
+  </table></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Tool</th><th>For</th></tr></thead>
+    <tbody>
+      <tr><td>QGIS 3</td><td>Looking at every file; digitizing geology; Topology Checker</td></tr>
+      <tr><td>GDAL command line</td><td><code>gdal_translate -projwin</code> to clip the big JP2; <code>gdalwarp</code> to reproject</td></tr>
+      <tr><td>Python: rasterio, geopandas, shapely, numpy, scipy, Pillow, pandas</td><td>The cleaning pipeline (section M) and the Plotly 3D export</td></tr>
+      <tr><td>Google Colab GPU, PyTorch, segmentation-models-pytorch</td><td>W3 model training</td></tr>
+      <tr><td>Vite, Leaflet, Plotly, a Web Worker</td><td>Tablet app, 3D view, planner</td></tr>
+      <tr><td>An LLM API with tool calling; browser speech APIs</td><td>The assistant (section K)</td></tr>
+      <tr><td>Vercel or Netlify (static site plus one server function); OBS</td><td>Hosting, the assistant's key-holding function, recording the video</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- M -->
+<section id="cleaning">
+  <div class="sh"><span class="tag">M · Cleaning the data</span><h2>Eight rules, then one recipe per dataset</h2></div>
+  <div class="two">
+    <div class="panel">
+      <h3>Rules for every file</h3>
+      <ol>
+        <li>Keep <code>data/raw/</code> read-only. Scripts read raw files and write to <code>data/clean/</code>, numbered in run order (<code>01_dtm.py</code>, <code>02_geology.py</code>…).</li>
+        <li>Use one web CRS: planetocentric latitude, east longitude from −180 to 180, a sphere with R = 3,396,190 m (<code>+proj=longlat +R=3396190 +no_defs</code>). Do the analysis in the DTM's own metre grid.</li>
+        <li>Clip to the box before anything else.</li>
+        <li>Mask NoData before any maths. HiRISE DTMs use −3.4028 × 10³⁸.</li>
+        <li>Put units in names: <code>elev_m</code>, <code>slope_deg</code>, <code>temp_c</code>, <code>dose_mSv</code>.</li>
+        <li>Continuous data → bilinear or mean. Classes → nearest or mode. Hazards → maximum.</li>
+        <li>Print before and after statistics for every step, and look at a picture.</li>
+        <li>Write each source URL into <code>DATA_SOURCES.md</code> when you download it.</li>
+      </ol>
+    </div>
+<pre><span class="c"># 01_dtm.py: clip, mask, fill small holes, remove spikes, slope</span>
+import numpy as np, rasterio
+from rasterio.warp import transform_bounds
+from rasterio.windows import from_bounds
+from rasterio.fill import fillnodata
+from scipy.ndimage import median_filter
+
+MARS_LL = "+proj=longlat +R=3396190 +no_defs"
+BOX = (137.36, -4.83, 137.40, -4.78)       <span class="c"># W, S, E, N</span>
+src = rasterio.open("data/raw/DTEEC_019698_1750_019988_1750_U01.IMG")
+print(src.crs, src.res, src.nodata)        <span class="c"># res must be ~1.0 (metres)</span>
+
+win = from_bounds(*transform_bounds(MARS_LL, src.crs, *BOX),
+                  transform=src.transform).round_offsets().round_lengths()
+z = src.read(1, window=win, masked=True)
+z = np.ma.masked_less(z, -1e30)            <span class="c"># belt and braces for -3.4e38</span>
+print(z.min(), z.max(), f"{z.mask.mean():.1%} empty")   <span class="c"># waypoints say ~ -3735 .. -3472 m</span>
+
+filled = fillnodata(z.filled(np.nan).astype("float32"),
+                    mask=(~z.mask).astype("uint8"), max_search_distance=10)
+interpolated = z.mask &amp; ~np.isnan(filled)  <span class="c"># show these as lower certainty</span>
+
+med = median_filter(np.nan_to_num(filled, nan=float(np.nanmean(filled))), size=5)
+spike = np.abs(filled - med) &gt; 5           <span class="c"># metres; a starting threshold, check the result</span>
+filled[spike] = med[spike]
+
+dzdy, dzdx = np.gradient(filled, src.res[0])
+slope_deg = np.degrees(np.arctan(np.hypot(dzdx, dzdy)))
+print(np.nanpercentile(slope_deg, [50, 95, 99]))   <span class="c"># nearly all red? the units are wrong</span></pre>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Dataset</th><th>Typical problems</th><th>Fix</th><th>Check</th></tr></thead>
+    <tbody>
+      <tr><td>HiRISE DTM</td><td>NoData value; holes at the edges and in shadows; spikes where stereo matching failed</td><td>Mask; fill holes up to 10 px and keep a mask of filled pixels (they count as lower certainty); replace spikes using a 5×5 median</td><td>Elevations near the rover's (−3,735 to −3,472 m). No pits where the image shows none.</td></tr>
+      <tr><td>HiRISE orthoimage (JP2)</td><td>Very large file; values crowded into dark or bright ends</td><td><code>gdal_translate -projwin 137.36 -4.78 137.40 -4.83</code> with <code>-projwin_srs</code> set to the web CRS; stretch the 1st–99th percentile to 8-bit; make a 1–2 m copy for the web</td><td>Ridges visible and aligned with the DTM hillshade</td></tr>
+      <tr><td>Rover waypoints</td><td>Whole mission; several waypoints per sol</td><td>Keep only the box; keep <code>sol, site, drive, lon, lat, elev_geoid</code>; sort by sol then drive; join photos by site and drive, not just sol</td><td>183 points; sol 4534 at 137.38644, −4.79762</td></tr>
+      <tr><td>Your geology polygons</td><td>Gaps, overlaps, invalid shapes, a stray CRS</td><td>Fix Geometries; Topology Checker; dissolve by <code>unit_code</code>; simplify to 1 m; round to 5 decimals</td><td>Every spot in the box falls in exactly one unit</td></tr>
+      <tr><td>USGS SIM 3292</td><td>Different projection; large</td><td>Reproject to the web CRS, clip around Gale, keep the unit fields</td><td>Gale sits where Mars Trek shows it</td></tr>
+      <tr><td>Navcam images</td><td>Thumbnails; sky and rover-deck shots; stereo duplicates</td><td>Keep full frames of 1,024 px and up; drop frames with no ground; keep one image per left/right pair</td><td>A human looks at a random sample of 20</td></tr>
+      <tr><td>AI4Mars labels</td><td>255 means unlabeled; rover and far-range areas</td><td>Set masked pixels to 255; resize masks with nearest neighbour</td><td>Class counts look plausible</td></tr>
+      <tr><td>REMS weather and ground temperature</td><td>Missing and sentinel values; local solar time vs UTC; sensor gaps</td><td>Sentinels → NaN; daily min and max per sol; keep sol and local time</td><td>Plot it. Flag physically implausible values for a human to check.</td></tr>
+      <tr><td>RAD dose</td><td>Daily values with spikes during solar particle events; µGy vs mSv</td><td>Keep and flag spikes; use quiet-day values for the estimate, and show the spike as the worst case</td><td>Unit printed next to every number</td></tr>
+      <tr><td><code>sensors.json</code> (scout)</td><td>Mixed units; missing timestamps; points outside the box; replayed data passed off as live</td><td>Validate every row against the schema; reject rows without time, unit or source; set <code>replayed_from</code> for Curiosity data</td><td>No row lacks <code>evidence</code> and <code>source</code></td></tr>
+    </tbody>
+  </table></div>
+<pre><span class="c"># shrink to the 10 m routing grid: mean elevation, steepest slope</span>
+f = 10
+H, W = filled.shape[0] // f, filled.shape[1] // f
+blocks = lambda a: a[:H*f, :W*f].reshape(H, f, W, f)
+elev10  = np.nanmean(blocks(filled),   axis=(1, 3))
+slope10 = np.nanmax(blocks(slope_deg), axis=(1, 3))   <span class="c"># conservative on purpose</span></pre>
+</section>
+
+<!-- N -->
+<section id="help">
+  <div class="sh"><span class="tag">N · Claude vs you</span><h2>Where I help, and where you have to lead</h2></div>
+  <div class="two">
+    <div class="panel">
+      <h3>Ask me (in this folder, any time this weekend)</h3>
+      <ul>
+        <li>The pipeline: <code>01_dtm.py</code>, ridge layer, geology rasterizing, <code>grid.json</code>, Plotly 3D export</li>
+        <li>The four-colour rule, the planner Web Worker, and GO / NO-GO with the oxygen check</li>
+        <li>The <code>sensors.json</code> replay builder and the live-event script</li>
+        <li>The assistant: tool functions, system prompt, the server function, and a script that runs the 25-question test</li>
+        <li>The helmet visor page and the app skeleton with fake contract files</li>
+        <li>Checking a dataset before you download it, as I did for the DTM and waypoints</li>
+        <li>Reviewing code; drafting the README, project page and references</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>You lead (I can't do these, or shouldn't)</h3>
+      <ul>
+        <li><b>Geologic interpretation:</b> drawing unit boundaries needs your eyes on the image and the papers.</li>
+        <li><b>Safety numbers:</b> slope limits, oxygen reserve, live-data expiry, dose limit. Agree them with a mentor and label them as assumptions.</li>
+        <li><b>Verify every science claim before it goes on a slide.</b> I can be wrong. I already caught one error of my own today.</li>
+        <li>The LLM account and API key. Keep the key out of the repo.</li>
+        <li>Big downloads, GPU training, testing on the real tablet</li>
+        <li>Pages behind logins or captchas; your Space Apps account and the submission</li>
+        <li>The video, the pitch, and team decisions</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- O -->
+<section id="decisions">
+  <div class="sh"><span class="tag">O · Decisions</span><h2>Decided today, and what is still open</h2></div>
+  <div class="cards">
+    <div class="card done"><span class="role">Decided · displays</span><h3>Tablet 3D with a 2D switch; helmet 2D</h3><p>Four colours, a robotic scout, live readings first, an oxygen check, and a voice assistant.</p></div>
+    <div class="card done"><span class="role">Decided · core</span><h3>Keep the AI4Mars model</h3><p>Ground truth from real rover photos is your edge over ARES//NAV on the same site (Field Manual ch. 13).</p></div>
+    <div class="card done"><span class="role">Decided · 3D</span><h3>Plotly</h3><p>three.js only if everything is done by H24 (section G).</p></div>
+    <div class="card done"><span class="role">Recommended · geology</span><h3>Draw your own 1:5,000 map, with the USGS map as context</h3><p>Section F explains why. Confirm this or tell me what's still unclear.</p></div>
+    <div class="card"><span class="role">O1 · Roles</span><h3>Who is P1 to P5?</h3><p>Section E. One owner per workstream.</p></div>
+    <div class="card"><span class="role">O2 · Safety numbers</span><h3>Limits for the four-colour rule</h3><p>Slope limits on foot and by rover, oxygen reserve, how long live readings stay valid, the dose limit, and the 30 m ground-truth radius.</p><p class="rec"><b>Recommend:</b> ask a mentor today, then put them in <code>ASSUMPTIONS.md</code>.</p></div>
+    <div class="card"><span class="role">O3 · Assistant</span><h3>Which LLM, and run where?</h3><p>Any model with tool calling. For the demo it runs through a server function; for Mars it would run onboard.</p><p class="rec"><b>Recommend:</b> Claude API with tool use via one Vercel or Netlify function. Say so in the pitch for the onboard version.</p></div>
+    <div class="card"><span class="role">O4 · Scout concept</span><h3>Drone, ground robot, or both?</h3><p>Only contact tells you whether sand is soft.</p><p class="rec"><b>Recommend:</b> both in the concept. Curiosity's real data plays the scout in the demo.</p></div>
+    <div class="card"><span class="role">O5 · Event logistics</span><h3>Deadline, pitch length, video or slides</h3><p>Ask your Local Lead for the submission time in local time and the live pitch format.</p></div>
+    <div class="card"><span class="role">O6 · Rules</span><h3>AI-assistance disclosure</h3><p>Check the participant terms. If they ask, list Claude (and your app's LLM) in References with the libraries and datasets.</p></div>
+  </div>
+</section>
+
+<section id="sources">
+  <div class="sh"><span class="tag">Sources</span><h2>Checked on 14 November 2026</h2></div>
+  <ul class="sources">
+    <li><a href="https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/">Official challenge page</a> and its <a href="https://www.spaceappschallenge.org/2026/challenges/interplanetary-survival-guide-martian-map/?tab=resources">Resources tab</a></li>
+    <li>Your folder: Martian Map Field Manual, Mission Journal (blank and filled), Martian Map 3D Guide</li>
+    <li><a href="https://astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars">USGS-NASA Planetary Geologic Mapping Program, Mars map database</a> (queried for 137.38°E, 4.80°S)</li>
+    <li><a href="https://pubs.usgs.gov/publication/sim3292">USGS SIM 3292: Geologic Map of Mars (Tanaka et al. 2014)</a></li>
+    <li><a href="https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json">NASA MMGIS: Curiosity waypoints GeoJSON</a> (box, sols and elevations computed from it)</li>
+    <li><a href="https://hirise-pds.lpl.arizona.edu/PDS/INDEX/DTMCUMINDEX.TAB">HiRISE PDS DTM index</a> (footprints and file sizes)</li>
+    <li><a href="https://gsameetings.secure-platform.com/connects25/solicitations/103002/sessiongallery/schedule/items/95386/application/10634">Siebach et al., GSA Connects 2025: Curiosity's investigation of the boxwork interval</a></li>
+    <li><a href="https://authors.library.caltech.edu/records/6522c-90325">Seeger et al. 2026, SEPM: sedimentology and diagenesis of the boxwork-hosting Altadena member</a></li>
+    <li><a href="https://science.nasa.gov/photojournal/hirise-views-mount-sharps-boxwork/">NASA PIA26306: HiRISE views Mount Sharp's boxwork</a></li>
+    <li><a href="https://science.nasa.gov/blog/curiosity-blog-sols-4709-4715-drilling-high-and-low-in-the-boxwork-unit">NASA Curiosity blog, sols 4709–4715: drilling in the boxwork unit</a></li>
+    <li><a href="https://www.jpl.nasa.gov/news/after-three-years-on-mars-nasas-ingenuity-helicopter-mission-ends/">JPL: after three years on Mars, Ingenuity's mission ends</a></li>
+    <li><a href="https://deepblue.lib.umich.edu/items/42b22b56-f48d-4815-aec2-17faec546aad">Martínez et al. 2014: surface energy budget and thermal inertia at Gale crater (REMS)</a> · <a href="https://science.nasa.gov/resource/steady-temperatures-at-mars-gale-crater">NASA: steady temperatures at Gale crater</a></li>
+    <li><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC5101845">Fraeman et al. 2016: stratigraphy and evolution of lower Mount Sharp</a></li>
+    <li><a href="https://astrogeology.usgs.gov/search/map/mars_msl_gale_merged_dem_1m">USGS: MSL Gale merged DEM 1 m</a> · <a href="https://zenodo.org/record/5808381">Zenodo: NW Aeolis Mons basemap (Persaud 2021)</a></li>
+    <li><a href="https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/WMTSCapabilities.xml">Mars Trek MOLA WMTS</a> · <a href="https://trek.nasa.gov/tiles/Mars/EQ/CTX_beta01_uncontrolled_5m_Caltech/1.0.0/WMTSCapabilities.xml">Mars Trek CTX WMTS</a></li>
+  </ul>
+</section>
+
+<footer>
+  <p>Facts on this page carry a source. These are my judgment or your team's assumptions, not published facts: hour estimates, the hazard column of the legend, every threshold in the four-colour rule, the scout and assistant designs, and all recommendations.</p>
+  <p>Coordinates are planetocentric, east-positive, on the Mars 2000 sphere.</p>
+</footer>
+</div>
+
+<script>
+(function () {
+  var PTS = [[4384,137.39959,-4.78328,-3724,384.8,49.1],[4387,137.39931,-4.78333,-3725,382.3,49.6],[4389,137.39898,-4.78339,-3725,379.3,50.1],[4391,137.39867,-4.78319,-3728,376.6,48.4],[4394,137.39818,-4.78321,-3731,372.2,48.5],[4396,137.39794,-4.78325,-3732,370.2,48.9],[4398,137.39759,-4.78341,-3733,367.0,50.3],[4414,137.39698,-4.78355,-3735,361.6,51.6],[4417,137.39688,-4.78394,-3734,360.7,55.0],[4425,137.39667,-4.78454,-3728,358.9,60.4],[4429,137.39613,-4.78485,-3727,354.1,63.1],[4432,137.39583,-4.78449,-3731,351.4,59.9],[4435,137.39548,-4.78495,-3729,348.3,64.0],[4437,137.3952,-4.78529,-3726,345.8,67.0],[4439,137.3948,-4.78563,-3724,342.4,70.1],[4442,137.39459,-4.78592,-3722,340.5,72.6],[4444,137.39453,-4.78593,-3722,339.9,72.7],[4446,137.39395,-4.7861,-3723,334.8,74.2],[4449,137.39369,-4.7866,-3721,332.5,78.7],[4450,137.39312,-4.78692,-3721,327.5,81.6],[4452,137.39262,-4.78723,-3721,323.0,84.2],[4456,137.39224,-4.78771,-3720,319.6,88.5],[4459,137.3918,-4.78818,-3719,315.8,92.7],[4462,137.39149,-4.7889,-3717,313.0,99.1],[4464,137.3913,-4.7893,-3715,311.3,102.7],[4466,137.39142,-4.78962,-3713,312.3,105.5],[4469,137.39152,-4.79019,-3709,313.2,110.6],[4471,137.39134,-4.79046,-3709,311.7,113.0],[4473,137.39125,-4.79083,-3708,310.9,116.3],[4478,137.39126,-4.79083,-3708,311.0,116.3],[4480,137.3909,-4.79096,-3707,307.8,117.4],[4483,137.39066,-4.79129,-3705,305.6,120.4],[4484,137.39069,-4.79159,-3703,305.9,123.0],[4487,137.3908,-4.7921,-3700,306.9,127.6],[4489,137.39073,-4.79241,-3698,306.3,130.3],[4491,137.39087,-4.7928,-3695,307.5,133.8],[4493,137.39055,-4.79312,-3694,304.7,136.6],[4496,137.39003,-4.7936,-3691,300.1,140.9],[4498,137.38991,-4.79361,-3690,299.0,141.0],[4500,137.38958,-4.79357,-3689,296.1,140.6],[4503,137.38908,-4.79336,-3688,291.6,138.8],[4505,137.38887,-4.79321,-3691,289.8,137.5],[4507,137.38828,-4.79385,-3690,284.5,143.1],[4510,137.38819,-4.79473,-3682,283.8,151.0],[4512,137.38823,-4.79504,-3680,284.1,153.8],[4514,137.38791,-4.79574,-3673,281.3,159.9],[4516,137.38792,-4.79602,-3670,281.3,162.4],[4518,137.38787,-4.7961,-3669,280.9,163.1],[4523,137.38775,-4.79641,-3666,279.8,165.9],[4526,137.38772,-4.79689,-3662,279.6,170.1],[4527,137.38751,-4.79721,-3661,277.7,173.1],[4530,137.38707,-4.79741,-3660,273.8,174.8],[4532,137.38665,-4.7975,-3658,270.1,175.6],[4534,137.38644,-4.79762,-3658,268.2,176.6],[4537,137.3862,-4.79779,-3656,266.1,178.1],[4539,137.38592,-4.79782,-3655,263.7,178.4],[4541,137.38593,-4.79782,-3655,263.7,178.4],[4544,137.38566,-4.79796,-3654,261.4,179.7],[4546,137.38501,-4.79827,-3653,255.6,182.4],[4548,137.38405,-4.79879,-3651,247.0,187.1],[4552,137.38357,-4.79927,-3648,242.9,191.3],[4554,137.38344,-4.79971,-3646,241.7,195.3],[4558,137.3835,-4.79981,-3647,242.2,196.1],[4560,137.38354,-4.79985,-3647,242.6,196.5],[4571,137.38299,-4.80041,-3644,237.7,201.4],[4573,137.38252,-4.80116,-3644,233.5,208.2],[4575,137.38211,-4.80191,-3644,229.9,214.8],[4578,137.38171,-4.80193,-3645,226.3,215.0],[4580,137.38125,-4.80233,-3644,222.3,218.5],[4582,137.38125,-4.80235,-3644,222.3,218.7],[4585,137.38105,-4.80257,-3644,220.5,220.7],[4587,137.38079,-4.80274,-3644,218.2,222.2],[4588,137.3806,-4.80243,-3645,216.5,219.4],[4591,137.38045,-4.80251,-3645,215.2,220.1],[4594,137.38043,-4.80296,-3642,215.0,224.2],[4596,137.38007,-4.80361,-3640,211.9,229.9],[4598,137.37976,-4.80402,-3636,209.0,233.5],[4600,137.37969,-4.80419,-3633,208.4,235.1],[4602,137.37962,-4.80437,-3631,207.9,236.7],[4605,137.37956,-4.80443,-3631,207.3,237.2],[4609,137.37932,-4.80474,-3624,205.2,240.0],[4612,137.3793,-4.80495,-3624,205.0,241.8],[4614,137.37945,-4.80521,-3622,206.3,244.1],[4616,137.37952,-4.80545,-3621,207.0,246.3],[4618,137.37954,-4.8055,-3620,207.1,246.7],[4621,137.37951,-4.80541,-3620,206.9,246.0],[4623,137.37992,-4.80548,-3622,210.5,246.6],[4625,137.37976,-4.80586,-3618,209.1,249.9],[4628,137.37946,-4.80599,-3614,206.4,251.1],[4629,137.37972,-4.80617,-3614,208.7,252.7],[4633,137.37967,-4.80646,-3611,208.3,255.2],[4634,137.37912,-4.80636,-3610,203.4,254.3],[4636,137.37934,-4.80654,-3607,205.3,256.0],[4639,137.37932,-4.80655,-3607,205.1,256.1],[4641,137.37935,-4.80669,-3608,205.5,257.3],[4643,137.37941,-4.8068,-3605,206.0,258.3],[4647,137.37981,-4.80689,-3610,209.5,259.1],[4650,137.37984,-4.80689,-3611,209.8,259.1],[4653,137.3799,-4.80708,-3608,210.3,260.8],[4655,137.3799,-4.80717,-3608,210.3,261.6],[4660,137.38006,-4.80745,-3605,211.7,264.1],[4662,137.38019,-4.80763,-3606,212.9,265.6],[4664,137.38025,-4.80793,-3605,213.4,268.3],[4667,137.38051,-4.80802,-3605,215.7,269.2],[4669,137.38088,-4.80805,-3607,219.0,269.4],[4671,137.38127,-4.80827,-3608,222.4,271.4],[4673,137.38157,-4.80872,-3607,225.1,275.3],[4677,137.38169,-4.80871,-3607,226.2,275.3],[4680,137.38125,-4.80827,-3608,222.2,271.4],[4684,137.38102,-4.80801,-3608,220.2,269.1],[4687,137.38104,-4.80784,-3610,220.4,267.5],[4709,137.38105,-4.808,-3609,220.5,268.9],[4711,137.381,-4.80801,-3608,220.1,269.0],[4741,137.38101,-4.80776,-3612,220.2,266.8],[4748,137.38112,-4.80791,-3610,221.1,268.1],[4752,137.38099,-4.80803,-3608,220.0,269.2],[4789,137.38099,-4.80801,-3608,220.0,269.0],[4805,137.38142,-4.80784,-3611,223.8,267.5],[4810,137.3815,-4.80754,-3613,224.5,264.8],[4813,137.38167,-4.80735,-3616,226.0,263.2],[4816,137.38194,-4.80753,-3615,228.4,264.7],[4818,137.38256,-4.8079,-3616,233.9,268.1],[4820,137.38267,-4.80778,-3617,234.9,267.0],[4823,137.38263,-4.80788,-3616,234.5,267.9],[4827,137.38285,-4.80813,-3615,236.5,270.1],[4830,137.38265,-4.80882,-3609,234.7,276.3],[4834,137.3827,-4.80954,-3605,235.1,282.7],[4837,137.38236,-4.80972,-3604,232.1,284.2],[4839,137.38186,-4.80991,-3598,227.7,286.0],[4841,137.38176,-4.81042,-3596,226.8,290.5],[4844,137.38168,-4.81054,-3595,226.1,291.5],[4845,137.38165,-4.8106,-3594,225.8,292.1],[4848,137.38181,-4.81155,-3590,227.3,300.5],[4851,137.38204,-4.81202,-3588,229.2,304.7],[4855,137.38215,-4.81285,-3583,230.2,312.1],[4857,137.38185,-4.81317,-3578,227.6,314.9],[4861,137.38137,-4.81323,-3579,223.3,315.4],[4865,137.381,-4.81379,-3574,220.1,320.4],[4868,137.38171,-4.81427,-3570,226.3,324.7],[4889,137.38183,-4.81445,-3569,227.4,326.3],[4891,137.3816,-4.81428,-3571,225.4,324.8],[4893,137.38158,-4.8144,-3570,225.2,325.8],[4912,137.38182,-4.81486,-3566,227.3,329.9],[4914,137.38215,-4.81524,-3564,230.3,333.3],[4916,137.38241,-4.81563,-3562,232.6,336.8],[4919,137.38239,-4.81611,-3559,232.3,341.1],[4921,137.38257,-4.81638,-3558,234.0,343.5],[4923,137.38296,-4.81686,-3554,237.4,347.7],[4928,137.38306,-4.81743,-3551,238.3,352.8],[4932,137.3831,-4.81792,-3546,238.7,357.1],[4936,137.38292,-4.81855,-3543,237.1,362.7],[4939,137.3832,-4.81918,-3539,239.5,368.3],[4942,137.38319,-4.81935,-3538,239.5,369.8],[4946,137.38328,-4.81962,-3536,240.3,372.3],[4948,137.3833,-4.8202,-3532,240.5,377.5],[4950,137.38397,-4.82119,-3524,246.4,386.2],[4953,137.3842,-4.82151,-3522,248.4,389.1],[4955,137.38465,-4.8216,-3519,252.4,389.9],[4957,137.38478,-4.82081,-3526,253.5,382.9],[4959,137.38507,-4.81991,-3531,256.2,374.9],[4963,137.3854,-4.82018,-3529,259.1,377.3],[4966,137.38551,-4.82073,-3523,260.0,382.2],[4970,137.3856,-4.82096,-3521,260.8,384.2],[4973,137.3857,-4.82123,-3517,261.7,386.6],[4977,137.38582,-4.82143,-3515,262.7,388.4],[4983,137.3861,-4.8215,-3513,265.2,389.0],[4987,137.38662,-4.82208,-3508,269.8,394.1],[4989,137.38666,-4.82249,-3505,270.2,397.8],[4994,137.38672,-4.82301,-3502,270.7,402.4],[4996,137.3867,-4.8236,-3499,270.5,407.6],[4998,137.38667,-4.82367,-3499,270.3,408.3],[5004,137.38662,-4.82381,-3497,269.9,409.5],[5008,137.38711,-4.82414,-3494,274.2,412.5],[5011,137.38759,-4.8246,-3489,278.5,416.6],[5014,137.38812,-4.82463,-3486,283.2,416.8],[5016,137.38848,-4.8246,-3485,286.3,416.6],[5018,137.38884,-4.82513,-3480,289.5,421.2],[5021,137.38885,-4.82514,-3480,289.6,421.3],[5041,137.38778,-4.82459,-3488,280.1,416.4],[5045,137.38761,-4.82466,-3488,278.7,417.1],[5069,137.38893,-4.82526,-3479,290.4,422.4],[5070,137.38915,-4.82568,-3474,292.3,426.1],[5073,137.38889,-4.82602,-3472,289.9,429.2]];
+  var svg = document.getElementById('locsvg');
+  var grid = document.getElementById('grid');
+  var NS = 'http://www.w3.org/2000/svg';
+  function el(tag, attrs, text) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (text) e.textContent = text;
+    return e;
+  }
+  var x0 = 34, y0 = 20, bw = 354.4, bh = 444.6;
+  for (var i = 0; i <= 4; i++) {
+    var x = x0 + i * bw / 4;
+    grid.appendChild(el('line', { 'class': 'g-grid', x1: x, x2: x, y1: y0, y2: y0 + bh }));
+    grid.appendChild(el('text', { 'class': 'g-tick', x: x, y: y0 + bh + 14, 'text-anchor': 'middle' }, (137.36 + i * 0.01).toFixed(2) + '°E'));
+  }
+  for (var j = 0; j <= 5; j++) {
+    var y = y0 + j * bh / 5;
+    grid.appendChild(el('line', { 'class': 'g-grid', x1: x0, x2: x0 + bw, y1: y, y2: y }));
+    grid.appendChild(el('text', { 'class': 'g-tick', x: x0 - 4, y: y + 3, 'text-anchor': 'end' }, (4.78 + j * 0.01).toFixed(2)));
+  }
+  grid.appendChild(el('text', { 'class': 'g-tick', x: x0 - 4, y: y0 - 8, 'text-anchor': 'end' }, '°S'));
+
+  var tip = document.getElementById('tip');
+  var hov = document.getElementById('hov');
+  var fig = document.getElementById('locfig');
+  function hide() { tip.hidden = true; hov.setAttribute('cx', -20); hov.setAttribute('cy', -20); }
+  function nearest(px, py) {
+    var best = null, bd = 1e9;
+    for (var k = 0; k < PTS.length; k++) {
+      var dx = PTS[k][4] - px, dy = PTS[k][5] - py, d = dx * dx + dy * dy;
+      if (d < bd) { bd = d; best = PTS[k]; }
+    }
+    return bd < 18 * 18 ? best : null;
+  }
+  svg.addEventListener('pointermove', function (ev) {
+    var m = svg.getScreenCTM();
+    if (!m) return;
+    var pt = svg.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    var p = pt.matrixTransform(m.inverse());
+    var n = nearest(p.x, p.y);
+    if (!n) { hide(); return; }
+    hov.setAttribute('cx', n[4]); hov.setAttribute('cy', n[5]);
+    tip.textContent = '';
+    tip.appendChild(document.createTextNode('sol ' + n[0]));
+    tip.appendChild(document.createElement('br'));
+    tip.appendChild(document.createTextNode(n[1].toFixed(5) + '°E  ' + Math.abs(n[2]).toFixed(5) + '°S'));
+    tip.appendChild(document.createElement('br'));
+    tip.appendChild(document.createTextNode('elevation ' + n[3].toLocaleString('en-US') + ' m'));
+    tip.hidden = false;
+    var r = fig.getBoundingClientRect();
+    var left = ev.clientX - r.left + 14, top = ev.clientY - r.top + 14;
+    if (left + tip.offsetWidth > r.width - 8) left = ev.clientX - r.left - tip.offsetWidth - 14;
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  });
+  svg.addEventListener('pointerleave', hide);
+})();
+</script>

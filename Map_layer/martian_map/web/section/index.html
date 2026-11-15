@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Map Section</title>
+<style>
+:root{--bg:#0f1115;--panel:#171a21;--line:#2c3038;--text:#e8e6e3;--muted:#9aa0a6;--accent:#00dcff;--mapbg:#0b0d11;
+--go:#1a9850;--caution:#f4c430;--nogo:#d73027;--unknown:#9e9e9e;--err:#ff8a80}
+:root[data-theme=light]{--bg:#f4f2ee;--panel:#ffffff;--line:#d9d5cc;--text:#1d1d1b;--muted:#5f5e5a;--accent:#0a7ea4;--mapbg:#e6e3dc;--err:#b3261e}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:8px 12px;border-bottom:1px solid var(--line);background:var(--panel);z-index:5}
+header .t{min-width:0}
+header h1{font-size:15px;margin:0;font-weight:600;overflow-wrap:anywhere}
+header .sub{color:var(--muted);font-size:12px}
+.tools{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button,.btn{background:none;border:0;color:var(--text);padding:5px 10px;cursor:pointer;font:inherit;text-decoration:none;display:inline-block}
+.seg button.on{background:color-mix(in srgb,var(--accent) 24%,transparent);font-weight:600}
+.btn{border:1px solid var(--line);border-radius:8px}
+.btn:hover,.seg button:hover{background:color-mix(in srgb,var(--text) 9%,transparent)}
+main{flex:1;display:flex;min-height:0;position:relative}
+#panes{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);min-width:0;min-height:0}
+#panes.one{grid-template-columns:1fr}
+@media (orientation:portrait){#panes{grid-template-columns:1fr;grid-template-rows:1fr 1fr}#panes.one{grid-template-rows:1fr}}
+.pane{position:relative;background:var(--mapbg);min-width:0;min-height:0;overflow:hidden}
+.pane.hide{display:none}
+.pane>canvas{display:block;position:absolute;inset:0;width:100%;height:100%}
+.labels{position:absolute;inset:0;pointer-events:none;z-index:1}
+.ptitle{position:absolute;left:8px;top:8px;z-index:2;font-size:12px;color:var(--muted);background:color-mix(in srgb,var(--panel) 85%,transparent);padding:2px 8px;border-radius:6px;pointer-events:none}
+.pctl{position:absolute;right:8px;top:6px;z-index:3;display:flex;gap:6px}
+.pctl .btn{background:var(--panel);font-size:12px;padding:3px 8px}
+.chipbox{position:absolute;left:8px;bottom:8px;z-index:2;display:flex;flex-wrap:wrap;gap:4px 10px;max-width:calc(100% - 16px);background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:12px}
+.readout{position:absolute;right:8px;bottom:8px;z-index:2;font-size:12px;font-variant-numeric:tabular-nums;background:color-mix(in srgb,var(--panel) 88%,transparent);border:1px solid var(--line);border-radius:8px;padding:4px 8px;display:none;max-width:60%}
+.sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid #0005}
+aside#side{width:320px;flex:none;border-left:1px solid var(--line);background:var(--panel);overflow:auto;padding:10px 12px 16px}
+aside h2{font-size:12px;margin:14px 0 6px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600}
+aside h2:first-child{margin-top:2px}
+#mini{width:100%;aspect-ratio:2371/2964;display:block;border-radius:6px;cursor:crosshair;touch-action:none;background:var(--mapbg)}
+.hint{color:var(--muted);font-size:12px;margin:4px 0 8px}
+select,textarea{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:5px;font:inherit}
+textarea{font:12px/1.35 ui-monospace,Consolas,monospace;resize:vertical}
+label.f{display:block;margin:6px 0}
+label.f>span{display:block;color:var(--muted);font-size:12px;margin-bottom:2px}
+label.ck{display:flex;gap:6px;align-items:flex-start;margin:4px 0;cursor:pointer}
+.sl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.sl b{color:var(--text);font-weight:600}
+input[type=range]{width:100%;accent-color:var(--accent)}
+details{margin:6px 0;border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+summary{cursor:pointer;padding:2px 0}
+.row{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.kv{display:flex;justify-content:space-between;gap:8px;padding:1px 0}
+.kv span:first-child{color:var(--muted)}
+.bar{display:flex;height:10px;border-radius:4px;overflow:hidden;margin:4px 0 2px;border:1px solid var(--line)}
+code#spec{display:block;font:12px ui-monospace,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 7px;overflow-wrap:anywhere;user-select:all}
+#err{color:var(--err);font-size:12px;margin:4px 0;min-height:0}
+.note{color:var(--muted);font-size:11.5px;margin-top:4px}
+.pin{display:flex;gap:5px;align-items:center;padding-left:12px;color:#fff;font-size:11.5px;font-weight:600;text-shadow:0 0 3px #000,0 0 6px #000;white-space:nowrap;pointer-events:none}
+.num{display:inline-grid;place-items:center;min-width:18px;height:18px;padding:0 4px;border-radius:999px;color:#111;font-weight:800;font-size:11px;border:1.5px solid #000;text-shadow:none}
+.ab{font-weight:800;font-size:12px;color:#111;background:#fff;border:2px solid #000;border-radius:999px;padding:0 7px;pointer-events:none;text-shadow:none}
+.ab.b{background:#00dcff}
+#loading{position:fixed;inset:0;display:grid;place-items:center;color:var(--muted);background:var(--bg);z-index:20;font-size:14px;padding:16px;text-align:center}
+#toggleSide{display:none}
+@media (max-width:900px){
+  #toggleSide{display:inline-block}
+  aside#side{position:absolute;right:0;top:0;bottom:0;z-index:6;box-shadow:-8px 0 24px #0006;width:min(320px,100%)}
+  aside#side.closed{display:none}
+}
+@media (min-width:901px){aside#side.closed{display:none}}
+body.embed header .tools,body.embed aside#side{display:none}
+</style>
+<script type="importmap">{"imports":{"three":"../vendor/three/build/three.module.js","three/addons/":"../vendor/three/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="loading">Loading the map…</div>
+<header>
+  <div class="t"><h1 id="title">Map section</h1><div class="sub" id="sub"></div></div>
+  <div class="tools">
+    <div class="seg" id="profile"><button data-p="foot">Crew on foot</button><button data-p="rover">Rover</button></div>
+    <div class="seg" id="view"><button data-v="both">3D + 2D</button><button data-v="3d">3D</button><button data-v="2d">2D</button></div>
+    <button class="btn" id="theme" title="Light or dark">Theme</button>
+    <button class="btn" id="toggleSide">Section tools</button>
+  </div>
+</header>
+<main>
+  <div id="panes">
+    <div class="pane" id="p3d">
+      <div class="ptitle" id="t3d">3D</div>
+      <div class="pctl"><button class="btn" id="reset3d">Reset view</button><button class="btn" id="top3d">From above</button></div>
+      <div class="readout" id="r3d"></div>
+    </div>
+    <div class="pane" id="p2d">
+      <canvas id="c2d"></canvas>
+      <div class="ptitle">2D colored map (GO / NO-GO)</div>
+      <div class="chipbox" id="chips"></div>
+      <div class="readout" id="r2d"></div>
+    </div>
+  </div>
+  <aside id="side">
+    <h2>Make a section</h2>
+    <canvas id="mini"></canvas>
+    <p class="hint">Drag on the small map to cut a box. Tap once to cut around a point.</p>
+    <label class="f"><span>Ready-made</span><select id="preset"></select></label>
+    <details id="pathbox"><summary>Path A → B</summary>
+      <textarea id="pathtxt" rows="4" placeholder="-4.79762, 137.38644&#10;-4.80500, 137.38100"></textarea>
+      <p class="hint">One point per line: lat, lon (south is negative). For local metres write x, y m.</p>
+      <button class="btn" id="pathgo">Cut along this path</button>
+    </details>
+    <div id="err"></div>
+    <div class="sl"><span>Margin around a path</span><b id="vMargin"></b></div><input type="range" id="margin" min="0" max="500" step="10">
+    <div class="sl"><span>Smallest side</span><b id="vMin"></b></div><input type="range" id="min" min="100" max="1000" step="25">
+    <div class="sl"><span>Half side around a point</span><b id="vR"></b></div><input type="range" id="radius" min="50" max="1000" step="25">
+    <label class="ck"><input type="checkbox" id="heading"> Heading up: A at the bottom, B at the top</label>
+    <label class="f"><span>Screen shape</span><select id="aspect"><option value="">Free</option><option value="screen">Fit this screen</option><option value="4:3">4:3</option><option value="16:10">16:10</option></select></label>
+    <h2>This section</h2>
+    <div id="facts"></div>
+    <code id="spec"></code>
+    <div class="row"><button class="btn" id="copy">Copy link</button><a class="btn" id="o3d" target="_blank" rel="noopener">3D viewer</a><a class="btn" id="oexp" target="_blank" rel="noopener">Layer animation</a></div>
+    <h2>Show</h2>
+    <label class="ck"><input type="checkbox" id="sRoutes"> Other planned routes</label>
+    <label class="ck"><input type="checkbox" id="sPath"> Curiosity's real path (white)</label>
+    <label class="ck"><input type="checkbox" id="sPois"> Points of interest (numbered)</label>
+    <label class="ck"><input type="checkbox" id="sEva"> EVA stops, team AI colour</label>
+    <label class="ck"><input type="checkbox" id="sPhoto"> Photo under the 2D colours</label>
+    <h2>3D</h2>
+    <label class="f"><span>Map on the terrain</span><select id="layer"></select></label>
+    <div class="sl"><span>Vertical exaggeration</span><b id="vExag"></b></div><input type="range" id="exag" min="1" max="5" step="0.5">
+    <p class="note">Sections use the 2 m heightmap. Sizes are map metres; true east-west ground distance is 0.35% shorter (terrain.json).</p>
+  </aside>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import * as SEC from '../lib/sections.js';
+
+const BASE = '../';
+const $ = s => document.querySelector(s);
+const Q = new URLSearchParams(location.search);
+const J = async p => { const r = await fetch(BASE + p); if (!r.ok) throw new Error(p + ' ' + r.status); return r.json(); };
+const fail = e => { $('#loading').textContent = 'Could not load: ' + e.message + '. Serve the web/ folder (see README).'; throw e; };
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const pct = v => (v * 100).toFixed(1) + '%';
+
+const manifest = await J('layers.json').catch(fail);
+const [meta, ov] = await Promise.all([J(manifest.terrain), J(manifest.overlays)]).catch(fail);
+const LAY = Object.fromEntries(manifest.layers.map(l => [l.id, l]));
+const F = SEC.makeFrame(meta), WM = F.W, HM = F.H;
+const HMAP = meta.heightmaps.find(h => h.file === 'height_2m.bin');      // sections use the 2 m heights (A34)
+const HZ = new Float32Array(await (await fetch(BASE + 'terrain/' + HMAP.file)).arrayBuffer().catch(fail));
+const CATS = ov.poi_categories;
+function heightAt(x, y) {                                       // bilinear on the 2 m heightmap, row 0 = north
+  const {cols, rows} = HMAP, c = x / WM * cols - 0.5, r = (HM - y) / HM * rows - 0.5;
+  const c0 = clamp(Math.floor(c), 0, cols - 2), r0 = clamp(Math.floor(r), 0, rows - 2);
+  const fc = clamp(c - c0, 0, 1), fr = clamp(r - r0, 0, 1), I = (rr, cc) => HZ[rr * cols + cc];
+  return (I(r0, c0) * (1 - fc) + I(r0, c0 + 1) * fc) * (1 - fr) + (I(r0 + 1, c0) * (1 - fc) + I(r0 + 1, c0 + 1) * fc) * fr;
+}
+
+// ---------------------------------------------------------------- images and class grids (same colours as viewer3d)
+const PAL = [[158, 158, 158, 0], [26, 152, 80, 1], [244, 196, 48, 2], [215, 48, 39, 3]];
+const CNAME = ['UNKNOWN', 'GO', 'CAUTION', 'NO-GO'], CCOL = ['#9e9e9e', '#1a9850', '#f4c430', '#d73027'];
+const imgs = {}, grids = {};
+const loadImg = src => imgs[src] ??= new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = src; });
+async function classGrid(id) {
+  if (grids[id]) return grids[id];
+  const L = LAY[id], img = await loadImg(BASE + L.file), c = document.createElement('canvas');
+  c.width = img.width; c.height = img.height;
+  const x = c.getContext('2d', {willReadFrequently: true}); x.drawImage(img, 0, 0);
+  const d = x.getImageData(0, 0, c.width, c.height).data, cls = new Int8Array(c.width * c.height);
+  for (let k = 0; k < cls.length; k++) {
+    const i = k * 4; if (d[i + 3] === 0) { cls[k] = -1; continue; }
+    let best = -1, bd = 1e9;
+    for (const q of PAL) { const dd = (q[0] - d[i]) ** 2 + (q[1] - d[i + 1]) ** 2 + (q[2] - d[i + 2]) ** 2; if (dd < bd) { bd = dd; best = q[3]; } }
+    cls[k] = bd < 300 ? best : -1;
+  }
+  return grids[id] = {img, w: c.width, h: c.height, cls, kx: L.covers_m[0] / c.width, ky: L.covers_m[1] / c.height, cov: L.covers_m};
+}
+const classAt = (G, x, y) => { const i = Math.floor(x / G.kx), j = Math.floor((HM - y) / G.ky); return i < 0 || j < 0 || i >= G.w || j >= G.h ? -1 : G.cls[j * G.w + i]; };
+
+// ---------------------------------------------------------------- state (URL first, then defaults)
+const qn = (k, d) => (Q.get(k) != null && Q.get(k) !== '' && Number.isFinite(+Q.get(k)) ? +Q.get(k) : d);
+const st = {
+  profile: Q.get('profile') === 'rover' ? 'rover' : 'foot',
+  view: ['3d', '2d'].includes(Q.get('view')) ? Q.get('view') : 'both',
+  theme: Q.get('theme') === 'light' ? 'light' : 'dark',
+  layer: Q.get('layer') || 'colored',
+  exag: clamp(qn('exag', meta.vertical_exaggeration.default), 1, 5),
+  show: {routes: Q.get('routes') !== '0', path: Q.get('curiosity') !== '0', pois: Q.get('pois') !== '0', eva: Q.get('eva') === '1', photo: Q.get('photo') === '1'},
+  opts: {margin: qn('margin', SEC.DEFAULTS.margin), min: qn('min', SEC.DEFAULTS.min), radius: qn('r', SEC.DEFAULTS.radius), heading: Q.get('heading') === '1', aspect: Q.get('aspect') || ''},
+  spec: Q.get('section') || 'whole', sec: null, stats: null, grid: null,
+};
+if (Q.get('ui') === '0') document.body.classList.add('embed');
+document.documentElement.dataset.theme = st.theme;
+
+// ---------------------------------------------------------------- 3D: renderer, camera
+const p3d = $('#p3d'), p2d = $('#p2d');
+const renderer = new THREE.WebGLRenderer({antialias: true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2)); renderer.localClippingEnabled = true;
+p3d.prepend(renderer.domElement);
+const labelR = new CSS2DRenderer(); labelR.domElement.className = 'labels'; p3d.appendChild(labelR.domElement);
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1.5, 1, 60000);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true; controls.maxPolarAngle = Math.PI * 0.495;
+const SKIRT = 20;                                               // m of side wall below the lowest point (A35, display only)
+
+const loader = new THREE.TextureLoader(), texCache = {};
+function texOf(id) {
+  if (texCache[id]) return texCache[id];
+  if (id === 'bare') { const t = new THREE.DataTexture(new Uint8Array([172, 164, 154, 255]), 1, 1); t.needsUpdate = true; return texCache[id] = {t, st: new THREE.Vector4(1, 1, 0, 0)}; }
+  const L = LAY[id], t = loader.load(BASE + L.file, () => { needs3d = true; });
+  t.colorSpace = THREE.NoColorSpace;                            // raw sRGB bytes in and out: legend colours stay exact
+  if (L.nearest) { t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; } else t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  return texCache[id] = {t, st: new THREE.Vector4(WM / L.covers_m[0], HM / L.covers_m[1], 0, 1 - HM / L.covers_m[1])};   // as viewer3d
+}
+const TVS = `varying vec2 vUv; varying vec3 vN;
+void main() { vUv = uv; vN = normal; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const TFS = `uniform sampler2D mapA, mapB; uniform vec4 stA, stB; uniform float useB, lit; uniform vec3 sunDir;
+varying vec2 vUv; varying vec3 vN;
+void main() {
+  if (vUv.x < 0.0 || vUv.x > 1.0 || vUv.y < 0.0 || vUv.y > 1.0) discard;     // outside the box (turned sections)
+  vec4 c = texture2D(mapA, vUv * stA.xy + stA.zw);
+  if (useB > 0.5) { vec4 o = texture2D(mapB, vUv * stB.xy + stB.zw); c.rgb = mix(c.rgb, o.rgb, o.a * 0.8); }
+  c.rgb *= mix(1.0, 0.3 + 0.95 * max(dot(normalize(vN), sunDir), 0.0), lit);
+  gl_FragColor = vec4(c.rgb, 1.0);
+}`;
+const WVS = `attribute float shade; varying vec2 vUv; varying float vS;
+void main() { vUv = uv; vS = shade; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const WFS = `uniform vec3 color; varying vec2 vUv; varying float vS;
+void main() { if (vUv.x < 0.0 || vUv.x > 1.0 || vUv.y < 0.0 || vUv.y > 1.0) discard; gl_FragColor = vec4(color * vS, 1.0); }`;
+const sunDir = new THREE.Vector3();
+const tMat = new THREE.ShaderMaterial({vertexShader: TVS, fragmentShader: TFS, side: THREE.DoubleSide,
+  uniforms: {mapA: {value: null}, mapB: {value: null}, stA: {value: new THREE.Vector4()}, stB: {value: new THREE.Vector4()}, useB: {value: 0}, lit: {value: 1}, sunDir: {value: sunDir}}});
+const wMat = new THREE.ShaderMaterial({vertexShader: WVS, fragmentShader: WFS, side: THREE.DoubleSide, uniforms: {color: {value: new THREE.Color()}}});
+const planes = [new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0), new THREE.Plane(new THREE.Vector3(1, 0, 0), 0), new THREE.Plane(new THREE.Vector3(0, 0, -1), 0), new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)];
+let terrain = null, wall = null, zb = 0, zt = 0, needs3d = true;
+const ovG = new THREE.Group(); scene.add(ovG);
+const P3 = (x, y, z, lift = 0) => { const {u, v} = SEC.toSection(st.sec, x, y); return new THREE.Vector3(u, (z - zb) * st.exag + lift, -v); };
+
+function buildTerrain() {
+  if (terrain) { scene.remove(terrain, wall); terrain.geometry.dispose(); wall.geometry.dispose(); }
+  const s = st.sec, L = Math.max(s.w, s.h), step = Math.max(HMAP.cell_m[1], L / 600);   // at most 600 cells on the long side
+  const nu = Math.max(2, Math.ceil(s.w / step) + 1), nv = Math.max(2, Math.ceil(s.h / step) + 1), n = nu * nv;
+  const pos = new Float32Array(n * 3), uv = new Float32Array(n * 2), Z = new Float32Array(n);
+  zb = Infinity; zt = -Infinity;
+  for (let j = 0, i = 0; j < nv; j++) for (let k = 0; k < nu; k++, i++) {
+    const u = -s.w / 2 + s.w * k / (nu - 1), v = s.h / 2 - s.h * j / (nv - 1), [x, y] = SEC.fromSection(s, u, v), z = heightAt(x, y);
+    Z[i] = z; pos[i * 3] = u; pos[i * 3 + 2] = -v; uv[i * 2] = x / WM; uv[i * 2 + 1] = y / HM;
+    if (F.inBox(x, y)) { zb = Math.min(zb, z); zt = Math.max(zt, z); }
+  }
+  if (!Number.isFinite(zb)) for (const z of Z) { zb = Math.min(zb, z); zt = Math.max(zt, z); }
+  for (let i = 0; i < n; i++) pos[i * 3 + 1] = (Z[i] - zb) * st.exag;
+  const idx = new Uint32Array((nu - 1) * (nv - 1) * 6);
+  for (let j = 0, q = 0; j < nv - 1; j++) for (let k = 0; k < nu - 1; k++) { const a = j * nu + k, b = a + 1, c = a + nu, d = c + 1; idx.set([a, c, b, b, c, d], q); q += 6; }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('uv', new THREE.BufferAttribute(uv, 2)); g.setIndex(new THREE.BufferAttribute(idx, 1));
+  g.computeVertexNormals();
+  terrain = new THREE.Mesh(g, tMat); terrain.frustumCulled = false;
+  // side walls along the four edges, so the section reads as a cut block of ground
+  const sun2 = [-Math.SQRT1_2, Math.SQRT1_2], {right, up} = SEC.axes(s), P = [], UV = [], SH = [], I = [];
+  const sides = [[0, 0, 1, 0, up], [nu - 1, 0, 0, 1, right], [nu - 1, nv - 1, -1, 0, up.map(c => -c)], [0, nv - 1, 0, -1, right.map(c => -c)]];
+  for (const [k0, j0, dk, dj, out] of sides) {
+    const m = dk ? nu : nv, shade = 0.62 + 0.4 * Math.max(0, out[0] * sun2[0] + out[1] * sun2[1]), base = P.length / 3;
+    for (let t = 0; t < m; t++) {
+      const i = (j0 + dj * t) * nu + (k0 + dk * t);
+      P.push(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2], pos[i * 3], -SKIRT, pos[i * 3 + 2]);
+      UV.push(uv[i * 2], uv[i * 2 + 1], uv[i * 2], uv[i * 2 + 1]); SH.push(shade, shade);
+      if (t) { const a = base + (t - 1) * 2; I.push(a, a + 1, a + 2, a + 2, a + 1, a + 3); }
+    }
+  }
+  const wg = new THREE.BufferGeometry();
+  wg.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); wg.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2));
+  wg.setAttribute('shade', new THREE.Float32BufferAttribute(SH, 1)); wg.setIndex(I);
+  wall = new THREE.Mesh(wg, wMat); wall.frustumCulled = false;
+  scene.add(terrain, wall);
+  const nw = SEC.toSection({...s, cx: 0, cy: 0}, -1, 1);      // sun from the north-west, 45° up (as viewer3d)
+  sunDir.set(nw.u, Math.hypot(nw.u, nw.v), -nw.v).normalize();
+  planes[0].constant = planes[1].constant = s.w / 2 + 0.5; planes[2].constant = planes[3].constant = s.h / 2 + 0.5;
+}
+const layerList = () => {
+  const p = st.profile, T = id => LAY[id].title.replace(/ \((foot|rover|crew on foot)\)$/i, '');
+  return [
+    {key: 'colored', id: `combined_over_photo_${p}`, label: '3D colored map'},
+    {key: 'combined', id: `combined_${p}`, label: '2D colored map, draped'},
+    {key: 'photo', id: 'photo', label: T('photo')}, {key: 'bare', id: 'bare', label: 'Bare terrain (shape only)'},
+    {key: 'slope', id: `conv_slope_${p}`, label: T(`conv_slope_${p}`)}, {key: 'rough', id: 'conv_roughness', label: T('conv_roughness')},
+    {key: 'terrain', id: 'conv_terrain', label: T('conv_terrain')}, {key: 'gt', id: 'conv_groundtruth', label: T('conv_groundtruth')},
+    {key: 'certainty', id: 'certainty', label: T('certainty')}, {key: 'reach', id: `reach_${p}`, label: T(`reach_${p}`)}, {key: 'hillshade', id: 'hillshade', label: T('hillshade')},
+  ].filter(l => l.id === 'bare' || LAY[l.id]);
+};
+function applyLayer() {
+  const L = layerList().find(l => l.key === st.layer) || layerList()[0]; st.layer = L.key;
+  const lay = LAY[L.id], u = tMat.uniforms;
+  if (lay?.overlay_on_photo) { const a = texOf('photo'), b = texOf(L.id); u.mapA.value = a.t; u.stA.value.copy(a.st); u.mapB.value = b.t; u.stB.value.copy(b.st); u.useB.value = 1; }
+  else { const a = texOf(L.id); u.mapA.value = a.t; u.stA.value.copy(a.st); u.mapB.value = a.t; u.useB.value = 0; }
+  $('#t3d').textContent = '3D: ' + L.label;
+  $('#layer').value = L.key; needs3d = true;
+}
+
+// ---------------------------------------------------------------- 3D overlays (cut by four planes at the section edges)
+const nearSite = (x, y) => ov.poi_sites.find(s => Math.hypot(s.x - x, s.y - y) < 25);   // POIs within 25 m share a pin (A22)
+const secPath = () => st.sec.path || null;
+function addLabel(html, cls, p, cx = 0) {
+  const el = document.createElement('div'); el.className = cls; el.innerHTML = html;
+  const o = new CSS2DObject(el); o.center.set(cx, 0.5); o.position.copy(p); ovG.add(o); return o;
+}
+function buildOverlays() {
+  ovG.traverse(o => { if (o.geometry) o.geometry.dispose(); if (o.material) o.material.dispose(); if (o.element) o.element.remove(); });
+  ovG.clear();
+  const s = st.sec, L = Math.max(s.w, s.h), r = Math.max(1.2, L / 450), M = c => ({color: c, clippingPlanes: planes});
+  const tube = (P, rad, col, closed = false) => {
+    if (P.length < 2) return;
+    const pts = P.map(p => P3(p[0], p[1], heightAt(p[0], p[1]), rad * 1.2));
+    ovG.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, closed, 'catmullrom', 0.05), Math.min(4000, pts.length * 3), rad, 6, closed), new THREE.MeshBasicMaterial(M(col))));
+  };
+  if (st.show.path) for (const seg of ov.curiosity_path) {
+    const g = new THREE.BufferGeometry().setFromPoints(seg.map(p => P3(p[0], p[1], heightAt(p[0], p[1]), r * 0.6)));
+    ovG.add(new THREE.Line(g, new THREE.LineBasicMaterial(M(0xffffff))));
+  }
+  if (st.show.routes) for (const R of ov.routes.filter(R => R.profile === st.profile && R.leg !== s.route?.leg)) tube(R.xyz, r * 0.55, 0x2aa7c0);
+  const P = secPath();
+  if (P) {
+    tube(P, r, 0x00dcff);
+    const ends = [[P[0], 'A', ''], [P[P.length - 1], 'B', ' b']];
+    for (const [q, t, c] of ends) {
+      const site = nearSite(q[0], q[1]), g = P3(q[0], q[1], heightAt(q[0], q[1]), 0), top = g.clone(); top.y += L * 0.05 + 10;
+      const stem = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.35, r * 0.35, top.y - g.y, 6), new THREE.MeshBasicMaterial(M(t === 'A' ? 0xffffff : 0x00dcff)));
+      stem.position.set(g.x, (g.y + top.y) / 2, g.z); ovG.add(stem);
+      const named = site && !st.show.pois;                     // with POI pins on, the pin already carries the name
+      addLabel(`${t}${named ? ` <span style="font-weight:600">${esc(site.names[0])}</span>` : ''}`, 'ab' + c, top, 0.5).center.set(0.5, 1);
+    }
+  }
+  if (st.show.pois) for (const S of ov.poi_sites) {
+    if (!SEC.contains(s, S.x, S.y)) continue;
+    const col = CATS[S.category].color, g = P3(S.x, S.y, heightAt(S.x, S.y), 0), top = g.clone(); top.y += L * 0.07 + 14;
+    const stem = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.4, r * 0.4, top.y - g.y, 6), new THREE.MeshBasicMaterial(M(col)));
+    stem.position.set(g.x, (g.y + top.y) / 2, g.z); ovG.add(stem);
+    const head = new THREE.Mesh(new THREE.SphereGeometry(r * 2.4, 16, 12), new THREE.MeshBasicMaterial(M(col))); head.position.copy(top); ovG.add(head);
+    addLabel(`<span class="num" style="background:${col}">${S.site}</span><span>${S.names.map(esc).join('<br>')}</span>`, 'pin', top);
+  }
+  if (st.show.eva) for (const e of ov.eva_stops) {
+    if (!SEC.contains(s, e.x, e.y)) continue;
+    const m = new THREE.Mesh(new THREE.SphereGeometry(r * 1.5, 10, 8), new THREE.MeshBasicMaterial(M({red: 0xd73027, orange: 0xff9e3d, green: 0x7ee2a0}[e.team_class])));
+    m.position.copy(P3(e.x, e.y, heightAt(e.x, e.y), r * 1.5)); ovG.add(m);
+  }
+  needs3d = true;
+}
+
+// camera: whole section in view, from the section's bottom side (south when north is up, behind A when heading up)
+const _d = new THREE.Vector3(), _f = new THREE.Vector3(), _rt = new THREE.Vector3(), _up = new THREE.Vector3(), _p = new THREE.Vector3(), Y = new THREE.Vector3(0, 1, 0);
+let autoFit = true, lastTop = false;
+function fitView(top = false, keep = false) {
+  if (!keep) autoFit = true; lastTop = top;
+  const w = p3d.clientWidth || 800, h = p3d.clientHeight || 600, s = st.sec, hy = (zt - zb) * st.exag;
+  const el = THREE.MathUtils.degToRad(top ? 89.5 : 40);
+  _d.set(0, Math.sin(el), Math.cos(el)); const tgt = new THREE.Vector3(0, hy / 2, 0);
+  _f.copy(_d).negate(); _rt.crossVectors(_f, Y).normalize(); _up.crossVectors(_rt, _f);
+  const vt = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2), ht = vt * w / h;
+  let d = 0;
+  for (const x of [-s.w / 2, s.w / 2]) for (const z of [-s.h / 2, s.h / 2]) for (const y of [-SKIRT, hy]) {
+    _p.set(x, y, z).sub(tgt); const k = _p.dot(_d);
+    d = Math.max(d, k + Math.abs(_p.dot(_rt)) / (0.92 * ht), k + Math.abs(_p.dot(_up)) / (0.86 * vt));
+  }
+  controls.target.copy(tgt); camera.position.copy(tgt).addScaledVector(_d, d * 1.04);
+  controls.minDistance = Math.max(30, Math.min(s.w, s.h) * 0.15); controls.maxDistance = d * 4;
+  camera.near = Math.max(0.5, d / 500); camera.far = d * 20; camera.updateProjectionMatrix(); controls.update(); needs3d = true;
+}
+
+// ---------------------------------------------------------------- 2D colored map (canvas, crisp 3 m cells)
+const c2d = $('#c2d'), x2d = c2d.getContext('2d');
+let V = null;
+function view2d() {
+  const w = p2d.clientWidth, h = p2d.clientHeight, s = st.sec, pad = 18, top = 30, bot = 72;   // bottom: scale bar, then the class chips
+  const k = Math.min((w - 2 * pad) / s.w, (h - top - bot) / s.h);
+  return {w, h, k, CX: w / 2, CY: top + (h - top - bot) / 2};
+}
+const toPx = (x, y) => { const {u, v} = SEC.toSection(st.sec, x, y); return [V.CX + u * V.k, V.CY - v * V.k]; };
+function drawImg(img, cov, alpha, smooth) {                     // draw a raster that covers x 0..cov[0], y HM-cov[1]..HM
+  const s = st.sec, {right: [rX, rY], up: [uX, uY]} = SEC.axes(s), kx = cov[0] / img.width, ky = cov[1] / img.height, k = V.k, dpr = devicePixelRatio || 1;
+  const a = k * kx * rX, b = -k * kx * uX, c = -k * ky * rY, d = k * ky * uY;
+  const e = V.CX + k * (-s.cx * rX + (HM - s.cy) * rY), f = V.CY - k * (-s.cx * uX + (HM - s.cy) * uY);
+  x2d.save(); x2d.globalAlpha = alpha; x2d.imageSmoothingEnabled = smooth; x2d.setTransform(dpr * a, dpr * b, dpr * c, dpr * d, dpr * e, dpr * f);
+  x2d.drawImage(img, 0, 0); x2d.restore();
+}
+function line(P, width, color, outline) {
+  if (P.length < 2) return;
+  x2d.lineJoin = x2d.lineCap = 'round';
+  for (const [wd, col] of outline ? [[width + 3, outline], [width, color]] : [[width, color]]) {
+    x2d.beginPath(); P.forEach((p, i) => { const [a, b] = toPx(p[0], p[1]); i ? x2d.lineTo(a, b) : x2d.moveTo(a, b); });
+    x2d.lineWidth = wd; x2d.strokeStyle = col; x2d.stroke();
+  }
+}
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+async function draw2D() {
+  if (p2d.classList.contains('hide') || !st.sec) return;
+  const dpr = devicePixelRatio || 1, w = p2d.clientWidth, h = p2d.clientHeight; if (!w || !h) return;
+  c2d.width = Math.round(w * dpr); c2d.height = Math.round(h * dpr); V = view2d();
+  const s = st.sec, G = st.grid, photo = st.show.photo ? await loadImg(BASE + LAY.photo.file) : null;
+  x2d.setTransform(dpr, 0, 0, dpr, 0, 0); x2d.clearRect(0, 0, w, h);
+  const rx = V.CX - s.w / 2 * V.k, ry = V.CY - s.h / 2 * V.k, rw = s.w * V.k, rh = s.h * V.k;
+  x2d.save(); x2d.beginPath(); x2d.rect(rx, ry, rw, rh); x2d.clip();
+  x2d.fillStyle = st.theme === 'light' ? '#cfcac0' : '#1a1d24'; x2d.fillRect(rx, ry, rw, rh);   // outside the box (turned sections)
+  if (photo) drawImg(photo, LAY.photo.covers_m, 1, true);
+  drawImg(G.img, G.cov, photo ? 0.55 : 1, false);
+  const box = [[0, 0], [WM, 0], [WM, HM], [0, HM], [0, 0]];
+  x2d.setLineDash([4, 4]); line(box, 1, st.theme === 'light' ? '#5f5e5a' : '#9aa0a6'); x2d.setLineDash([]);
+  const L = Math.max(s.w, s.h), lw = clamp(rw / L * 6, 2, 5);
+  if (st.show.path) for (const seg of ov.curiosity_path) line(seg, 1.4, '#ffffff', '#0009');
+  if (st.show.routes) for (const R of ov.routes.filter(R => R.profile === st.profile && R.leg !== s.route?.leg)) line(R.xyz, lw * 0.55, '#2aa7c0', '#0008');
+  if (st.show.eva) for (const e of ov.eva_stops) {
+    if (!SEC.contains(s, e.x, e.y, 10)) continue; const [a, b] = toPx(e.x, e.y);
+    x2d.beginPath(); x2d.arc(a, b, 4, 0, 7); x2d.fillStyle = {red: '#d73027', orange: '#ff9e3d', green: '#7ee2a0'}[e.team_class]; x2d.fill(); x2d.lineWidth = 1; x2d.strokeStyle = '#000'; x2d.stroke();
+  }
+  const P = secPath(); if (P) line(P, lw, '#00dcff', '#003a46');
+  x2d.restore();
+  x2d.strokeStyle = st.theme === 'light' ? '#1d1d1b' : '#e8e6e3'; x2d.lineWidth = 1; x2d.strokeRect(rx + 0.5, ry + 0.5, rw - 1, rh - 1);
+  x2d.font = '600 11.5px system-ui,sans-serif'; x2d.textBaseline = 'middle';
+  if (st.show.pois) for (const S of ov.poi_sites) {
+    if (!SEC.contains(s, S.x, S.y)) continue; const [a, b] = toPx(S.x, S.y);
+    x2d.beginPath(); x2d.arc(a, b, 9, 0, 7); x2d.fillStyle = CATS[S.category].color; x2d.fill(); x2d.lineWidth = 1.5; x2d.strokeStyle = '#000'; x2d.stroke();
+    x2d.fillStyle = '#111'; x2d.textAlign = 'center'; x2d.fillText(S.site, a, b + 0.5);
+    const tw = x2d.measureText(S.names[0]).width, left = a + 12 + tw > w - 4, tx = left ? a - 12 : a + 12;   // flip the name when it would leave the canvas
+    x2d.textAlign = left ? 'right' : 'left'; x2d.lineWidth = 3; x2d.strokeStyle = '#000c'; x2d.strokeText(S.names[0], tx, b); x2d.fillStyle = '#fff'; x2d.fillText(S.names[0], tx, b);
+  }
+  if (P) for (const [q, t, col] of [[P[0], 'A', '#fff'], [P[P.length - 1], 'B', '#00dcff']]) {
+    const [a, b] = toPx(q[0], q[1]); x2d.beginPath(); x2d.arc(a, b, 10, 0, 7); x2d.fillStyle = col; x2d.fill(); x2d.lineWidth = 2; x2d.strokeStyle = '#000'; x2d.stroke();
+    x2d.fillStyle = '#111'; x2d.textAlign = 'center'; x2d.font = '800 12px system-ui,sans-serif'; x2d.fillText(t, a, b + 0.5);
+  }
+  // scale bar (map metres) and north arrow
+  const nice = [10, 20, 25, 50, 100, 200, 250, 500, 1000], want = s.w * 0.25, m = nice.filter(n => n <= want).pop() || 10, px = m * V.k;
+  const sx = rx, sy = ry + rh + 16, fg = st.theme === 'light' ? '#1d1d1b' : '#e8e6e3';
+  x2d.fillStyle = fg; x2d.strokeStyle = fg; x2d.lineWidth = 2; x2d.beginPath(); x2d.moveTo(sx, sy - 4); x2d.lineTo(sx, sy); x2d.lineTo(sx + px, sy); x2d.lineTo(sx + px, sy - 4); x2d.stroke();
+  x2d.font = '12px system-ui,sans-serif'; x2d.textAlign = 'left'; x2d.fillText(`${m} m`, sx + px + 6, sy - 1);
+  const {right, up} = SEC.axes(s), nu = right[1], nv = up[1], ax = rx + rw - 18, ay = ry + rh + 18;   // north (0, 1) in section axes
+  x2d.save(); x2d.translate(ax, ay - 2); x2d.rotate(Math.atan2(nu, nv));
+  x2d.beginPath(); x2d.moveTo(0, -11); x2d.lineTo(6, 7); x2d.lineTo(0, 3); x2d.lineTo(-6, 7); x2d.closePath(); x2d.fillStyle = fg; x2d.fill(); x2d.restore();
+  x2d.textAlign = 'right'; x2d.fillText('N', ax - 12, ay - 1);
+}
+
+// ---------------------------------------------------------------- small overview map: draw a box or tap a point
+const mini = $('#mini'), xm = mini.getContext('2d');
+let drag = null;
+const mPx = (x, y) => [x / WM * mini.clientWidth, (HM - y) / HM * mini.clientHeight];
+const mXY = e => { const r = mini.getBoundingClientRect(); return [clamp((e.clientX - r.left) / r.width, 0, 1) * WM, (1 - clamp((e.clientY - r.top) / r.height, 0, 1)) * HM]; };
+async function drawMini() {
+  const dpr = devicePixelRatio || 1, w = mini.clientWidth, h = mini.clientHeight; if (!w) return;
+  mini.width = Math.round(w * dpr); mini.height = Math.round(h * dpr); xm.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const G = st.grid; xm.imageSmoothingEnabled = true; xm.clearRect(0, 0, w, h);
+  xm.drawImage(G.img, 0, 0, G.img.width, G.img.height, 0, 0, G.cov[0] / WM * w, G.cov[1] / HM * h);
+  xm.lineJoin = 'round';
+  for (const R of ov.routes.filter(R => R.profile === st.profile)) { xm.beginPath(); R.xyz.forEach((p, i) => { const [a, b] = mPx(p[0], p[1]); i ? xm.lineTo(a, b) : xm.moveTo(a, b); }); xm.lineWidth = 3; xm.strokeStyle = '#003a46'; xm.stroke(); xm.lineWidth = 1.5; xm.strokeStyle = '#00dcff'; xm.stroke(); }
+  for (const S of ov.poi_sites) { const [a, b] = mPx(S.x, S.y); xm.beginPath(); xm.arc(a, b, 3.5, 0, 7); xm.fillStyle = CATS[S.category].color; xm.fill(); xm.strokeStyle = '#000'; xm.lineWidth = 1; xm.stroke(); }
+  const c = SEC.corners(st.sec);
+  xm.beginPath(); c.forEach((p, i) => { const [a, b] = mPx(p[0], p[1]); i ? xm.lineTo(a, b) : xm.moveTo(a, b); }); xm.closePath();
+  xm.fillStyle = '#ffffff22'; xm.fill(); xm.lineWidth = 3; xm.strokeStyle = '#000'; xm.stroke(); xm.lineWidth = 1.5; xm.strokeStyle = '#fff'; xm.stroke();
+  if (drag && drag.moved) { const [a, b] = mPx(...drag.a), [c2, d] = mPx(...drag.b); xm.setLineDash([4, 3]); xm.strokeStyle = '#00dcff'; xm.lineWidth = 1.5; xm.strokeRect(a, b, c2 - a, d - b); xm.setLineDash([]); }
+}
+mini.addEventListener('pointerdown', e => { mini.setPointerCapture(e.pointerId); const p = mXY(e); drag = {a: p, b: p, moved: false, x: e.clientX, y: e.clientY}; });
+mini.addEventListener('pointermove', e => { if (!drag) return; drag.b = mXY(e); drag.moved ||= Math.hypot(e.clientX - drag.x, e.clientY - drag.y) > 4; drawMini(); });
+mini.addEventListener('pointerup', () => {
+  if (!drag) return; const d = drag; drag = null;
+  if (d.moved) setSection(`box:${[d.a[0], d.a[1], d.b[0], d.b[1]].map(v => Math.round(v)).join(',')}`);
+  else setSection(`xy:${Math.round(d.a[0])},${Math.round(d.a[1])}`);
+});
+
+// ---------------------------------------------------------------- numbers about the section (computed from the map files)
+function sectionStats() {
+  const s = st.sec, G = st.grid, b = SEC.bounds(s), n = [0, 0, 0, 0];
+  const i0 = clamp(Math.floor(b.x0 / G.kx), 0, G.w - 1), i1 = clamp(Math.ceil(b.x1 / G.kx), 0, G.w - 1);
+  const j0 = clamp(Math.floor((HM - b.y1) / G.ky), 0, G.h - 1), j1 = clamp(Math.ceil((HM - b.y0) / G.ky), 0, G.h - 1);
+  for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) {
+    const k = G.cls[j * G.w + i]; if (k < 0) continue;
+    if (SEC.contains(s, (i + 0.5) * G.kx, HM - (j + 0.5) * G.ky)) n[k]++;
+  }
+  const tot = n.reduce((a, v) => a + v, 0) || 1, out = {cells: n.map(v => v / tot), path: null};
+  const P = secPath();
+  if (P && P.length > 1) {
+    const len = [0, 0, 0, 0, 0]; let up = 0, down = 0, zp = heightAt(P[0][0], P[0][1]), acc = 0;
+    for (let q = 1; q < P.length; q++) {
+      const a = P[q - 1], c = P[q], seg = Math.hypot(c[0] - a[0], c[1] - a[1]), m = Math.max(1, Math.ceil(seg)), g = F.groundDist(a, c) / m;
+      for (let t = 0; t < m; t++) {
+        const f = (t + 0.5) / m, x = a[0] + (c[0] - a[0]) * f, y = a[1] + (c[1] - a[1]) * f, k = classAt(G, x, y);
+        len[k < 0 ? 4 : k] += g; acc += g;
+        if (acc >= 2) { const z = heightAt(x, y); if (z > zp) up += z - zp; else down += zp - z; zp = z; acc = 0; }   // every 2 m on the 2 m heightmap
+      }
+    }
+    const L = len.reduce((a, v) => a + v, 0);
+    out.path = {len: L, cls: len.slice(0, 4).map(v => v / (L || 1)), straight: F.groundDist(P[0], P[P.length - 1]), z0: heightAt(P[0][0], P[0][1]), z1: heightAt(...P[P.length - 1]), up, down};
+  }
+  out.pois = ov.poi_sites.filter(S => SEC.contains(s, S.x, S.y));
+  out.eva = {red: 0, orange: 0, green: 0}; for (const e of ov.eva_stops) if (SEC.contains(s, e.x, e.y)) out.eva[e.team_class]++;
+  return out;
+}
+const barOf = sh => `<div class="bar">${[1, 2, 3, 0].map(k => sh[k] > 0 ? `<span style="width:${sh[k] * 100}%;background:${CCOL[k]}"></span>` : '').join('')}</div>`;
+const rowsOf = sh => [1, 2, 3, 0].filter(k => sh[k] > 0.0005).map(k => `<div class="kv"><span><span class="sw" style="background:${CCOL[k]}"></span>${CNAME[k]}</span><span>${pct(sh[k])}</span></div>`).join('');
+function renderFacts() {
+  const s = st.sec, S = st.stats, c = F.toLatLon(s.cx, s.cy), prof = st.profile === 'rover' ? 'rover' : 'crew on foot';
+  let h = `<div class="kv"><span>Size</span><span>${Math.round(s.w)} × ${Math.round(s.h)} m</span></div>
+    <div class="kv"><span>Share of the box</span><span>${pct(SEC.share(F, s))}</span></div>
+    <div class="kv"><span>Centre</span><span>${c.lat.toFixed(5)}°, ${c.lon.toFixed(5)}°E</span></div>
+    ${s.rot ? `<div class="kv"><span>Turned</span><span>${s.rot.toFixed(0)}° (up = bearing)</span></div>` : ''}
+    <div class="note" style="margin-top:8px">Inside the section, combined map (${prof}):</div>${barOf(S.cells)}${rowsOf(S.cells)}`;
+  if (S.path) h += `<div class="note" style="margin-top:8px">Along the path A → B (2D colored map, 2 m heights):</div>${barOf(S.path.cls)}${rowsOf(S.path.cls)}
+    <div class="kv"><span>Length</span><span>${Math.round(S.path.len)} m (straight ${Math.round(S.path.straight)} m)</span></div>
+    <div class="kv"><span>Height A → B</span><span>${(S.path.z1 - S.path.z0 >= 0 ? '+' : '') + (S.path.z1 - S.path.z0).toFixed(0)} m</span></div>
+    <div class="kv"><span>Climb / descent</span><span>${S.path.up.toFixed(0)} m / ${S.path.down.toFixed(0)} m</span></div>`;
+  if (s.route) { const p = s.route.props; h += `<div class="note" style="margin-top:8px">Pipeline numbers for this leg (overlays.json, step 50): route ${p.route_m} m, ${pct(p.pct_go)} GO, max slope ${p.slope_max_deg}°.</div>`; }
+  if (S.pois.length) h += `<div class="note" style="margin-top:8px">Points of interest inside: ${S.pois.map(p => `${p.site}. ${esc(p.names.join(', '))}`).join('; ')}</div>`;
+  const ev = S.eva; if (ev.red + ev.orange + ev.green) h += `<div class="note">EVA stops inside: ${ev.green} green, ${ev.orange} orange, ${ev.red} red.</div>`;
+  $('#facts').innerHTML = h;
+  $('#chips').innerHTML = [1, 2, 3, 0].filter(k => S.cells[k] > 0.0005).map(k => `<span><span class="sw" style="background:${CCOL[k]}"></span>${CNAME[k]} ${pct(S.cells[k])}</span>`).join('');
+  $('#spec').textContent = st.spec;
+  $('#title').textContent = s.label;
+  $('#sub').textContent = `${Math.round(s.w)} × ${Math.round(s.h)} m · ${pct(SEC.share(F, s))} of the box · Mount Sharp boxwork, Gale crater · ${prof}`;
+  document.title = 'Map Section';
+}
+
+// ---------------------------------------------------------------- make / change the section
+function optsNow() {
+  const o = {...st.opts, profile: st.profile};
+  if (o.aspect === 'screen') { const p = st.view === '3d' ? p3d : p2d; o.aspect = p.clientWidth && p.clientHeight ? Math.max(1, p.clientWidth - 36) / Math.max(1, p.clientHeight - 102) : 0; }
+  return o;
+}
+function urlParams(spec = st.spec) {
+  const u = new URLSearchParams();
+  u.set('section', spec);
+  const o = st.opts, D = SEC.DEFAULTS;
+  if (o.margin !== D.margin) u.set('margin', o.margin); if (o.min !== D.min) u.set('min', o.min); if (o.radius !== D.radius) u.set('r', o.radius);
+  if (o.heading) u.set('heading', '1'); if (o.aspect) u.set('aspect', o.aspect);
+  if (st.profile === 'rover') u.set('profile', 'rover');
+  return u;
+}
+function syncURL() {
+  const u = urlParams();
+  if (st.view !== 'both') u.set('view', st.view); if (st.theme === 'light') u.set('theme', 'light'); if (st.layer !== 'colored') u.set('layer', st.layer);
+  if (st.exag !== meta.vertical_exaggeration.default) u.set('exag', st.exag);
+  if (!st.show.routes) u.set('routes', '0'); if (!st.show.path) u.set('curiosity', '0'); if (!st.show.pois) u.set('pois', '0');
+  if (st.show.eva) u.set('eva', '1'); if (st.show.photo) u.set('photo', '1'); if (Q.get('ui') === '0') u.set('ui', '0');
+  history.replaceState(null, '', '?' + u.toString().replace(/%3A/g, ':').replace(/%2C/g, ',').replace(/%3B/g, ';'));
+  const p = urlParams().toString().replace(/%3A/g, ':').replace(/%2C/g, ',').replace(/%3B/g, ';');
+  $('#o3d').href = '../viewer3d/?' + p; $('#oexp').href = '../explode/?' + p;
+}
+function setSection(spec, fit = true) {
+  let sec;
+  try { sec = SEC.parse(F, spec, {overlays: ov}, optsNow()); }
+  catch (e) { $('#err').textContent = e.message; return false; }
+  $('#err').textContent = '';
+  st.sec = sec; st.spec = spec; st.stats = sectionStats();
+  buildTerrain(); buildOverlays(); if (fit) fitView(); draw2D(); drawMini(); renderFacts(); syncURL();
+  const pre = [...$('#preset').options].find(o => o.value === spec); $('#preset').value = pre ? spec : '';
+  return true;
+}
+const reapply = () => setSection(st.spec);
+
+// ---------------------------------------------------------------- controls
+function fillPresets() {
+  const list = SEC.presets(F, ov, st.profile, optsNow()), groups = {};
+  for (const p of list) (groups[p.group] ??= []).push(p);
+  $('#preset').innerHTML = `<option value="">Choose…</option><option value="whole">Whole box</option>` +
+    Object.entries(groups).map(([g, ps]) => `<optgroup label="${g}">${ps.map(p => `<option value="${p.spec}">${esc(p.label)} (${pct(SEC.share(F, p.section))})</option>`).join('')}</optgroup>`).join('');
+}
+$('#preset').onchange = e => { if (e.target.value) setSection(e.target.value); };
+$('#pathgo').onclick = () => {
+  const lines = $('#pathtxt').value.split(/\n|;/).map(l => l.trim()).filter(Boolean), xy = lines.some(l => /m\s*$/i.test(l));
+  const pts = lines.map(l => l.replace(/m\s*$/i, '').split(/[\s,]+/).filter(Boolean).map(Number)).filter(p => p.length >= 2 && p.every(Number.isFinite));
+  if (pts.length < 2) { $('#err').textContent = 'Give at least two points.'; return; }
+  setSection((xy ? 'pathxy:' : 'path:') + pts.map(p => p.slice(0, 2).join(',')).join(';'));
+};
+function bindRange(id, key, out, unit) {
+  const el = $('#' + id); el.value = st.opts[key]; $('#' + out).textContent = st.opts[key] + unit;
+  el.oninput = () => { st.opts[key] = +el.value; $('#' + out).textContent = el.value + unit; };
+  el.onchange = () => { fillPresets(); reapply(); };
+}
+bindRange('margin', 'margin', 'vMargin', ' m'); bindRange('min', 'min', 'vMin', ' m'); bindRange('radius', 'radius', 'vR', ' m');
+$('#heading').checked = st.opts.heading; $('#heading').onchange = e => { st.opts.heading = e.target.checked; reapply(); };
+$('#aspect').value = st.opts.aspect; $('#aspect').onchange = e => { st.opts.aspect = e.target.value; fillPresets(); reapply(); };
+const SHOW = {sRoutes: 'routes', sPath: 'path', sPois: 'pois', sEva: 'eva', sPhoto: 'photo'};
+for (const [id, k] of Object.entries(SHOW)) { $('#' + id).checked = st.show[k]; $('#' + id).onchange = e => { st.show[k] = e.target.checked; buildOverlays(); draw2D(); syncURL(); }; }
+$('#exag').value = st.exag; $('#vExag').textContent = st.exag + '×';
+$('#exag').oninput = e => { st.exag = +e.target.value; $('#vExag').textContent = st.exag + '×'; buildTerrain(); buildOverlays(); };
+$('#exag').onchange = () => { fitView(); syncURL(); };
+function fillLayers() { $('#layer').innerHTML = layerList().map(l => `<option value="${l.key}">${esc(l.label)}</option>`).join(''); }
+$('#layer').onchange = e => { st.layer = e.target.value; applyLayer(); syncURL(); };
+async function setProfile(p) {
+  st.profile = p; document.querySelectorAll('#profile button').forEach(b => b.classList.toggle('on', b.dataset.p === p));
+  st.grid = await classGrid(`combined_${p}`); fillLayers(); applyLayer(); fillPresets();
+  if (st.sec) setSection(st.spec.replace(/^route:(foot|rover):/, `route:${p}:`), false);
+}
+$('#profile').onclick = e => { const p = e.target.dataset?.p; if (p && p !== st.profile) setProfile(p); };
+function setView(v) {
+  st.view = v; document.querySelectorAll('#view button').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  p3d.classList.toggle('hide', v === '2d'); p2d.classList.toggle('hide', v === '3d'); $('#panes').classList.toggle('one', v !== 'both');
+  needs3d = true; if (st.sec) { syncURL(); requestAnimationFrame(() => { draw2D(); }); }
+}
+$('#view').onclick = e => { const v = e.target.dataset?.v; if (v) setView(v); };
+$('#theme').onclick = () => { st.theme = st.theme === 'light' ? 'dark' : 'light'; document.documentElement.dataset.theme = st.theme; setBg(); draw2D(); syncURL(); };
+$('#toggleSide').onclick = () => $('#side').classList.toggle('closed');
+if (innerWidth <= 900) $('#side').classList.add('closed');
+$('#reset3d').onclick = () => fitView(false); $('#top3d').onclick = () => fitView(true);
+$('#copy').onclick = async () => {
+  try { await navigator.clipboard.writeText(location.href); $('#copy').textContent = 'Copied'; }
+  catch { $('#copy').textContent = 'Copy failed'; }
+  setTimeout(() => { $('#copy').textContent = 'Copy link'; }, 1500);
+};
+function setBg() { const c = new THREE.Color(css('--mapbg') || '#0b0d11'); scene.background = c; wMat.uniforms.color.value.set(st.theme === 'light' ? 0x9a8e80 : 0x7d7266); needs3d = true; }
+
+// hover readouts
+const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+const readout = (el, x, y) => {
+  if (!F.inBox(x, y) || !SEC.contains(st.sec, x, y)) { el.style.display = 'none'; return; }
+  const ll = F.toLatLon(x, y), k = classAt(st.grid, x, y);
+  el.style.display = 'block';
+  el.innerHTML = `${ll.lat.toFixed(5)}°, ${ll.lon.toFixed(5)}°E · ${heightAt(x, y).toFixed(1)} m` + (k >= 0 ? ` · <span class="sw" style="background:${CCOL[k]}"></span>${CNAME[k]}` : '');
+};
+renderer.domElement.addEventListener('pointermove', e => {
+  if (!terrain) return; const r = renderer.domElement.getBoundingClientRect();
+  mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(mouse, camera);
+  const hit = ray.intersectObject(terrain)[0]; if (!hit) { $('#r3d').style.display = 'none'; return; }
+  readout($('#r3d'), hit.uv.x * WM, hit.uv.y * HM);
+});
+renderer.domElement.addEventListener('pointerleave', () => { $('#r3d').style.display = 'none'; });
+c2d.addEventListener('pointermove', e => {
+  if (!V) return; const r = c2d.getBoundingClientRect(), u = (e.clientX - r.left - V.CX) / V.k, v = -(e.clientY - r.top - V.CY) / V.k;
+  const [x, y] = SEC.fromSection(st.sec, u, v); readout($('#r2d'), x, y);
+});
+c2d.addEventListener('pointerleave', () => { $('#r2d').style.display = 'none'; });
+
+// sizes
+function size3d() {
+  const w = p3d.clientWidth, h = p3d.clientHeight; if (!w || !h) return;
+  renderer.setSize(w, h); labelR.setSize(w, h); camera.aspect = w / h; camera.updateProjectionMatrix(); needs3d = true;
+  if (autoFit && st.sec) fitView(lastTop, true);                // keep the whole section in view until the user moves the camera
+}
+new ResizeObserver(() => { size3d(); }).observe(p3d);
+let rz = 0; new ResizeObserver(() => { cancelAnimationFrame(rz); rz = requestAnimationFrame(() => { draw2D(); }); }).observe(p2d);
+new ResizeObserver(() => drawMini()).observe(mini);
+controls.addEventListener('change', () => { needs3d = true; });
+controls.addEventListener('start', () => { autoFit = false; });
+
+// ---------------------------------------------------------------- messages from the tablet app (iframe embed)
+// postMessage({type: 'martian-map:section', spec?, path?: [{lat, lon}], point?: {lat, lon}, profile?, margin?, min?, radius?, heading?, view?})
+addEventListener('message', async e => {
+  const d = e.data; if (!d || d.type !== 'martian-map:section') return;
+  const reply = m => { try { e.source?.postMessage(m, e.origin && e.origin !== 'null' ? e.origin : '*'); } catch {} };
+  for (const k of ['margin', 'min', 'radius']) if (Number.isFinite(+d[k]) && d[k] !== null && d[k] !== '') st.opts[k] = +d[k];
+  if (typeof d.heading === 'boolean') st.opts.heading = d.heading;
+  if (['both', '3d', '2d'].includes(d.view)) setView(d.view);
+  if ((d.profile === 'foot' || d.profile === 'rover') && d.profile !== st.profile) await setProfile(d.profile);
+  let spec = typeof d.spec === 'string' ? d.spec : '';
+  if (!spec && Array.isArray(d.path) && d.path.length > 1) {
+    const P = d.path.filter(p => Number.isFinite(+p?.lat) && Number.isFinite(+p?.lon)), keep = Math.ceil(P.length / 300);   // at most ~300 points in the URL
+    spec = 'path:' + P.filter((p, i) => i % keep === 0 || i === P.length - 1).map(p => `${(+p.lat).toFixed(6)},${(+p.lon).toFixed(6)}`).join(';');
+  }
+  if (!spec && d.point && Number.isFinite(+d.point.lat)) spec = `point:${+d.point.lat},${+d.point.lon}`;
+  if (!spec) { reply({type: 'martian-map:section-error', message: 'nothing to show: give spec, path or point'}); return; }
+  if (setSection(spec)) reply({type: 'martian-map:section-ready', spec: st.spec, section: SEC.encode(st.sec), share: SEC.share(F, st.sec), stats: st.stats});
+  else reply({type: 'martian-map:section-error', message: $('#err').textContent});
+});
+
+// ---------------------------------------------------------------- start
+setView(st.view); setBg();
+st.grid = await classGrid(`combined_${st.profile}`).catch(fail);
+document.querySelectorAll('#profile button').forEach(b => b.classList.toggle('on', b.dataset.p === st.profile));
+fillLayers(); applyLayer(); fillPresets();
+size3d();
+if (!setSection(st.spec)) setSection('whole');
+$('#loading').remove();
+renderer.setAnimationLoop(() => {
+  controls.update();
+  if (p3d.classList.contains('hide') || !p3d.clientWidth) return;
+  renderer.render(scene, camera); labelR.render(scene, camera);
+});
+window.__section = {st, F, SEC, setSection, setProfile, setView, fitView, camera, controls};
+window.parent !== window && window.parent.postMessage({type: 'martian-map:section-loaded'}, '*');
+</script>
+</body>
+</html>

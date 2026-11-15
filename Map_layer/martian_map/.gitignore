@@ -1,0 +1,23 @@
+# Python environment (recreate: see docs/TOOLS.md)
+.venv/
+__pycache__/
+*.pyc
+
+# Local tool settings
+.claude/
+
+# GDAL/QGIS side files, rebuilt on open
+*.aux.xml
+*.qgz~
+*.gpkg-shm
+*.gpkg-wal
+
+# Layer 1 base map: 113 MB, over GitHub's 100 MB file limit.
+# Re-fetch with pipeline/10_fetch_basemap.py (checks the pixel MD5).
+layers/L1_basemap/usgs_msl_gale_ortho_25cm_box.tif
+layers/L1_basemap/*.part
+layers/L1_basemap/fetch_log_refetch.json
+
+# NASA PIA26693 colour panorama: 179 MB, over the limit. Re-fetch with pipeline/12_fetch_color_ref.py (MD5 checked).
+walk/sources/PIA26693.png
+walk/sources/*.part

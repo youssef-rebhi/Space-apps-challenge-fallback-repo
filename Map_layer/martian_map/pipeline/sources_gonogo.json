@@ -1,0 +1,80 @@
+{
+ "slope": [
+  {
+   "what": "USGS MSL Gale DEM Mosaic 1 m v3 (input of the approved Layer 2 slope)",
+   "who": "Parker, T. & Calef, F.J. III / USGS Astrogeology, PDS Annex",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif"
+  },
+  {
+   "what": "Curiosity designed to withstand 45 deg tilt; onboard fault protection prevents tilts over 30 deg",
+   "who": "NASA/JPL MSL mission technology page (archived 2009)",
+   "url": "https://webarchive.library.unt.edu/eot2008/20090512223236/http://mars.jpl.nasa.gov/msl/mission/technology/planetarymobility"
+  },
+  {
+   "what": "Record tilt of 31 deg on Mars during a 2020 hill climb",
+   "who": "NASA/JPL news",
+   "url": "https://www.jpl.nasa.gov/news/nasas-curiosity-mars-rover-takes-a-new-selfie-before-record-climb/"
+  },
+  {
+   "what": "Rover tilt per waypoint (calibration)",
+   "who": "NASA/JPL MMGIS MSL_waypoints.json (Layer 4)",
+   "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+  }
+ ],
+ "roughness": [
+  {
+   "what": "USGS MSL Gale DEM Mosaic 1 m v3",
+   "who": "USGS Astrogeology",
+   "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif"
+  },
+  {
+   "what": "Calibration path: Curiosity traverse",
+   "who": "NASA/JPL MMGIS MSL_traverse.json (Layer 4)",
+   "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json"
+  }
+ ],
+ "terrain": [
+  {
+   "what": "Boxwork: ridges with dark central lines, hollows 10-20 m often sediment-filled",
+   "who": "Siebach et al., GSA Connects 2025 abstract",
+   "url": "https://gsameetings.secure-platform.com/connects25/solicitations/103002/sessiongallery/schedule/items/95386/application/10634"
+  },
+  {
+   "what": "Curiosity starts unpacking boxwork formations",
+   "who": "NASA",
+   "url": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/"
+  },
+  {
+   "what": "Drilling high (ridge) and low (hollow) in the boxwork unit",
+   "who": "NASA Curiosity blog sols 4709-4715",
+   "url": "https://science.nasa.gov/blog/curiosity-blog-sols-4709-4715-drilling-high-and-low-in-the-boxwork-unit"
+  },
+  {
+   "what": "Hidden Valley: sand too slippery, rover backed out (sols 709-710)",
+   "who": "NASA",
+   "url": "https://mars.nasa.gov/resources/6493/curiosity-tracks-in-hidden-valley-on-mars/"
+  }
+ ],
+ "groundtruth": [
+  {
+   "what": "Curiosity traverse (driven path)",
+   "who": "NASA/JPL MMGIS MSL_traverse.json",
+   "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json"
+  },
+  {
+   "what": "EVA stops with terrain fractions (soil/bedrock/sand/big rock)",
+   "who": "Team AI (AI4Mars-style) on NASA Navcam images (Layer 5)",
+   "url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json"
+  },
+  {
+   "what": "Per-stop AI certainty (app data)",
+   "who": "Team app, Application/data/stops.json",
+   "url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Application/data/stops.json"
+  },
+  {
+   "what": "Team thresholds: stop colours, 30 m AI radius, 15 m red keep-out, Safest route weights, 30 min O2 reserve",
+   "who": "Team ASSUMPTIONS.md",
+   "url": "https://github.com/malek-mejaouel/Depo_nasa/blob/main/ASSUMPTIONS.md"
+  }
+ ]
+}

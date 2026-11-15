@@ -1,0 +1,11 @@
+{
+ "residual_shift_px_25cm": [
+  -23,
+  -17
+ ],
+ "residual_m_east_north": [
+  -5.727,
+  4.25
+ ],
+ "corr_no_extra_shift": -0.09715303465247996
+}

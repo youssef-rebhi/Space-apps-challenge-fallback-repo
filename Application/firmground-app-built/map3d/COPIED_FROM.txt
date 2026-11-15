@@ -1,0 +1,2 @@
+Copied by Application/fg-app/scripts/map3d.mjs from Map_layer/martian_map/web.
+Do not edit here: change the files in Map_layer, then rebuild the app.

@@ -1,0 +1,72 @@
+# Layer 2 metadata: sources, datasets, decisions (14 Nov 2026)
+
+This file documents every dataset and source behind Layer 2: where it came from and how we used it. **Fact** = read from the source or measured here (the file named). **ASSUMPTION** = a team choice, to be confirmed (all listed in `ASSUMPTIONS.md` at the repo root). Citations marked *(verify)* were not yet checked against the publisher's page. Paths that start with `../` are in the team's working folder, not in this repo. The full reference list for the project is `REFERENCES.md` at the repo root.
+
+Machine-readable copy: `sources.json`. Download log with byte counts and MD5: `raw/fetch_log.json`.
+
+---
+
+## A. Datasets downloaded for this layer (`raw/`)
+
+| Local file | Dataset | Source / URL | What was taken | Used for |
+|---|---|---|---|---|
+| `raw/msl_gale_dem_1m_box.tif` | **USGS MSL Gale Merged DEM Mosaic 1 m v3**, float32 m, `eqc lon_0=0 R=3396190`, planetocentric E-positive (from the PDS3/ISIS labels) | https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif (7.58 GB; label `..._pds3.lbl`, revised 2017-05-01 by D. P. Mayer, USGS). Citation: Parker & Calef 2016, USGS Astrogeology PDS Annex *(verify)* | Window 137.3565–137.4035°E, 4.8335–4.7765°S (box + ~200 m), 3,379 rows, 446 MB transferred by HTTP range reads, 197 s | **Primary box elevation** (Layer 2), slope, contours, Plotly/Leaflet exports; frame/datum tests |
+| `raw/hrsc_mola_blend_200m_gale.tif` | **Mars MGS MOLA – MEX HRSC Blended DEM Global 200 m v2**, int16 m, `+proj=longlat +R=3396190` | https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif (redirects to asc-pds-services S3; 11.4 GB). Citation: Fergason, Hare & Laura 2018, USGS Astrogeology *(verify)* | 136.2–139.4°E, 7.0–3.8°S (whole Gale crater + rim), 948×948 px, 202 MB, 94 s | **Regional whole-crater elevation**, hillshade, 100 m contours, regional Plotly/Leaflet |
+| `raw/mola_463m_gale.tif` | **MGS MOLA global DEM 463 m** (USGS mosaic of MOLA MEGDR), int16 m | https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif (2.13 GB). Citation: Smith et al. 2001, JGR 106(E10) *(verify)* | Same crater window, 38 MB, 20 s | Cross-check of the blend (`derived/regional_hrsc_vs_mola.json`: median +2.1 m, std 67 m) |
+| `raw/mola_pedr/MolaPEDR_box_pts_csv.csv` (+ `.lbl`, `.txt`, `query_response.xml`) | **MOLA PEDR individual laser shots**, TOPOGRAPHY = planetary radius − areoid radius (from the `.lbl`) | PDS Geosciences Node GDS REST: `https://oderest.rsl.wustl.edu/livegds/?query=molapedr&results=vsi&minlat=-4.8335&maxlat=-4.7765&westernlon=137.3565&easternlon=137.4035` (53 shots, orbits 2001; output URLs expire 2026-12-14). Citation: Smith et al., MGS MOLA PEDR, PDS *(verify)* | 53 shots in box + margin | **Absolute vertical check** of both 1 m DEMs (`derived/mola_shot_check.json`) |
+
+## B. Datasets from the team's earlier work (read-only here)
+
+Full per-file table: `../DATA_SOURCES.md` and `../data/raw/geology/manifest.json` (89 files, 3.5 GB, downloaded by `pipeline/00_download_geology_kit.py`; not in this repo).
+
+| Dataset | Source | Used in this folder for |
+|---|---|---|
+| HiRISE DTM `DTEEC_019698_1750_019988_1750_U01.IMG` (1.0117 m; label: "elevations in meters above the martian equipotential surface (Mars 2000 Datum) defined by Smith et al. (2001)"; `eqc lon_0=137.38`) | MRO HiRISE (NASA/JPL/Univ. Arizona) via PDS: hirise-pds.lpl.arizona.edu/PDS/DTM/ESP/ORB_019600_019699/ESP_019698_1750_ESP_019988_1750/ | Via its clip `../data/clean/geology/dtm_box.tif` (team geology work): first-version items 1–2, frame test, MOLA test, shifted copy |
+| HiRISE orthoimages ESP_019698_1750 RED_C (1 m), RED_A (25 cm), IRB_C/IRB_A | Same PDS folder | RED_C: shifted copy into Gale frame; RED_A: trial alignment |
+| Backup HiRISE DTM DTEEC_009149_1750_009294_1750 + RED_C; PSP_001752_1750 RED (PIA26306 context) | HiRISE PDS | Not used here |
+| Curiosity waypoints / traverse / current position (GeoJSON, no CRS; fields `easting`, `northing`, `elev_geoid`, `sol`…) | NASA/JPL MMGIS: https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json (+ `MSL_traverse.json`, `MSL_waypoints_current.json`) | Datum and frame tests; `exports/rover/waypoints_box.geojson` |
+| USGS SIM 3292 Geologic Map of Mars (Tanaka et al. 2014), pamphlet, DMU, database | pubs.usgs.gov/sim/3292, doi:10.3133/sim3292 | Not used here (geology context, Layer 3) |
+| Persaud 2021 Sakarya Vallis unit map shapefiles; Persaud 2021 CRISM basemaps | Zenodo 5819267, 5808381 | Not used here (Layer 3, inferred lines) |
+| `../data/clean/geology/` dtm_box, hillshade_box, study_box.gpkg, ridges_hollows_DRAFT, tpi_relief_DRAFT | Derived by the team's geology work from the HiRISE DTM | study_box (outline), dtm_box (see above) |
+| `../qgis/geology_DRAFT.gpkg` | Team geology draft (in HiRISE frame) | Not used, not touched. **Needs the frame shift (section D) if the Gale frame is adopted** |
+| USGS MSL Gale Merged Orthophoto Mosaic 25 cm v3 (Calef & Parker 2016) | asc-pds-services S3 `mosaic/MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif`, via teammate repo github.com/malek-mejaouel/nasa_data (commit 7769d38) | `../trials/nasa_data_trial/output/` windows: frame check (shifted RED_C vs mosaic) and comparison layer |
+
+## C. Literature and web sources
+- Official challenge page and Resources tab, NASA Space Apps 2026 "Interplanetary Survival Guide: Martian Map" (spaceappschallenge.org).
+- USGS–NASA Planetary Geologic Mapping Program map database (astrogeology-usgs.hub.arcgis.com/pages/interactive-maps-mars).
+- Siebach et al., GSA 2025 abstract (sulfate → boxwork transition, sol 4534; ridge/hollow sizes).
+- Seeger et al. 2026, SEPM (boxwork phyllosilicates, siderite; authors.library.caltech.edu/records/6522c-90325).
+- NASA PIA26306 (boxwork extent 10–20 km).
+- JPL Ingenuity end-of-mission release (scout precedent).
+- Martínez et al. 2014 (REMS ground temperature, thermal inertia).
+- Milliken et al. 2010 (marker bed), via Persaud 2021.
+- Kirk et al. 2008 (HiRISE DTM production), cited in the DTM label.
+- Smith et al. 2001 (MOLA, Mars 2000 areoid), cited in the DTM label.
+- Mars Trek (trek.nasa.gov): viewer referenced by the nasa_data repo. Not used as data.
+
+## D. Decisions and findings
+
+### Item 5: reference frame. DECISION: USGS MSL Gale mosaic frame (ortho 25 cm + DEM 1 m v3)
+Evidence (`derived/frame_datum_tests.json`, `derived/mola_shot_check.json`, `derived/check_shifted_redc_vs_mosaic.json`):
+1. **Rover data is native to it.** At all 183 waypoints in the box, USGS Gale DEM − rover `elev_geoid` = **0.00 m mean, 0.08 m std, 0.38 m max**. The rover elevations are read from this DEM at the published positions. A horizontal error of even a few metres would give metre-scale differences on these slopes, so the positions are in this frame too.
+2. **Our HiRISE products are offset** from it by **29.8 m W, 32.0 N = 43.7 m** (DEM-to-DEM correlation of 7 M pixels). An earlier image-to-image trial gave 47–50 m. After the shift, the HiRISE RED_C image still differs from the USGS 25 cm image by ~7 m (5.7 m W, 4.3 m N). Treat **±7 m as the imagery alignment uncertainty**.
+3. **MOLA cannot decide horizontally.** A grid search of DEM shifts against 47–52 laser shots barely improves the fit for either DEM (std 7.7→7.1 m and 7.5→6.9 m). Both lie within MOLA's own positional tolerance.
+4. So we choose for internal consistency with the most important ground truth (rover). **All HiRISE-derived layers must be shifted by (−29.87, +32.05) m in eqc grid metres** to join it. Files here already shifted: `hirise_dtm_box_GALEFRAME.tif`, `hirise_red_c_box_GALEFRAME.tif`. **Not yet shifted:** `../qgis/geology_DRAFT.gpkg`, `../data/clean/geology/*`. They belong to the team's geology work; apply the same translation there if the team adopts this frame.
+
+### Item 4: the 12–15 m height gap. CONFIRMED cause
+- It is **not** a different datum definition: the HiRISE DTM label says "above … Mars 2000 Datum (Smith et al. 2001)", and the rover field is `elev_geoid`, read from the USGS Gale DEM (point 1 above).
+- It **is** a near-constant vertical bias between two DEM products. After horizontal alignment, HiRISE DTM − USGS Gale DEM = **+15.2 m mean, 1.6 m std** over 7.0 M pixels. Before alignment it looked like 7.6 ± 6.9 m, which is why the earlier waypoint test (12.2 ± 2.3 m) was mixing the horizontal and vertical offsets.
+- **Absolute truth (MOLA laser shots):** MOLA − HiRISE DTM = **+6.8 m median** (std 7.7 m, n = 47). MOLA − USGS Gale DEM = **+14.9 m median** (std 7.5 m, n = 52). Our HiRISE DTM is closer to MOLA by ~8 m, but neither matches. The ~7 m shot-to-shot scatter is expected on steep ground with a ~150 m footprint (*approximation: 150 m box mean*).
+- **What this means for the walk:** slopes, contours and relative heights are unaffected. Absolute heights carry a ±15 m uncertainty. We **use USGS Gale DEM heights** so that every height shown agrees exactly with the rover's own numbers, and we state "heights relative to Mars areoid, USGS MSL Gale DEM; MOLA shots suggest true areoid heights ~15 m higher".
+- **How to confirm further, if needed:** (a) ask the MSL localization team, or the PDS MSL Localizations archive (PLACES), which DEM and version their `elev_geoid` uses (expected: this mosaic, given the 0.08 m match); (b) compare against more MOLA shots over a larger area (e.g. 10 × 10 km) to beat the per-shot scatter; (c) MOLA PEDR areoid version vs MEGDR areoid: check that both use the same areoid model. *Not done.*
+
+### Item 6: slope GO/NO-GO version. All thresholds are ASSUMPTIONS
+- Slope = Horn 3×3 on the USGS DEM block-averaged to **3 m** (ASSUMPTION: a 1 m baseline is noisy; HiRISE-class DTMs resolve a few metres).
+- **GO < 15°, caution 15–25°, NO-GO ≥ 25°, unknown = no data.** These are placeholders, NOT sourced limits. They are listed in `ASSUMPTIONS.md` and still to be confirmed with a mentor. Change `SLOPE_GO_MAX` / `SLOPE_NOGO_MIN` in `scripts/06_galeframe_layers.py` and re-run 06, 08, 09.
+- Result in the box: GO 60.2 %, caution 22.8 %, NO-GO 16.6 %, unknown 0.5 % (`derived/slope_classes_stats.json`).
+
+### Other ASSUMPTIONS / approximations
+- Regional window 136.2–139.4°E, 7.0–3.8°S taken as "whole crater + rim" (Gale ≈ 154 km diameter; centre ≈ 5.4°S, 137.8°E as used by the nasa_data repo).
+- Plotly grids: Gaussian anti-alias then 300 × 300 sampling. Display height ×3 per the team's 3D guide.
+- Leaflet bounds are planetocentric degrees on the Mars sphere. The app must not treat them as Earth WGS84 for distances.
+- Hillshade 315° azimuth, 30° altitude (same as the team's geology layers).

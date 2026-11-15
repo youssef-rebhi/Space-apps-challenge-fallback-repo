@@ -1,0 +1,99 @@
+{
+ "galeDEM_minus_hiriseDTM_horizontal": {
+  "east_m_ground": -29.770004199732202,
+  "north_m": 32.047241577172784,
+  "total_m": 43.74104300034174,
+  "east_m_eqc_grid": -29.87499829230589,
+  "note": "+ = feature appears further east/north in the USGS Gale DEM than in our HiRISE DTM"
+ },
+ "hiriseDTM_minus_galeDEM_vertical_as_is": {
+  "mean": 7.622626309620675,
+  "median": 8.40384427462186,
+  "std": 6.929479627640519,
+  "p05": -5.049318269671106,
+  "p95": 16.719406246509923,
+  "n": 7027644
+ },
+ "hiriseDTM_minus_galeDEM_vertical_after_horizontal_shift": {
+  "mean": 15.167300103550273,
+  "median": 15.01112610655764,
+  "std": 1.5987211909973436,
+  "p05": 12.981987628443722,
+  "p95": 17.692606978471577,
+  "n": 7030015
+ },
+ "waypoints_in_box": 183,
+ "waypoint_easting_northing_minus_projected_lonlat_m": {
+  "east": {
+   "mean": 0.00013636952378059345,
+   "median": 0.00017770938575267792,
+   "std": 0.001693058824130544,
+   "max_abs": 0.0031797755509614944,
+   "n": 183
+  },
+  "north": {
+   "mean": -1.230125812956137e-05,
+   "median": -3.289995947852731e-05,
+   "std": 0.00017426524301549884,
+   "max_abs": 0.0002943557919934392,
+   "n": 183
+  }
+ },
+ "galeDEM_minus_rover_at_waypoints": {
+  "mean": -0.002714674118203613,
+  "median": 0.0020636198073589185,
+  "std": 0.08233371657279996,
+  "max_abs": 0.38270383732196933,
+  "n": 183
+ },
+ "hiriseDTM_minus_rover_at_waypoints_as_given": {
+  "mean": 12.20399689141629,
+  "median": 12.362234110882582,
+  "std": 2.312152959220685,
+  "max_abs": 17.671293924759993,
+  "n": 183
+ },
+ "hiriseDTM_minus_rover_at_waypoints_shifted_into_hirise_frame": {
+  "mean": 15.27540911574978,
+  "median": 14.782143275239832,
+  "std": 1.1897171324409828,
+  "max_abs": 18.51538553361752,
+  "n": 183
+ },
+ "examples": [
+  {
+   "sol": 4534,
+   "rover": -3657.644,
+   "gale": -3657.7394688826953,
+   "hirise": -3642.8673085934147,
+   "hirise_shifted": -3641.6355809104352
+  },
+  {
+   "sol": 4600,
+   "rover": -3632.878,
+   "gale": -3632.8047383197863,
+   "hirise": -3621.12676058715,
+   "hirise_shifted": -3617.9166252997375
+  },
+  {
+   "sol": 4709,
+   "rover": -3608.689,
+   "gale": -3608.6752158971854,
+   "hirise": -3594.143090720785,
+   "hirise_shifted": -3594.4008342991674
+  },
+  {
+   "sol": 5073,
+   "rover": -3472.085,
+   "gale": -3471.9992033903836,
+   "hirise": -3463.4774611429802,
+   "hirise_shifted": -3457.63932880835
+  }
+ ],
+ "box_mean_elevation_m": {
+  "MOLA_463m": -3705.25,
+  "HRSC_MOLA_200m": -3617.5364583333335,
+  "USGS_Gale_DEM_1m": -3624.7772696227744,
+  "HiRISE_DTM_1m": -3616.2194673088325
+ }
+}
