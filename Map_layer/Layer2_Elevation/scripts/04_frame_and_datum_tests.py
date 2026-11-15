@@ -4,7 +4,7 @@ Inputs (read-only): data/clean/geology/dtm_box.tif (HiRISE DTM, our frame),
 raw/msl_gale_dem_1m_box.tif (USGS MSL Gale DEM 1 m v3, the orthophoto mosaic's DEM),
 raw/mola_463m_gale.tif, raw/hrsc_mola_blend_200m_gale.tif, data/raw/geology/rover/MSL_waypoints.json
 Output: derived/frame_datum_tests.json (+ console)
-Run: .venv/Scripts/python.exe -I scripts/04_frame_and_datum_tests.py
+Run: python -I scripts/04_frame_and_datum_tests.py
 """
 import os, json, math
 import numpy as np, rasterio

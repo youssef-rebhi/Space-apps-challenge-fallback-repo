@@ -3,7 +3,7 @@ import { COLOURS } from "../lib/mission.js";
 
 // 3D view of the stops: drag to turn, wheel to tilt. Bar height = sand + big rock % from our AI
 // (taller = more dangerous). The terrain shape is NOT shown here (no elevation in our data);
-// the real terrain is in Mohamed's map.
+// the real terrain is in the elevation layer (Map_layer/).
 export default function Map3D({ stops, route, selected, onSelect, colourFor }) {
   const cv = useRef(null), pts = useRef([]);
   const [yaw, setYaw] = useState(-0.6), [tilt, setTilt] = useState(0.9);

@@ -1,0 +1,24 @@
+{
+ "id": "drone_hazards",
+ "type": "geojson",
+ "url": "ov/drone_hazards.geojson",
+ "bounds": [
+  [
+   -4.808716,
+   137.379119
+  ],
+  [
+   -4.797618,
+   137.386436
+  ]
+ ],
+ "style": {
+  "clear": "#3ecf8e",
+  "sand": "#ffb020",
+  "slope_caution": "#b57cff",
+  "slope_nogo": "#6a1fd1",
+  "obstacle": "#ff5a5a",
+  "obstacle_point": "#ff5a5a"
+ },
+ "legend": "Drone laser scout (simulated): red obstacle > 30 cm, purple slope 15–25°, dark purple slope ≥ 25°, orange sand ripples, green clear"
+}

@@ -1,0 +1,120 @@
+{
+ "rule": {
+  "cv": {
+   "sand_iou": 0.239,
+   "clear_iou": 0.842,
+   "precision": 0.273,
+   "recall": 0.655
+  },
+  "test": {
+   "sand_iou": 0.079,
+   "clear_iou": 0.791,
+   "precision": 0.086,
+   "recall": 0.502
+  }
+ },
+ "logistic": {
+  "threshold": 0.825,
+  "cv": {
+   "sand_iou": 0.426,
+   "clear_iou": 0.932,
+   "precision": 0.54,
+   "recall": 0.669
+  },
+  "test": {
+   "sand_iou": 0.269,
+   "clear_iou": 0.933,
+   "precision": 0.307,
+   "recall": 0.683
+  },
+  "seconds": 0.8
+ },
+ "random_forest": {
+  "threshold": 0.525,
+  "cv": {
+   "sand_iou": 0.504,
+   "clear_iou": 0.947,
+   "precision": 0.632,
+   "recall": 0.713
+  },
+  "test": {
+   "sand_iou": 0.304,
+   "clear_iou": 0.934,
+   "precision": 0.33,
+   "recall": 0.794
+  },
+  "seconds": 27.2
+ },
+ "gradient_boosting": {
+  "threshold": 0.525,
+  "cv": {
+   "sand_iou": 0.52,
+   "clear_iou": 0.949,
+   "precision": 0.653,
+   "recall": 0.719
+  },
+  "test": {
+   "sand_iou": 0.292,
+   "clear_iou": 0.937,
+   "precision": 0.33,
+   "recall": 0.72
+  },
+  "seconds": 13.4
+ },
+ "per_test_segment": {
+  "F02": {
+   "sand_bins": 0,
+   "rule_iou": 0.0,
+   "gb_iou": 0.0,
+   "rule_false_alarm_bins": 262,
+   "gb_false_alarm_bins": 35
+  },
+  "F05": {
+   "sand_bins": 192,
+   "rule_iou": 0.268,
+   "gb_iou": 0.585,
+   "rule_false_alarm_bins": 263,
+   "gb_false_alarm_bins": 97
+  },
+  "F08": {
+   "sand_bins": 0,
+   "rule_iou": 0.0,
+   "gb_iou": 0.0,
+   "rule_false_alarm_bins": 476,
+   "gb_false_alarm_bins": 163
+  },
+  "F11": {
+   "sand_bins": 0,
+   "rule_iou": 0.0,
+   "gb_iou": 0.0,
+   "rule_false_alarm_bins": 159,
+   "gb_false_alarm_bins": 24
+  },
+  "F14": {
+   "sand_bins": 51,
+   "rule_iou": 0.0,
+   "gb_iou": 0.068,
+   "rule_false_alarm_bins": 133,
+   "gb_false_alarm_bins": 37
+  }
+ },
+ "importance": {
+  "minRes4": 0.124,
+  "slope": 0.1147,
+  "maxRes4": 0.089,
+  "curv": 0.0639,
+  "range4": 0.0617,
+  "sd2": 0.0317,
+  "sd4": 0.0204,
+  "sd8": 0.018,
+  "cr4": 0.0031,
+  "valid8": 0.0011,
+  "cr8": -0.0018,
+  "ruleSand": -0.0029,
+  "acLag": -0.004,
+  "obstDist": -0.0048,
+  "res": -0.0107,
+  "acPeak": -0.014
+ },
+ "n_trees": 300
+}

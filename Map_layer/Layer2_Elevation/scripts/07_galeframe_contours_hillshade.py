@@ -1,5 +1,5 @@
 """Item 2 in the chosen frame: hillshade + contours of derived/elevation_box_1m_GALEFRAME.tif.
-Run with QGIS python: "C:/Program Files/QGIS 4.2.3/bin/python-qgis.bat" scripts/07_galeframe_contours_hillshade.py
+Run with QGIS python: python-qgis scripts/07_galeframe_contours_hillshade.py
 """
 import os, math
 os.environ["GDAL_PAM_ENABLED"] = "NO"

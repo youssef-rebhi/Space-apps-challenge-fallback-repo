@@ -6,7 +6,7 @@ Outputs (derived/):
   hirise_red_c_box_GALEFRAME.tif          HiRISE RED_C 1 m orthoimage, same shift (base map consistent with rover)
   slope_box_3m_GALEFRAME.tif              Horn slope (deg) on the DEM averaged to 3 m (ASSUMPTION: 3 m baseline)
   slope_classes_box_3m_GALEFRAME.tif      1 GO / 2 caution / 3 NO-GO / 0 unknown (thresholds = ASSUMPTIONS below)
-Run: .venv/Scripts/python.exe -I scripts/06_galeframe_layers.py
+Run: python -I scripts/06_galeframe_layers.py
 """
 import os, json, math
 import numpy as np, rasterio

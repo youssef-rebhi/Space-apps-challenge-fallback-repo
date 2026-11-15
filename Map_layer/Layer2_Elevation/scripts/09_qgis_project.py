@@ -1,6 +1,6 @@
-"""Build possible_output/qgis/layer2_elevation_POSSIBLE.qgz (separate project) and save
-QML styles to qgis/styles/. Does not touch qgis/ in the main project folder.
-Run: "C:/Program Files/QGIS 4.2.3/bin/python-qgis.bat" scripts/09_qgis_project.py
+"""Build qgis/layer2_elevation_POSSIBLE.qgz (separate QGIS project) and save
+QML styles to qgis/styles/.
+Run with QGIS python: python-qgis scripts/09_qgis_project.py
 """
 import os, sys
 os.environ["GDAL_PAM_ENABLED"] = "NO"

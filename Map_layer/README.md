@@ -1,2 +1,13 @@
-MRO HiRISE, Curiosity Roving Site Mosaic =>
-This data was acquired using the High Resolution Imaging Science Experiment camera aboard NASA's Mars Reconnaissance Orbiter spacecraft (MRO). MRO was launched on August 12, 2005 and arrived at Mars on March 10, 2006. It maintains a nearly circular orbit, completing an orbital revolution about every 112 minutes at an altitude of approximately 250 to 316 km or 155 to 196 miles. MRO carries a sophisticated suite of instruments used to analyze and map the landforms, stratigraphy, minerals, and ice of Mars. The High Resolution Imaging Science Experiment (HiRISE) camera utilizes a 0.5-meter telescope to obtain very high resolution images of Martian landforms and terrains. From an altitude of 300 km, HiRISE has a resolution of 0.3 meters per pixel. In addition to being used for getting very detailed images of surface features, pairs of slightly offset HiRISE images are combined to produce precise digital elevation models of Martian topography.
+# Map_layer
+
+Orbital map layers of the study box (137.36–137.40°E, 4.78–4.83°S, lower Mount Sharp, Gale crater).
+
+| Layer | Folder | What |
+|---|---|---|
+| Layer 2: Elevation | [`Layer2_Elevation/`](Layer2_Elevation/) | 1 m elevation, hillshade, 5 m contours, slope and slope classes (GO / caution / NO-GO), whole-crater 200 m elevation, exports for Leaflet and Plotly |
+
+All layers use the **USGS MSL Gale DEM frame**, the frame Curiosity's own positions and heights are in (planetocentric, east-positive longitudes, Mars sphere R = 3396.19 km). Distances must be computed on the Mars sphere, not as Earth WGS84.
+
+## Source imagery
+
+The 1 m elevation comes from the USGS MSL Gale Merged DEM Mosaic, built from stereo pairs taken by the HiRISE camera on NASA's Mars Reconnaissance Orbiter (0.5 m telescope, about 0.3 m/pixel from 300 km; McEwen et al. 2007). Full list in [`REFERENCES.md`](../REFERENCES.md).
