@@ -112,7 +112,13 @@ border:2px solid #000;box-shadow:0 1px 6px #000c;pointer-events:none}
 <aside id="info" class="panel"></aside>
 <div id="nav" class="panel"><button class="b" id="back">◀ Back</button><div id="dots"></div><button class="b" id="next">Next ▶</button></div>
 <div id="foot">Click a label to see its rule and sources.</div>
-<script type="module">
+<script>
+// Opened as a file (double-click), the browser blocks this page's code and data: say how to open it instead of "Loading…" forever
+var OPEN_HINT = 'Serve the web/ folder: from Map_layer/martian_map run  .venv/Scripts/python.exe -m http.server 8765 --directory web  then open http://localhost:8765/explode/';
+function loadFailed(why) { var l = document.getElementById('loading'); if (l) { l.textContent = why + ' ' + OPEN_HINT; l.style.padding = '24px'; l.style.textAlign = 'center'; l.style.lineHeight = '1.7'; } }
+if (location.protocol === 'file:') loadFailed('This page cannot run from a file: the browser blocks its code and data there.');
+</script>
+<script type="module" onerror="if (location.protocol !== 'file:') loadFailed('Could not load the page code (three.js or lib/sections.js).')">
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
