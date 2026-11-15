@@ -102,6 +102,7 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
     // Waypoints (draggable) or fallback to A / B pins
     if (waypoints && waypoints.length > 0) {
       waypoints.forEach((wp, idx) => {
+        if (!wp) return; // not placed yet
         const isBase = idx === 0;
         const icon = L.divIcon({
           className: `abpin ${isBase ? "A" : "wp"}`,

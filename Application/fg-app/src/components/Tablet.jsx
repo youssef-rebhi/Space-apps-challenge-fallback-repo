@@ -46,6 +46,7 @@ export default function Tablet() {
   // route planner A → B (several options)
   const [A, setA] = useState(null), [B, setB] = useState(null), [pickFor, setPickFor] = useState(null);
   const [waypoints, setWaypoints] = useState([]);
+  const [planMode, setPlanMode] = useState("direct"); // route planner: "direct" (A → B) or "multi" (W0..Wk)
   const [abortData, setAbortData] = useState(null);
   const [hoverCoord, setHoverCoord] = useState(null);
   const [loadedGeo, setLoadedGeo] = useState(null);
@@ -108,6 +109,11 @@ export default function Tablet() {
     });
     setOptions([]);
   };
+
+  const pins3d = useMemo(() => (planMode === "multi"
+    ? waypoints.map((w, i) => w && { label: `W${i}`, kind: i === 0 ? "a" : "w", lat: w.lat, lon: w.lon })
+    : [A && { label: "A", kind: "a", lat: A.lat, lon: A.lon }, B && { label: "B", kind: "b", lat: B.lat, lon: B.lon }]
+  ).filter(Boolean), [planMode, waypoints, A, B]);
 
   const elevStats = useMemo(() => {
     const pts = options[chosen]?.pts;
@@ -292,7 +298,7 @@ export default function Tablet() {
   if (err) return <p className="err">⚠ {err}. Put stops.json in public/data/.</p>;
 
   const routeStops = route.map(resolve).filter(Boolean);
-  const show3d = view3d && !pickFor; // picking A / B / a waypoint happens on the 2D map
+  const show3d = view3d; // A / B / waypoints can be placed on the 3D map too
   const plan = missionCheck(routeStops, EVA_MIN);
   const live = sel && scouted[keyOf(sel)];
   const cert = sel && certaintyOf(sel, live);
@@ -318,7 +324,7 @@ export default function Tablet() {
           <div className="mapbar">
             <div className="mapbar-title">
               <b>{show3d ? "3D GO / NO-GO map" : "2D map"}</b>
-              <span>{pickFor ? `Click the map to set ${pickFor}${view3d ? " · 3D comes back after" : ""}` : show3d ? (options[chosen]?.pts ? `Route: ${options[chosen].label} · ${Math.round(options[chosen].len)} m · layer by layer` : "The whole boxwork area · layer by layer") : "Drag to move · scroll to zoom · click to check a spot"}</span>
+              <span>{pickFor ? `Click the ground to place ${pickFor}` : show3d ? (options[chosen]?.pts ? `Route: ${options[chosen].label} · ${Math.round(options[chosen].len)} m · layer by layer` : "The whole boxwork area · layer by layer") : "Drag to move · scroll to zoom · click to check a spot"}</span>
             </div>
             <label className="toggle" title="3D map on / off">
               <input type="checkbox" role="switch" checked={view3d} onChange={(e) => setView3d(e.target.checked)} />
@@ -327,11 +333,11 @@ export default function Tablet() {
             </label>
           </div>
           {show3d
-            ? (!simple3d ? <LayerMap3D routePts={options[chosen]?.pts} routeColour={options[chosen]?.colour} onFallback={() => setSimple3d(true)} />
+            ? (!simple3d ? <LayerMap3D routePts={options[chosen]?.pts} routeColour={options[chosen]?.colour} pins={pins3d} picking={pickFor} onPick={pick} onCancelPick={() => setPickFor(null)} onFallback={() => setSimple3d(true)} />
               : noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
                      : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} hoverCoord={hoverCoord} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
             : (noGeo ? <MiniMap stops={stops} greys={greys} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} />
-                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} waypoints={waypoints} onMoveWaypoint={handleMoveWaypoint} abortPaths={abortData?.abortPaths || []} hoverCoord={hoverCoord} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
+                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} waypoints={planMode === "multi" ? waypoints : []} onMoveWaypoint={handleMoveWaypoint} abortPaths={abortData?.abortPaths || []} hoverCoord={hoverCoord} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
           <div className="legend">
             {show3d && !simple3d
               ? GONOGO_KEY.map(([c, t]) => <span key={t}><i className="sq" style={{ background: c }} />{t}</span>)
@@ -353,7 +359,7 @@ export default function Tablet() {
           </label>
           {!noGeo && <Planner targets={targets} stops={stops} A={A} B={B} setA={setA} setB={setB} waypoints={waypoints} setWaypoints={setWaypoints} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
             options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} need={need} onScout={scoutRoute} scoutBusy={scoutBusy}
-            abortData={abortData} setAbortData={setAbortData} plan={plan} elevStats={elevStats} />}
+            abortData={abortData} setAbortData={setAbortData} plan={plan} elevStats={elevStats} mode={planMode} setMode={setPlanMode} />}
           {sel && (
             <div className="card">
               {targetOf(sel) && (

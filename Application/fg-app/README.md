@@ -22,6 +22,7 @@ The phone camera needs **https** → test the camera on the deployed site.
 layer-by-layer animation (`Map_layer/martian_map/web/explode/`), shown in `LayerMap3D.jsx`. Without a route
 it shows the whole box; with a chosen route it shows only the route's section, floating above the 2D map
 around it. One button: 1st click two maps, 2nd click all layers, 3rd click back together.
+A, B and multi-stop waypoints show on the 3D map too: press 📍 On map, then click the ground (3D or 2D map).
 Its files are copied from Map_layer at build time as `map3d/` (`scripts/map3d.mjs`, about 18 MB); `npm run dev`
 serves them straight from Map_layer. three.js is a local copy (`Map_layer/martian_map/web/vendor/three`), so no internet is needed.
 

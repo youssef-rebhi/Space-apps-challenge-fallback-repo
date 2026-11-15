@@ -140,7 +140,7 @@ button.danger { background: #7a1d1d; border-color: #d43d3d; }
 .prow { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
 .prow input { width: 92px; flex: 1; min-width: 80px; background: #0006; color: #fff; border: 1px solid #ffffff33; border-radius: 8px; padding: 6px 8px; font: 14px ui-monospace, monospace; }
 .prow button { padding: 6px 10px; font-size: 13px; } .prow select { background: #2a221c; color: #fff; border: 1px solid #ffffff33; border-radius: 6px; padding: 4px; margin-left: 6px; }
-.pin { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #000; font-weight: 800; }
+.pin { display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 5px; box-sizing: border-box; border-radius: 12px; color: #000; font-weight: 800; flex: none; }
 .pin.A, .abpin.A { background: #fff; } .pin.B, .abpin.B { background: #ffd84d; }
 .abpin { display: grid !important; place-items: center; border-radius: 50%; border: 2px solid #000; font: 800 14px system-ui; color: #000; box-shadow: 0 0 6px #000; }
 button.primary { background: #1f4d34; border-color: #3cff8f88; }
@@ -299,8 +299,6 @@ button.primary { background: #1f4d34; border-color: #3cff8f88; }
 .pin.wp {
   background: #8b5cf6;
   color: #fff;
-  border-radius: 4px;
-  padding: 2px 6px;
 }
 .smallbtn {
   padding: 2px 6px;
@@ -477,3 +475,5 @@ button.ghost { font: 600 13px system-ui; padding: 7px 12px; border-radius: 10px;
 .prow button.chipbtn.on { background: #2e8b4a; border-color: #2e8b4a; }
 details.rules summary { cursor: pointer; font-size: 13px; color: var(--muted); }
 details.rules small { display: block; margin-top: 6px; }
+.lm3d-pick { position: absolute; top: 54px; left: 50%; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 10px; white-space: nowrap; padding: 6px 6px 6px 14px; border-radius: 12px; background: #2e8b4ae6; color: #fff; font-size: 13.5px; box-shadow: 0 2px 10px #0008; }
+.lm3d-pick button { font: 600 12.5px system-ui; padding: 5px 10px; border-radius: 8px; background: #0003; border: 1px solid #fff5; }

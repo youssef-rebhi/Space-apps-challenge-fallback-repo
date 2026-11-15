@@ -18,7 +18,8 @@
     &route=lat,lon;lat,lon…  draws that route (and A / B pins) on the 3D map and on the 2D map sheets
     &rc=3cff8f               route colour (hex, no #)
     &base=1                  with a section: the flat 2D colored map of the area around it is drawn under the 3D piece
-  postMessage (same origin, {fg3d: 1, type}): app -> page 'next' | 'step' (step) | 'reset';  page -> app 'ready' | 'state' (step, caption) | 'error'
+  postMessage (same origin, {fg3d: 1, type}): app -> page 'next' | 'step' (step) | 'reset' | 'pins' ([{label, kind a|b|w, lat, lon}]) | 'picking' (label or null);
+                                             page -> app 'ready' | 'state' (step, caption) | 'error' | 'pick' (lat, lon: where the ground was clicked while picking)
 -->
 <style>
 :root{--bg1:#1c2029;--bg2:#08090c;--panel:rgba(20,22,28,.9);--tagbg:rgba(14,16,21,.82);--line:#2c3038;--text:#e8e6e3;--muted:#9aa0a6;--accent:#00dcff;
@@ -80,7 +81,7 @@ body.embed{--bg1:#2b2119;--bg2:#0d0a08;--tagbg:rgba(18,14,11,.84);--line:#3a3029
 body.embed #loading{font-size:13px;letter-spacing:.02em}
 .pinAB{width:22px;height:22px;margin-top:-18px;border-radius:50%;display:grid;place-items:center;font:800 12px system-ui,sans-serif;color:#000;
 border:2px solid #000;box-shadow:0 1px 6px #000c;pointer-events:none}
-.pinAB.a{background:#fff}.pinAB.b{background:#ffd84d}
+.pinAB.a{background:#fff}.pinAB.b{background:#ffd84d}.pinAB.w{background:#8b5cf6;color:#fff}.pinAB.wide{width:auto;min-width:22px;padding:0 5px;border-radius:11px}
 </style>
 <script type="importmap">{"imports":{"three":"../vendor/three/build/three.module.js","three/addons/":"../vendor/three/examples/jsm/"}}</script>
 </head>
@@ -368,8 +369,61 @@ if (ROUTE) {
     for (const o of [casing, line]) { o.frustumCulled = false; scene.add(o); }
     routeLines.push({key, casing, line});
   }
-  const pin = (t, cls) => { const el = document.createElement('div'); el.className = 'pinAB ' + cls; el.textContent = t; const o = new CSS2DObject(el); scene.add(o); return o; };
-  pinA = pin('A', 'a'); pinB = pin('B', 'b');
+  pinA = mkPin('A', 'a'); pinB = mkPin('B', 'b');
+}
+// pins: the app's A / B / waypoints when it sends them (?embed=1), else the two ends of ?route=
+let appPins = null, picking = null;                         // picking: the pin the app waits for (a click on the ground places it)
+function mkPin(t, cls) { const el = document.createElement('div'); el.className = 'pinAB ' + cls + (t.length > 1 ? ' wide' : ''); el.textContent = t; const o = new CSS2DObject(el); scene.add(o); return o; }
+function placeOn(o, x, yN) {                                 // on the 3D terrain when inside it, else on the 2D map under a section, else hidden
+  const e = SH.elev, sx = x - VCX, sz = (HM - yN) - VCZ;
+  if (Math.abs(sx) <= VW / 2 && Math.abs(sz) <= VH / 2) { o.visible = e.op > 0.5; o.position.set(sx, e.yDisp + (hAt(x, yN) - ZMID) * S.exag * (1 - e.flat) + LIFT, sz); }
+  else if (BASE_ON && sx >= BASEX.x0 && sx <= BASEX.x1 && sz >= BASEX.z0 && sz <= BASEX.z1) { o.visible = true; o.position.set(sx, BS.yDisp + 1, sz); }
+  else o.visible = false;
+}
+function placePins() {
+  if (appPins) { for (const p of appPins) placeOn(p.obj, p.x, p.yN); if (pinA) pinA.visible = pinB.visible = false; return; }
+  if (pinA) { placeOn(pinA, ...ROUTE[0]); placeOn(pinB, ...ROUTE[ROUTE.length - 1]); }
+}
+function setPins(list) {
+  for (const p of appPins || []) scene.remove(p.obj);
+  appPins = (list || []).filter(p => Number.isFinite(p.lat) && Number.isFinite(p.lon)).map(p => {
+    const [x, yN] = FRAME.toXY({lat: p.lat, lon: p.lon});
+    return {x, yN, obj: mkPin(String(p.label).slice(0, 4), ['a', 'b', 'w'].includes(p.kind) ? p.kind : 'w')};
+  });
+  placePins();
+}
+// where a click meets the ground: march along the ray over the heightmap (the 3D sheet is shaped in the shader), then the 2D map under a section
+const _ray = new THREE.Raycaster(), _ndc = new THREE.Vector2();
+function groundAt(cx, cy) {
+  const rc = renderer.domElement.getBoundingClientRect();
+  _ndc.set((cx - rc.left) / rc.width * 2 - 1, -(cy - rc.top) / rc.height * 2 + 1);
+  _ray.setFromCamera(_ndc, camera);
+  const o = _ray.ray.origin, d = _ray.ray.direction;
+  if (d.y > -1e-6) return null;
+  const at = t => [o.x + d.x * t, o.y + d.y * t, o.z + d.z * t];
+  const inside = (x, z) => Math.abs(x) <= VW / 2 && Math.abs(z) <= VH / 2;
+  let hit = null, best = Infinity;
+  for (const s of sheets) {                                  // every sheet on screen covers the same ground: the nearest one hit wins
+    if (!s.mesh.visible || s.op < 0.5) continue;
+    const k = S.exag * (1 - s.flat), above = t => { const [x, y, z] = at(t); return y - (s.yDisp + (hAt(x + VCX, HM - (z + VCZ)) - ZMID) * k); };
+    const top = s.yDisp + (ZMAX - ZMID) * k + 1, bot = s.yDisp + (ZMIN - ZMID) * k - 1, step = Math.min(CW, CH) * 0.5;
+    const t0 = Math.max(0, (top - o.y) / d.y), t1 = Math.min(best, (bot - o.y) / d.y);
+    for (let t = t0, prev = t0; t <= t1 + step; prev = t, t += step) {
+      const [x, , z] = at(t);
+      if (!inside(x, z) || above(t) > 0) continue;
+      let a = inside(...at(prev).filter((_, i) => i !== 1)) ? prev : t, b = t;
+      for (let i = 0; i < 24; i++) { const m = (a + b) / 2; if (above(m) <= 0) b = m; else a = m; }
+      if (b < best) { best = b; const [hx, , hz] = at(b); hit = [hx, hz]; }
+      break;
+    }
+  }
+  if (!hit && BASE_ON) {
+    const [x, , z] = at((BS.yDisp - o.y) / d.y);
+    if (x >= BASEX.x0 && x <= BASEX.x1 && z >= BASEX.z0 && z <= BASEX.z1) hit = [x, z];
+  }
+  if (!hit) return null;
+  const xm = hit[0] + VCX, yN = HM - (hit[1] + VCZ);
+  return FRAME.inBox(xm, yN) ? FRAME.toLatLon(xm, yN) : null;
 }
 const fam2d = famLabel('GO / NO-GO inputs', 'together they make the 2D colored map', '--fam2d');
 const fam3d = famLabel('Terrain shape and look', 'together they make the plain 3D map', '--fam3d');
@@ -623,6 +677,7 @@ function updateExtras() {                                    // the 2D map under
     });
     a.needsUpdate = true; guides.material.color.set(S.theme === 'dark' ? 0xffffff : 0x2a2d33);
   }
+  placePins();
   if (!routePos) return;
   for (const r of routeLines) {
     let y, k, op, order;
@@ -632,11 +687,6 @@ function updateExtras() {                                    // the 2D map under
       o.visible = op > 0.05; o.position.y = y + LIFT; o.scale.y = Math.max(k, 1e-4); o.renderOrder = order + w;
       o.material.opacity = (w === 1 ? 0.6 : 1) * op;
     }
-  }
-  const e = SH.elev, k = S.exag * (1 - e.flat), n = routePos.length / 3 - 1;
-  for (const [pin, i] of [[pinA, 0], [pinB, n]]) {
-    pin.visible = e.op > 0.5;
-    pin.position.set(routePos[i * 3], e.yDisp + routePos[i * 3 + 1] * k + LIFT, routePos[i * 3 + 2]);
   }
 }
 function updateLabels() {
@@ -707,7 +757,9 @@ addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); la
 let down = null;
 renderer.domElement.addEventListener('pointerdown', e => { down = {x: e.clientX, y: e.clientY, t: performance.now(), b: e.button}; });
 renderer.domElement.addEventListener('pointerup', e => {
-  if (!EMBED && down && down.b === 0 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && performance.now() - down.t < 450) next();   // in the app a button steps
+  const click = down && down.b === 0 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && performance.now() - down.t < 450;
+  if (click && !EMBED) next();                                  // in the app a button steps
+  if (click && EMBED && picking) { const g = groundAt(e.clientX, e.clientY); if (g) post({type: 'pick', lat: +g.lat.toFixed(7), lon: +g.lon.toFixed(7)}); }
   down = null;
 });
 renderer.domElement.addEventListener('wheel', () => { autoFit = false; }, {passive: true});
@@ -752,6 +804,8 @@ addEventListener('message', e => {                           // the Firm Ground 
   if (!EMBED || e.source !== parent || e.origin !== location.origin || !d || d.fg3d !== 1) return;
   if (d.type === 'next') next();
   else if (d.type === 'step') goTo(+d.step || 0);
+  else if (d.type === 'pins') setPins(d.pins);
+  else if (d.type === 'picking') { picking = d.label || null; renderer.domElement.style.cursor = picking ? 'crosshair' : ''; }
   else if (d.type === 'reset') { controls.target.set(0, 0, 0); camera.position.copy(camDir).multiplyScalar(desiredDist); autoFit = true; }
 });
 if (innerWidth <= 900) $('#settings').classList.add('min');
