@@ -131,7 +131,18 @@ export default function Tablet() {
   }
 
   // chosen option → route for the helmet (A, points every ~200 m, the science stop, B)
+  const [routeWhy, setRouteWhy] = useState("");
+  function whyOf(o) {
+    const others = options.filter((x) => x !== o && x.pts);
+    const parts = [`${o.label}: ${Math.round(o.len)} m, ${o.goPct}% firm GO ground on the team map`];
+    others.forEach((x) => { if (x.goPct < o.goPct) parts.push(`${x.label} is ${Math.round(x.len)} m but only ${x.goPct}% GO${x.caution > 20 ? `, with ${Math.round(x.caution)} m of caution ground` : ""}`); });
+    if (o.scouted) parts.push(`the drone checked it and ${Math.round(o.droneStat?.confirmed || 0)} m are confirmed`);
+    if (o.target) parts.push(`it passes ${o.target.name} for science`);
+    parts.push("NO-GO ground is never crossed");
+    return parts.join(". ") + ".";
+  }
   function useOption(o) {
+    setRouteWhy(whyOf(o));
     const mk = (q, via) => {
       const st = stops.find((x) => dist(x, q) < 3); if (st && !via) return st;
       return { ...pointFrom(q.lat, q.lon, stops, dist), id: pickId(q.lat, q.lon, via), via };
@@ -328,7 +339,7 @@ export default function Tablet() {
                 <small>Oxygen {O2_H} h, {RESERVE_MIN} min reserve never planned · EVA {EVA_MIN / 60} h · team assumptions</small>
               </div>
             )}
-            <PairQR routePts={routeStops} />
+            <PairQR routePts={routeStops} why={routeWhy} />
           </div>
           {ctx && <div className="card"><Assistant ctx={ctx} /></div>}
         </section>

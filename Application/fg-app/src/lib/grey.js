@@ -4,7 +4,7 @@ import { dist } from "./mission.js";
 
 export const keyOf = (s) => s.id ?? s.sol;
 export const pickId = (lat, lon, via = false) => `${via ? "v" : "p"}${lat.toFixed(6)}_${lon.toFixed(6)}`;
-export const labelOf = (s) => (s.sol != null && !s.grey && !s.custom ? `sol ${s.sol}` : s.via ? "path point" : s.custom ? "your point" : "unexplored area");
+export const labelOf = (s) => (s.home ? "start (home)" : s.sol != null && !s.grey && !s.custom ? `sol ${s.sol}` : s.via ? "path point" : s.custom ? "your point" : "unexplored area");
 
 export function greyCells(stops, n = 14) {
   if (!stops.length) return [];

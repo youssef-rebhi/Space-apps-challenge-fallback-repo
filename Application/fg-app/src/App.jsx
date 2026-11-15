@@ -11,7 +11,7 @@ function Pair({ code }) {
   useEffect(() => {
     fetch("api/pair?c=" + code).then((r) => (r.ok ? r.json() : Promise.reject())).then((e) => {
       const u = new URL(location.href.split("?")[0]);
-      u.searchParams.set("view", "helmet"); u.searchParams.set("stops", e.stops); u.searchParams.set("eva", e.eva || 240);
+      u.searchParams.set("view", "helmet"); u.searchParams.set("stops", e.stops); u.searchParams.set("eva", e.eva || 240); if (e.why) u.searchParams.set("why", e.why);
       location.replace(u.href);
     }).catch(() => setErr(`Code ${code} not found. Is server.py running, and was the route made on the tablet after it started?`));
   }, []);

@@ -30,7 +30,10 @@ export default function Control() {
         if (p.back > 900 && e.back <= 900) add("TIME", "15 min before turn-back", "orange");
         if (p.o2Pct >= 25 && e.o2Pct < 25) add("O₂", "oxygen under 25%", "red");
         last.current = e; setTele(e);
-      } else if (e.type === "sample") add("SAMPLE", `🧪 samples taken at ${e.name}`, "green");
+      } else if (e.type === "sos") add("🆘 SOS", `${e.reason} · at ${e.lat?.toFixed(5)}, ${e.lon?.toFixed(5)} · helmet sent it on its own`, "red");
+      else if (e.type === "ok") add("OK", `astronaut answered: I'm OK (${e.reason})`, "green");
+      else if (e.type === "auto") add("AUTO", e.text, "orange");
+      else if (e.type === "sample") add("SAMPLE", `🧪 samples taken at ${e.name}`, "green");
       else if (e.type === "scout") add("SCOUT", `${e.verdict.label} · ${e.label || (e.sol ? `sol ${e.sol}` : "area")}`, e.verdict.colour);
     };
     // telemetry coming from Mars arrives late

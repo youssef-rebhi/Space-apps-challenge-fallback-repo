@@ -244,3 +244,12 @@ export function rerouteScanned(geo, stops, a, b, scan, profile = "safest") {
   return { ...o, droneStat: st };
 }
 export const cellCentre = (geo, stops, i) => { const C = grid(geo, stops); return { lat: C.latOf((i / C.W) | 0), lon: C.lonOf(i % C.W) }; };
+
+// dense safe path between two points (Safest weights) — used by the helmet copilot
+export function safePath(geo, stops, a, b) {
+  const C = grid(geo, stops), cells = dijkstra(C, weightFn(C, PROFILES.safest), a, b);
+  if (!cells) return null;
+  const pts = cells.map((i) => ({ lat: C.latOf((i / C.W) | 0), lon: C.lonOf(i % C.W) }));
+  pts[0] = { lat: a.lat, lon: a.lon }; pts[pts.length - 1] = { lat: b.lat, lon: b.lon };
+  return pts;
+}

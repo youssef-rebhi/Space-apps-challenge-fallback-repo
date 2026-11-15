@@ -16,14 +16,14 @@ export function helmetLink(routePts, evaMin = 240) {
 }
 const codeOf = (str) => { let h = 7; for (const ch of str) h = (h * 31 + ch.charCodeAt(0)) >>> 0; const A = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"; let c = ""; for (let k = 0; k < 4; k++) { c += A[h % A.length]; h = Math.floor(h / A.length); } return c; };
 
-export default function PairQR({ routePts, evaMin = 240 }) {
+export default function PairQR({ routePts, evaMin = 240, why = "" }) {
   const stops = routePts.map(token).join(",");
-  const code = codeOf(stops + "|" + evaMin);
+  const code = codeOf(stops + "|" + evaMin + "|" + why);
   const [stored, setStored] = useState(false);
   useEffect(() => {
     if (routePts.length < 2) return;
     setStored(false);
-    const e = { type: "pair", code, stops, eva: evaMin };
+    const e = { type: "pair", code, stops, eva: evaMin, why };
     publish(e);
     // check the server kept it (server.py); if not, fall back to the long link
     const t = setTimeout(() => fetch("api/pair?c=" + code).then((r) => setStored(r.ok)).catch(() => setStored(false)), 600);

@@ -167,3 +167,11 @@ button.primary { background: #1f4d34; border-color: #3cff8f88; }
 .sw { display: inline-block; width: 12px; height: 8px; border-radius: 2px; vertical-align: middle; }
 .sw.u { background: #cfcfcf; } .sw.c { background: #ff9a2e; }
 .paircode { font-family: ui-monospace, monospace; font-size: 15px; color: #ffd27a; word-break: break-all; }
+.navbar { position: absolute; top: 96px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center; background: #0b1a12e6; border: 2px solid #3cff8f; color: #d8ffe8; border-radius: 12px; padding: 4px 12px; font: 700 clamp(12px, 2vw, 17px) system-ui; white-space: nowrap; }
+.navbar .arr { font-size: 1.8em; line-height: 1; }
+.navbar em { font-style: normal; color: #ffd27a; }
+.navbar.care { border-color: #f4c430; } .navbar.stop { border-color: #ff4a3d; background: #2a0b0be6; }
+.news.sos { border-color: #ff2a2a !important; background: #4a0000e6; color: #fff; font-weight: 800; }
+.guard { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); z-index: 9; background: #2a0000f2; border: 3px solid #ff3b3b; border-radius: 16px; padding: 16px 20px; display: grid; gap: 10px; text-align: center; color: #fff; width: min(420px, 92vw); font-size: 16px; }
+.guard big { font-size: 34px; color: #ffd27a; } .guard button { font-size: 18px; padding: 10px; } .guard .sosnow { background: #b00; color: #fff; }
+.quick.confirm .yes { background: #1f6f3a; color: #fff; }
