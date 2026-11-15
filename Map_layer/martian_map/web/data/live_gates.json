@@ -1,0 +1,164 @@
+{
+ "what": "Live-sensor gates. Radiation and weather change by the hour and are the same over this 2.4 x 3 km box, so they are NOT painted as maps. Each sensor gives one GO / CAUTION / NO-GO for the whole map at that moment; the app combines them with the terrain map.",
+ "combine": {
+  "gate": "worst of all live gates",
+  "map_rule": {
+   "GO": "terrain map as is",
+   "CAUTION": "terrain map as is + banner: shorten the EVA, stay within the return-reserve ring",
+   "NO-GO": "whole map NO-GO except the shelter: return / stay inside",
+   "UNKNOWN": "a feed is stale or missing: whole map grey (hold or send the scout)"
+  },
+  "certainty": "a live reading is the highest certainty level (team ladder: live > rover ground truth > orbital > none)"
+ },
+ "stale_after_hours": {
+  "value": 6,
+  "status": "ASSUMPTION",
+  "note": "older readings turn the gate UNKNOWN (grey)",
+  "ui": {
+   "min": 0,
+   "max": 24,
+   "step": 0.5,
+   "default": 0.5
+  }
+ },
+ "gates": [
+  {
+   "id": "radiation_rate",
+   "label": "Radiation dose rate",
+   "unit": "mSv/day (dose equivalent)",
+   "feed": "surface dosimeter (RAD-type)",
+   "baseline": {
+    "value": 0.67,
+    "meaning": "average galactic-cosmic-ray dose equivalent rate measured by Curiosity's RAD at Gale crater, Aug 2012 - Jun 2013",
+    "sources": [
+     {
+      "who": "SwRI press release on Hassler et al. 2014, Science 343",
+      "url": "https://www.swri.org/press-release/swri-scientists-publish-first-radiation-measurements-surface-mars"
+     },
+     {
+      "who": "Hassler et al. 2014, Science 343 (absorbed dose 0.210 +/- 0.040 mGy/day)",
+      "url": "https://ntrs.nasa.gov/citations/20180007641"
+     }
+    ]
+   },
+   "GO": "<= 2 x baseline (<= 1.34)",
+   "CAUTION": "2-10 x baseline (1.34-6.7): possible solar particle event onset",
+   "NO-GO": "> 10 x baseline (> 6.7) or a solar-particle-event alert: shelter",
+   "status": "ASSUMPTION (multipliers chosen by the team; baseline is measured)",
+   "num": {
+    "higher_is_worse": true,
+    "caution": 1.34,
+    "nogo": 6.7,
+    "min": 0,
+    "max": 10,
+    "step": 0.01,
+    "default": 0.67
+   }
+  },
+  {
+   "id": "radiation_budget",
+   "label": "Career dose budget",
+   "unit": "mSv (cumulative effective dose per crew member)",
+   "feed": "personal dosimeter log",
+   "limit": {
+    "value": 600,
+    "meaning": "NASA career effective dose limit (NASA-STD-3001 Vol. 1 Rev. B)",
+    "sources": [
+     {
+      "who": "NASA OCHMO Radiation Protection technical brief",
+      "url": "https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf"
+     }
+    ]
+   },
+   "GO": "< 80 % of limit",
+   "CAUTION": "80-95 %",
+   "NO-GO": ">= 95 %",
+   "status": "ASSUMPTION (percentages); limit is NASA",
+   "num": {
+    "higher_is_worse": true,
+    "caution": 80,
+    "nogo": 95,
+    "min": 0,
+    "max": 100,
+    "step": 1,
+    "default": 20,
+    "unit_ui": "% of 600 mSv"
+   }
+  },
+  {
+   "id": "dust_opacity",
+   "label": "Dust opacity (tau)",
+   "unit": "optical depth",
+   "feed": "sky camera / mast camera opacity (REMS/MEDA-type station)",
+   "GO": "< 1.0",
+   "CAUTION": "1.0-2.0 (low visibility, dust on suits and panels)",
+   "NO-GO": ">= 2.0 or a regional/global dust-storm alert",
+   "context": [
+    {
+     "what": "Opportunity was lost to the 2018 planet-encircling dust storm",
+     "url": "https://science.nasa.gov/mission/mer-opportunity/"
+    },
+    {
+     "what": "MEDA (Perseverance) opacity from SkyCam; data in PDS",
+     "url": "https://pds-atmospheres.nmsu.edu/data_and_services/atmospheres_data/PERSEVERANCE/meda.html"
+    }
+   ],
+   "status": "ASSUMPTION (thresholds)",
+   "num": {
+    "higher_is_worse": true,
+    "caution": 1.0,
+    "nogo": 2.0,
+    "min": 0,
+    "max": 5,
+    "step": 0.05,
+    "default": 0.5
+   }
+  },
+  {
+   "id": "wind",
+   "label": "Wind speed",
+   "unit": "m/s",
+   "feed": "weather station wind sensor",
+   "GO": "< 10",
+   "CAUTION": "10-20 (blowing dust, saltation)",
+   "NO-GO": ">= 20",
+   "context": [
+    {
+     "what": "MEDA wind sensor damaged by saltating sand: wind data need care",
+     "url": "https://meetingorganizer.copernicus.org/EPSC-DPS2025/EPSC-DPS2025-1461.html"
+    }
+   ],
+   "status": "ASSUMPTION (thresholds)",
+   "num": {
+    "higher_is_worse": true,
+    "caution": 10,
+    "nogo": 20,
+    "min": 0,
+    "max": 40,
+    "step": 0.5,
+    "default": 5
+   }
+  },
+  {
+   "id": "o2_reserve",
+   "label": "Suit O2 left after the walk back",
+   "unit": "minutes of oxygen left on return to base",
+   "feed": "suit telemetry + route length back to base from the map (team app: walk 0.8 m/s, way back +20 %)",
+   "GO": ">= 60 min",
+   "CAUTION": "30-60 min (turn back soon)",
+   "NO-GO": "< 30 min (the team's reserve that is never planned into: turn back now)",
+   "status": "NO-GO line = team value (ASSUMPTIONS.md: 30 min reserve, NASA ISS EVA planning); CAUTION line 60 min = ASSUMPTION (2 x reserve)",
+   "num": {
+    "higher_is_worse": false,
+    "caution": 60,
+    "nogo": 30,
+    "min": 0,
+    "max": 240,
+    "step": 5,
+    "default": 150,
+    "unit_ui": "min O2 left at base"
+   }
+  }
+ ],
+ "simulation_note": "The viewer moves these values with sliders (SIMULATED). In the real app each value comes from its live feed."
+}

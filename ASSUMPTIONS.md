@@ -37,6 +37,21 @@ Every threshold below is a choice made by our team for a walking astronaut. None
 | GO / caution / NO-GO | < 15° / 15–25° / ≥ 25° | same script (`SLOPE_GO_MAX`, `SLOPE_NOGO_MIN`) |
 | Reference frame | USGS MSL Gale DEM frame, because the rover heights match it to 0.08 m | `Map_layer/Layer2_Elevation/METADATA.md` §D |
 
+## GIS GO/NO-GO map (`Map_layer/martian_map/`)
+
+The GIS map uses the team values above as they are: the stop colours (sand > 30 % or big rock > 2 % red; sand 10–30 % or certainty < 0.75 orange), the 30 m AI radius, the 15 m red keep-out, the "Safest" route weights and the 30 min oxygen reserve. The numbers below are the extra choices it makes. The full table is in [`Map_layer/martian_map/docs/ASSUMPTIONS.md`](Map_layer/martian_map/docs/ASSUMPTIONS.md).
+
+| Assumption | Value | Where |
+|---|---|---|
+| Analysis grid | 3 m (the Layer 2 slope grid) | `pipeline/40_gonogo_layers.py` |
+| Slope, rover profile | caution 15°, NO-GO 30° (30° is Curiosity's onboard fault-protection limit, NASA/JPL) | `40_gonogo_layers.py` |
+| Roughness (RMS of DEM minus a 5 m smooth, in 9 m) | GO ≤ 0.56 m (95 % of Curiosity's in-box drive); caution to 1.53 m (the roughest it drove); grey above; never red | `40_gonogo_layers.py` |
+| Terrain units (Layer 3) | layered sulfate unit and boxwork ridges GO; boxwork hollows (often sediment-filled) and sand caution; unmapped neutral | `40_gonogo_layers.py` |
+| Rover-proven ground | within 5 m of Curiosity's path, orbital red or grey becomes caution; a red stop is never lifted | `50_combined_routes.py` |
+| Strictness check | Curiosity's own path must be ≤ 5 % red on the orbital data (result: 1.0 % on foot, 0.5 % rover) | `50_combined_routes.py` |
+| Live gates for the whole map | radiation caution > 2×, NO-GO > 10× the 0.67 mSv/day baseline; career dose 80 % / 95 % of 600 mSv; dust τ 1 / 2; wind 10 / 20 m/s; O2 after the walk back caution < 60 min, NO-GO < 30 min; reading stale after 6 h | `pipeline/live_gates_rules.json` |
+| 3D view height exaggeration | 2× by default (display only) | `web/viewer3d/index.html` |
+
 ## Route planner (A → B options)
 
 | Assumption | Value | Where |

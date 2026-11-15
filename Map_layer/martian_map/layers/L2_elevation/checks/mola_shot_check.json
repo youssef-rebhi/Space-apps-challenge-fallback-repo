@@ -1,0 +1,34 @@
+{
+ "n_shots_query": 53,
+ "footprint_box_m": 150,
+ "HiRISE_DTM": {
+  "n_shots_used": 47,
+  "mola_minus_dem_m_as_is": {
+   "median": 6.798058211421903,
+   "mean": 7.511181734384575,
+   "std": 7.728909350300503
+  },
+  "best_fit_shift_of_dem_m_grid": {
+   "dx_east": 0,
+   "dy_north": 20,
+   "std_after": 7.106024194339151,
+   "median_after": 4.05898412779834
+  },
+  "note": "dx is in the DEM's eqc grid metres (ground east = dx*cos(4.8 deg) = 0.996*dx)"
+ },
+ "USGS_Gale_DEM": {
+  "n_shots_used": 52,
+  "mola_minus_dem_m_as_is": {
+   "median": 14.85763203874103,
+   "mean": 16.054753065272806,
+   "std": 7.549766984234618
+  },
+  "best_fit_shift_of_dem_m_grid": {
+   "dx_east": 25,
+   "dy_north": -5,
+   "std_after": 6.9144296294709235,
+   "median_after": 17.414140435911122
+  },
+  "note": "dx is in the DEM's eqc grid metres (ground east = dx*cos(4.8 deg) = 0.996*dx)"
+ }
+}

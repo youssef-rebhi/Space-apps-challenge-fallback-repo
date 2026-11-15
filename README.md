@@ -10,6 +10,7 @@ The map combines three readings of the same ground:
 |---|---|---|
 | AI terrain reading | What is the ground made of (soil, bedrock, sand, big rock)? From Curiosity's own Navcam photos. | [`Ai_model/`](Ai_model/) |
 | Elevation and slope | How steep is it? 1 m elevation model in the rover's own frame. | [`Map_layer/`](Map_layer/) |
+| GIS map, GO/NO-GO and 3D | Where can we walk? All five map layers in QGIS, one GO/NO-GO layer per input, a combined GO/NO-GO map with routes, and a 3D viewer. | [`Map_layer/martian_map/`](Map_layer/martian_map/) |
 | Scout drone (simulated) | What lies between the stops, where no photo exists? A laser-ranging drone flies ahead. | [`Drone/`](Drone/) |
 
 The [`Application/`](Application/) folder is the tablet and helmet app that puts these together for the astronaut.
@@ -21,6 +22,7 @@ The [`Application/`](Application/) folder is the tablet and helmet app that puts
 | AI terrain reading | sand IoU 0.966, mean IoU 0.821 on the AI4Mars expert test set; 55 boxwork stops read (50 green, 4 orange, 1 red) | [`Ai_model/AI_WRITEUP.md`](Ai_model/AI_WRITEUP.md) |
 | Elevation layer | rover heights match the USGS Gale DEM to 0.08 m at 183 waypoints; slope classes GO < 15°, caution 15–25°, NO-GO ≥ 25° | [`Map_layer/Layer2_Elevation/METADATA.md`](Map_layer/Layer2_Elevation/METADATA.md) |
 | Scout drone | laser map height error 4.4 cm on the real route, 95 % safe landings (40-seed verification loop) | [`Drone/README.md`](Drone/README.md) |
+| GO/NO-GO map | box (crew on foot): 55.7 % GO, 27.3 % caution, 16.6 % NO-GO; Curiosity's own path is only 1.0 % NO-GO on the orbital data, so the limits are not too strict; 98 % of passable ground is connected; 5 routes between the boxwork stops, none crosses NO-GO | [`Map_layer/martian_map/README.md`](Map_layer/martian_map/README.md) |
 
 ## Run it
 
@@ -34,6 +36,8 @@ python server.py        # then open http://localhost:8000 (or http://<this-PC-IP
 
 **Elevation layer:** open `Map_layer/Layer2_Elevation/qgis/layer2_elevation_POSSIBLE.qgz` in QGIS, or use the web exports in `Map_layer/Layer2_Elevation/exports/`.
 
+**GIS map and GO/NO-GO:** open `Map_layer/martian_map/qgis/martian_map.qgz` in QGIS. For the 3D viewer, run `python -m http.server 8765 --directory Map_layer/martian_map/web` and open http://localhost:8765/viewer3d/. The 25 cm base map is not in git (113 MB); `Map_layer/martian_map/pipeline/10_fetch_basemap.py` fetches it from USGS.
+
 **AI model:** `Ai_model/nasa_training.ipynb` (Google Colab, GPU).
 
 ## Repository layout
@@ -41,6 +45,7 @@ python server.py        # then open http://localhost:8000 (or http://<this-PC-IP
 ```
 Ai_model/                    terrain segmentation notebook, metrics, per-stop results
 Map_layer/Layer2_Elevation/  elevation, slope, contours, exports for the web map, scripts
+Map_layer/martian_map/       all five map layers, GO/NO-GO layers and combined map, routes, 3D viewer, pipeline
 Application/
   fg-app/                    React source of the tablet + helmet app
   firmground-app-built/      built app, ready to serve

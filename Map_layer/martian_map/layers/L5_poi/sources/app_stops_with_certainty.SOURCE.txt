@@ -1,0 +1,2 @@
+Application/data/stops.json from https://github.com/malek-mejaouel/Depo_nasa at commit 6898af7e72bd2dafe93a6e1129e4ff55ca7f5b5d (main), downloaded 15 Nov 2026.
+Same 55 stops and terrain fractions as Layer 5 eva_stops (checked: 0 mismatches); adds the per-stop AI certainty used by the team rule "green turns orange below 0.75" (ASSUMPTIONS.md, safety.js UNSURE).

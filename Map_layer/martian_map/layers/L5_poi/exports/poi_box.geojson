@@ -1,0 +1,286 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "id": "4",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0005",
+    "name": "Sulfate unit to boxwork contact",
+    "name_status": "team",
+    "category": "discovery",
+    "scale": "box",
+    "sol": 4534.0,
+    "sol_end": null,
+    "lon": 137.3864361,
+    "lat": -4.79761763,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4534, site 116, drive 0",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3657.644,
+    "evidence": "observed",
+    "source_name": "Siebach et al., GSA 2025 abstract (per SESSION_HANDOFF.md); NASA blog sols 4804-4811 (boxwork Phase 1 began sol 4534)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4804-4811-kicking-off-the-final-phase-of-boxwork-exploration",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Where Curiosity left the layered sulfate unit and entered the boxwork region (sol 4534). NASA's blog dates boxwork campaign Phase 1 to sols 4534-4570. GSA 2025 abstract URL to be added (not verified here).",
+    "science_value": "Key geologic boundary; start of the boxwork campaign and of our EVA box route.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3864361,
+     -4.79761763
+    ]
+   }
+  },
+  {
+   "id": "5",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0006",
+    "name": "Altadena (first boxwork drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4564.0,
+    "sol_end": null,
+    "lon": 137.3835414,
+    "lat": -4.79984723,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4560, site 116, drive 1944",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3647.181,
+    "evidence": "observed",
+    "source_name": "NASA/JPL: NASA's Curiosity Mars Rover Starts Unpacking Boxwork Formations (23 Jun 2025); blog sols 4563-4565",
+    "source_url": "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "First drill sample of the boxwork campaign, on a ridge edge, June 2025. Drill sol 4564 is INFERRED (blog: drilling on the second sol of the 4563-4565 plan; post-brush image sol 4561).",
+    "science_value": "Baseline composition of boxwork bedrock.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3835414,
+     -4.79984723
+    ]
+   }
+  },
+  {
+   "id": "6",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0007",
+    "name": "Monte Grande (boxwork hollow)",
+    "name_status": "NASA_informal",
+    "category": "science_target",
+    "scale": "box",
+    "sol": 4693.0,
+    "sol_end": null,
+    "lon": 137.3810353,
+    "lat": -4.80783916,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4687, site 119, drive 1722",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3610.432,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog, Sols 4695-4701: Searching for Answers at Monte Grande",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4695-4701-searching-for-answers-at-monte-grande/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Boxwork hollow studied in Oct 2025; Mastcam mosaics of its walls. Hollow drill target Valle de la Luna lies here.",
+    "science_value": "Example of a boxwork hollow: compare with ridges for how boxwork formed.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810353,
+     -4.80783916
+    ]
+   }
+  },
+  {
+   "id": "7",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0008",
+    "name": "Valle de la Luna (44th drill hole)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4693.0,
+    "sol_end": null,
+    "lon": 137.3810353,
+    "lat": -4.80783916,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4687, site 119, drive 1722",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3610.432,
+    "evidence": "observed",
+    "source_name": "NASA blogs: Sols 4689-4694 'Drill in the Boxwork Unit is GO!' and Sols 4695-4701 (44th hole)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4689-4694-drill-in-the-boxwork-unit-is-go/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Drill target in the Monte Grande hollow, drilled around 18-19 Oct 2025 (Mastcam image of the hole on sol 4693); Curiosity's 44th hole. Exact drill sol not stated.",
+    "science_value": "Hollow sample for the ridge-vs-hollow comparison.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810353,
+     -4.80783916
+    ]
+   }
+  },
+  {
+   "id": "8",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0009",
+    "name": "Nevado Sajama (ridge-top drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4718.0,
+    "sol_end": null,
+    "lon": 137.3810041,
+    "lat": -4.80800755,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4711, site 120, drive 82",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3607.722,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog, Sols 4716-4722: Drilling Success at Nevado Sajama",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4716-4722-drilling-success-at-nevado-sajama/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Ridge-top drill target; drilling completed on sol 4718 (13 Nov 2025) after APXS, ChemCam and MAHLI checks.",
+    "science_value": "Ridge sample for the ridge-vs-hollow comparison.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3810041,
+     -4.80800755
+    ]
+   }
+  },
+  {
+   "id": "9",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0010",
+    "name": "Nevado Sajama 2 (second ridge drill)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 4803.0,
+    "sol_end": null,
+    "lon": 137.3809924,
+    "lat": -4.80800539,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 4789, site 120, drive 574",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3608.018,
+    "evidence": "observed",
+    "source_name": "NASA blog: Curiosity Blog Sols 4804-4811: Kicking Off the Final Phase of Boxwork Exploration",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-4804-4811-kicking-off-the-final-phase-of-boxwork-exploration",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Second drill at Nevado Sajama; MAHLI image sol 4803 (9 Feb 2026); final activities completed that week before the last boxwork phase.",
+    "science_value": "Repeat sample at the same ridge site.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3809924,
+     -4.80800539
+    ]
+   }
+  },
+  {
+   "id": "10",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0011",
+    "name": "Nazca (49th drill hole)",
+    "name_status": "NASA_informal",
+    "category": "drill_site",
+    "scale": "box",
+    "sol": 5050.0,
+    "sol_end": 5055.0,
+    "lon": 137.3876138,
+    "lat": -4.82466475,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 5045, site 125, drive 1326",
+    "position_uncertainty_m": 25.0,
+    "elev_m_usgs": -3487.995,
+    "evidence": "observed",
+    "source_name": "NASA blog title 'Curiosity Blog, Sols 5050-5055: It's Nazca, Our 49th Drill Hole' (title seen in site sidebar; page NOT read)",
+    "source_url": "https://science.nasa.gov/blog/curiosity-blog-sols-5050-5055-its-nazca-our-49th-drill-hole/",
+    "source_class": "NASA",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "49th drill hole, sols 5050-5055 per the NASA blog title. Details NOT verified (page not read); position = rover waypoint at sol 5050.",
+    "science_value": "Bedrock sample just above the boxwork (per a later blog, to verify).",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.3876138,
+     -4.82466475
+    ]
+   }
+  },
+  {
+   "id": "11",
+   "type": "Feature",
+   "properties": {
+    "poi_id": "L5-0012",
+    "name": "Curiosity position, sol 5073 (latest in data)",
+    "name_status": "team",
+    "category": "rover_position",
+    "scale": "box",
+    "sol": 5073.0,
+    "sol_end": null,
+    "lon": 137.388886,
+    "lat": -4.82602331,
+    "position_method": "rover_waypoint_on_sol",
+    "position_note": "waypoint sol 5073, site 125, drive 2490",
+    "position_uncertainty_m": 5.0,
+    "elev_m_usgs": -3472.085,
+    "evidence": "observed",
+    "source_name": "NASA MMGIS MSL waypoints (latest in our download)",
+    "source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "source_class": "official_NASA_list",
+    "position_source_url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json",
+    "description": "Last waypoint in the waypoint file downloaded 14 Nov 2026 (sol 5073). Not live.",
+    "science_value": "Where the rover was most recently, per our data.",
+    "image_url": null,
+    "retrieved": "2026-11-14"
+   },
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     137.388886,
+     -4.82602331
+    ]
+   }
+  }
+ ],
+ "crs_note": "Coordinates: planetocentric lon/lat, east-positive, Mars sphere R=3396190 (NOT Earth WGS84). Frame: USGS MSL Gale mosaic frame."
+}

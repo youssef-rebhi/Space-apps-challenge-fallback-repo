@@ -1,0 +1,36 @@
+{
+  "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif",
+  "source": {
+    "width": 180000,
+    "height": 280000,
+    "crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs=True",
+    "res": [
+      0.25,
+      0.25
+    ],
+    "nodata": 0.0
+  },
+  "bbox_lonlat_requested": [
+    137.3583,
+    -4.8317,
+    137.4017,
+    -4.7783
+  ],
+  "pixel_window": [
+    62494,
+    168273,
+    10290,
+    12661
+  ],
+  "transfer_bytes": 2278980000,
+  "seconds": 954.9,
+  "local_file": "raw/usgs_msl_gale_ortho_25cm_box.tif",
+  "local_md5": "d04ddd301f6333ef1bc726ee9b3c3582",
+  "valid_fraction": 0.99998,
+  "stretch_p2_p98": [
+    66.0,
+    194.0
+  ],
+  "citation": "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex",
+  "fetched_at": "2026-11-15T01:53:33+01:00"
+}

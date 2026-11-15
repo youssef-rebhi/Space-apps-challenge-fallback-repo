@@ -1,0 +1,816 @@
+{
+ "assembled_at": "2026-11-15T02:23:20+01:00",
+ "note": "Every file below was COPIED from the original project folders; originals are untouched.",
+ "files": [
+  {
+   "from": "possible_output/layer1_basemap/raw/usgs_msl_gale_ortho_25cm_box.tif",
+   "to": "layers/L1_basemap/usgs_msl_gale_ortho_25cm_box.tif",
+   "bytes": 112837915,
+   "md5": "d04ddd301f6333ef1bc726ee9b3c3582"
+  },
+  {
+   "from": "possible_output/layer1_basemap/raw/fetch_log.json",
+   "to": "layers/L1_basemap/fetch_log.json",
+   "bytes": 953,
+   "md5": "4e1aa881ecf9828cf7e36b38a5a4edcb"
+  },
+  {
+   "from": "possible_output/layer1_basemap/raw/fetch_console.log",
+   "to": "layers/L1_basemap/fetch_console.log",
+   "bytes": 2929,
+   "md5": "2a5b59ca46f301a67f3df7cf580b5096"
+  },
+  {
+   "from": "possible_output/layer1_basemap/docs/preview_box.png",
+   "to": "layers/L1_basemap/docs/preview_box.png",
+   "bytes": 1385103,
+   "md5": "55e8cf52d8b02156029386b611e7e7bc"
+  },
+  {
+   "from": "possible_output/derived/elevation_box_1m_GALEFRAME.tif",
+   "to": "layers/L2_elevation/elevation_box_1m_GALEFRAME.tif",
+   "bytes": 18503590,
+   "md5": "e67363304a0dbc69c71331b20268d6cb"
+  },
+  {
+   "from": "possible_output/derived/hillshade_box_1m_GALEFRAME.tif",
+   "to": "layers/L2_elevation/hillshade_box_1m_GALEFRAME.tif",
+   "bytes": 5780433,
+   "md5": "42dded325fa5925bd7899612abeee839"
+  },
+  {
+   "from": "possible_output/derived/contours_box_1m_GALEFRAME.gpkg",
+   "to": "layers/L2_elevation/contours_box_1m_GALEFRAME.gpkg",
+   "bytes": 47706112,
+   "md5": "f7602b604372692f85c55d199ac9ed70"
+  },
+  {
+   "from": "possible_output/derived/contours_box_5m_GALEFRAME.gpkg",
+   "to": "layers/L2_elevation/contours_box_5m_GALEFRAME.gpkg",
+   "bytes": 9625600,
+   "md5": "61e8983dc0e3b098a56a3c8bf21ffeb0"
+  },
+  {
+   "from": "possible_output/derived/slope_box_3m_GALEFRAME.tif",
+   "to": "layers/L2_elevation/slope_box_3m_GALEFRAME.tif",
+   "bytes": 2777870,
+   "md5": "cc1742fdfeb87a97cdd85c4fdfb278cc"
+  },
+  {
+   "from": "possible_output/derived/slope_classes_box_3m_GALEFRAME.tif",
+   "to": "layers/L2_elevation/slope_classes_box_3m_GALEFRAME.tif",
+   "bytes": 91102,
+   "md5": "1a7c7ad1424f77ab6f1c984d3433af9b"
+  },
+  {
+   "from": "possible_output/derived/slope_classes_stats.json",
+   "to": "layers/L2_elevation/slope_classes_stats.json",
+   "bytes": 430,
+   "md5": "447c090b2cfd71aba3d999ca49075e28"
+  },
+  {
+   "from": "possible_output/derived/regional_gale_elevation_200m.tif",
+   "to": "layers/L2_elevation/regional/regional_gale_elevation_200m.tif",
+   "bytes": 1473999,
+   "md5": "b66d88fc20cd808d85689d458a1da5c0"
+  },
+  {
+   "from": "possible_output/derived/regional_gale_hillshade_200m.tif",
+   "to": "layers/L2_elevation/regional/regional_gale_hillshade_200m.tif",
+   "bytes": 672761,
+   "md5": "a1fc51c9a05306a6be1472c882219351"
+  },
+  {
+   "from": "possible_output/derived/regional_gale_contours_100m.gpkg",
+   "to": "layers/L2_elevation/regional/regional_gale_contours_100m.gpkg",
+   "bytes": 5480448,
+   "md5": "50afdb11c8ef8c0c58065aa92664d3b3"
+  },
+  {
+   "from": "possible_output/derived/frame_datum_tests.json",
+   "to": "layers/L2_elevation/checks/frame_datum_tests.json",
+   "bytes": 2642,
+   "md5": "00743e8c80edf0042591bcf076f0b9e4"
+  },
+  {
+   "from": "possible_output/derived/mola_shot_check.json",
+   "to": "layers/L2_elevation/checks/mola_shot_check.json",
+   "bytes": 902,
+   "md5": "7bb2653178b390aa8fc27376a2f81bd6"
+  },
+  {
+   "from": "possible_output/derived/regional_hrsc_vs_mola.json",
+   "to": "layers/L2_elevation/checks/regional_hrsc_vs_mola.json",
+   "bytes": 235,
+   "md5": "66db50306c30a260135f8a33da414598"
+  },
+  {
+   "from": "possible_output/derived/check_shifted_redc_vs_mosaic.json",
+   "to": "layers/L2_elevation/checks/check_shifted_redc_vs_mosaic.json",
+   "bytes": 153,
+   "md5": "d6a238560e0f9162fccf4e179425e305"
+  },
+  {
+   "from": "possible_output/derived/hirise_dtm_box_GALEFRAME.tif",
+   "to": "layers/L2_elevation/checks/hirise_dtm_box_GALEFRAME.tif",
+   "bytes": 18129141,
+   "md5": "b084fe49359784940ed914aea628ab48"
+  },
+  {
+   "from": "possible_output/raw/hrsc_mola_blend_200m_gale.tif",
+   "to": "layers/L2_elevation/sources/hrsc_mola_blend_200m_gale.tif",
+   "bytes": 880268,
+   "md5": "608f866c2c5d5774058c7522b7b40eab"
+  },
+  {
+   "from": "possible_output/raw/mola_463m_gale.tif",
+   "to": "layers/L2_elevation/sources/mola_463m_gale.tif",
+   "bytes": 185323,
+   "md5": "ca8c2b02d507e72136db8869b764d36e"
+  },
+  {
+   "from": "possible_output/raw/msl_gale_dem_1m_box.tif",
+   "to": "layers/L2_elevation/sources/msl_gale_dem_1m_box.tif",
+   "bytes": 15445149,
+   "md5": "2a68dbedab666c07d1c3f996d2a9e41f"
+  },
+  {
+   "from": "possible_output/raw/fetch_log.json",
+   "to": "layers/L2_elevation/sources/fetch_log.json",
+   "bytes": 2300,
+   "md5": "8907d52f6ec41d2dfbddbb5a7444ced5"
+  },
+  {
+   "from": "possible_output/raw/fetch_console.log",
+   "to": "layers/L2_elevation/sources/fetch_console.log",
+   "bytes": 750,
+   "md5": "411f073f4680e4748eef2ba7fc6700fe"
+  },
+  {
+   "from": "possible_output/raw/mola_pedr/MolaPEDR_box.txt",
+   "to": "layers/L2_elevation/sources/mola_pedr/MolaPEDR_box.txt",
+   "bytes": 6912,
+   "md5": "c5b0b7cc818c6c1985e0ad6e3aec05f1"
+  },
+  {
+   "from": "possible_output/raw/mola_pedr/MolaPEDR_box_pts_csv.csv",
+   "to": "layers/L2_elevation/sources/mola_pedr/MolaPEDR_box_pts_csv.csv",
+   "bytes": 5886,
+   "md5": "2bd76279ddebe8c8e30107a1eec6d914"
+  },
+  {
+   "from": "possible_output/raw/mola_pedr/MolaPEDR_box_pts_csv.lbl",
+   "to": "layers/L2_elevation/sources/mola_pedr/MolaPEDR_box_pts_csv.lbl",
+   "bytes": 6087,
+   "md5": "8dc601d680550d21f948c42b640474dd"
+  },
+  {
+   "from": "possible_output/raw/mola_pedr/query_response.xml",
+   "to": "layers/L2_elevation/sources/mola_pedr/query_response.xml",
+   "bytes": 16783,
+   "md5": "9029d197cb6c7e93a0b87c74ae30c67d"
+  },
+  {
+   "from": "possible_output/qgis/styles/contours_5m.qml",
+   "to": "layers/L2_elevation/styles/contours_5m.qml",
+   "bytes": 30427,
+   "md5": "3a5143ddf02e2ee06ac3b2ddca7a7916"
+  },
+  {
+   "from": "possible_output/qgis/styles/contours_regional.qml",
+   "to": "layers/L2_elevation/styles/contours_regional.qml",
+   "bytes": 30437,
+   "md5": "f3b23f4102b73dc8f8209c06d8a69fac"
+  },
+  {
+   "from": "possible_output/qgis/styles/elevation_box.qml",
+   "to": "layers/L2_elevation/styles/elevation_box.qml",
+   "bytes": 8657,
+   "md5": "c3bd911ae9d70c2e72ddc606a9877cb5"
+  },
+  {
+   "from": "possible_output/qgis/styles/elevation_regional.qml",
+   "to": "layers/L2_elevation/styles/elevation_regional.qml",
+   "bytes": 8661,
+   "md5": "8e7e76d9a8eb263844ffd5c993bee408"
+  },
+  {
+   "from": "possible_output/qgis/styles/slope_classes.qml",
+   "to": "layers/L2_elevation/styles/slope_classes.qml",
+   "bytes": 7660,
+   "md5": "8cdf3f78173c5cf4a68051f2e9c49e6b"
+  },
+  {
+   "from": "possible_output/qgis/styles/slope_deg.qml",
+   "to": "layers/L2_elevation/styles/slope_deg.qml",
+   "bytes": 8572,
+   "md5": "dbc2e69a3fa35dbbf71c6500f4bcfaeb"
+  },
+  {
+   "from": "possible_output/exports/web/elevation_box_1m_lonlat.tif",
+   "to": "layers/L2_elevation/exports_v1/web/elevation_box_1m_lonlat.tif",
+   "bytes": 18503154,
+   "md5": "fbf6e17431f4f828c3b3514a14f8e98e"
+  },
+  {
+   "from": "possible_output/exports/web/hillshade_box_1m_lonlat.tif",
+   "to": "layers/L2_elevation/exports_v1/web/hillshade_box_1m_lonlat.tif",
+   "bytes": 5780245,
+   "md5": "12d569157a03c29625dd6d436e090f3d"
+  },
+  {
+   "from": "possible_output/exports/web/regional_gale_elevation_200m_lonlat.tif",
+   "to": "layers/L2_elevation/exports_v1/web/regional_gale_elevation_200m_lonlat.tif",
+   "bytes": 1472540,
+   "md5": "c20439a71066c93e89772f3f84b3eebf"
+  },
+  {
+   "from": "possible_output/exports/web/slope_classes_box_3m_lonlat.tif",
+   "to": "layers/L2_elevation/exports_v1/web/slope_classes_box_3m_lonlat.tif",
+   "bytes": 90726,
+   "md5": "7406223ba28e7206f0be77c598f17c0e"
+  },
+  {
+   "from": "possible_output/exports/leaflet/elevation_box.png",
+   "to": "layers/L2_elevation/exports_v1/leaflet/elevation_box.png",
+   "bytes": 9214927,
+   "md5": "9c200867c438763c6060a1ab610dae33"
+  },
+  {
+   "from": "possible_output/exports/leaflet/leaflet_bounds.json",
+   "to": "layers/L2_elevation/exports_v1/leaflet/leaflet_bounds.json",
+   "bytes": 973,
+   "md5": "2c0ebbcce33f39f634a5cdedde814a98"
+  },
+  {
+   "from": "possible_output/exports/leaflet/regional_gale_elevation.png",
+   "to": "layers/L2_elevation/exports_v1/leaflet/regional_gale_elevation.png",
+   "bytes": 781245,
+   "md5": "998ebe3bc25aea8bdff131cfab236fab"
+  },
+  {
+   "from": "possible_output/exports/leaflet/slope_classes_box.png",
+   "to": "layers/L2_elevation/exports_v1/leaflet/slope_classes_box.png",
+   "bytes": 145309,
+   "md5": "fe0dccdd24e52f7c9dd035586498216a"
+  },
+  {
+   "from": "possible_output/exports/plotly/elevation_box_300x300.json",
+   "to": "layers/L2_elevation/exports_v1/plotly/elevation_box_300x300.json",
+   "bytes": 915674,
+   "md5": "d89e14ca4ae126cebec61b36fcc54bcc"
+  },
+  {
+   "from": "possible_output/exports/plotly/regional_gale_300x300.json",
+   "to": "layers/L2_elevation/exports_v1/plotly/regional_gale_300x300.json",
+   "bytes": 873375,
+   "md5": "821091f7314632e80495254e90f82542"
+  },
+  {
+   "from": "possible_output/docs/preview_layers.png",
+   "to": "layers/L2_elevation/docs/preview_layers.png",
+   "bytes": 995538,
+   "md5": "849912b046c2c1574ed6ec1c57ce17e0"
+  },
+  {
+   "from": "data/clean/geology/ridges_hollows_DRAFT_GALEFRAME.tif",
+   "to": "layers/L3_geology/terrain/ridges_hollows_DRAFT_GALEFRAME.tif",
+   "bytes": 652748,
+   "md5": "996d2f133a8adb40eef69e7c0f28a00c"
+  },
+  {
+   "from": "data/clean/geology/tpi_relief_DRAFT_GALEFRAME.tif",
+   "to": "layers/L3_geology/terrain/tpi_relief_DRAFT_GALEFRAME.tif",
+   "bytes": 25509316,
+   "md5": "a7b96c25ef1a5f43d82aa542eeb89c74"
+  },
+  {
+   "from": "data/clean/geology/dtm_box_GALEFRAME.tif",
+   "to": "layers/L3_geology/terrain/dtm_box_GALEFRAME.tif",
+   "bytes": 18130892,
+   "md5": "7a38f439c1f4e2a2cafdb4ee7fc37548"
+  },
+  {
+   "from": "data/clean/geology/hillshade_box_GALEFRAME.tif",
+   "to": "layers/L3_geology/terrain/hillshade_box_GALEFRAME.tif",
+   "bytes": 5747936,
+   "md5": "02b4a0b42ead34cd75eca9f9ebe43516"
+  },
+  {
+   "from": "possible_output/derived/hirise_red_c_box_GALEFRAME.tif",
+   "to": "layers/L3_geology/terrain/hirise_red_c_box_GALEFRAME.tif",
+   "bytes": 5500932,
+   "md5": "e1d81897ca402bd0b6dff938702dd82a"
+  },
+  {
+   "from": "data/clean/geology/study_box.gpkg",
+   "to": "layers/L3_geology/study_box.gpkg",
+   "bytes": 98304,
+   "md5": "9fab43399c32f2a37cc84c677633cb77"
+  },
+  {
+   "from": "data/clean/context/README.md",
+   "to": "layers/L3_geology/context_sim3292/README.md",
+   "bytes": 2393,
+   "md5": "de8af78115f52a62181b88cdbc86bd4f"
+  },
+  {
+   "from": "data/clean/context/sim3292_gale_context.gpkg",
+   "to": "layers/L3_geology/context_sim3292/sim3292_gale_context.gpkg",
+   "bytes": 1490944,
+   "md5": "00def64cfe9d2d01ddfdbe6acc64f330"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.dbf",
+   "to": "layers/L3_geology/reference_persaud2021/marker-bed_trace.dbf",
+   "bytes": 473,
+   "md5": "1e1315cefca7d3c49ae892cab3802ca1"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.prj",
+   "to": "layers/L3_geology/reference_persaud2021/marker-bed_trace.prj",
+   "bytes": 315,
+   "md5": "14fc3151b5949c830fade416ba01fe95"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.qpj",
+   "to": "layers/L3_geology/reference_persaud2021/marker-bed_trace.qpj",
+   "bytes": 318,
+   "md5": "b78a6d2ac898fb4d77edbe589530a415"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.shp",
+   "to": "layers/L3_geology/reference_persaud2021/marker-bed_trace.shp",
+   "bytes": 20468,
+   "md5": "b8c9099ff4793c73a47283b5b496d1d0"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/marker-bed_trace.shx",
+   "to": "layers/L3_geology/reference_persaud2021/marker-bed_trace.shx",
+   "bytes": 396,
+   "md5": "f77a5acc6e6637997e4ba48d7978eb3b"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.dbf",
+   "to": "layers/L3_geology/reference_persaud2021/p3.dbf",
+   "bytes": 198,
+   "md5": "e9556f75e83a5b558298241ed39cfe9b"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.prj",
+   "to": "layers/L3_geology/reference_persaud2021/p3.prj",
+   "bytes": 315,
+   "md5": "14fc3151b5949c830fade416ba01fe95"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.qpj",
+   "to": "layers/L3_geology/reference_persaud2021/p3.qpj",
+   "bytes": 318,
+   "md5": "b78a6d2ac898fb4d77edbe589530a415"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.shp",
+   "to": "layers/L3_geology/reference_persaud2021/p3.shp",
+   "bytes": 37064,
+   "md5": "9616384ce8415ba88e7339c4511fd688"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/p3.shx",
+   "to": "layers/L3_geology/reference_persaud2021/p3.shx",
+   "bytes": 196,
+   "md5": "0b00dad1461be03e4fc97c9b242cc2d3"
+  },
+  {
+   "from": "data/raw/geology/references/zenodo_5819267_sakarya_unit_map/Persaud_2021_Shapefiles-README.txt",
+   "to": "layers/L3_geology/reference_persaud2021/Persaud_2021_Shapefiles-README.txt",
+   "bytes": 3371,
+   "md5": "57beb703f96c98e1f3fde5024a16b1d8"
+  },
+  {
+   "from": "possible_output/layer4_rover/derived/layer4_rover.gpkg",
+   "to": "layers/L4_rover/layer4_rover.gpkg",
+   "bytes": 1949696,
+   "md5": "37caf3547050712328b70a877f7fbe37"
+  },
+  {
+   "from": "possible_output/layer4_rover/docs/preview_box.png",
+   "to": "layers/L4_rover/docs/preview_box.png",
+   "bytes": 1411650,
+   "md5": "68e0bf9c9e43cb2c165574c01659cfae"
+  },
+  {
+   "from": "data/raw/geology/rover/MSL_traverse.json",
+   "to": "layers/L4_rover/sources/MSL_traverse.json",
+   "bytes": 1357951,
+   "md5": "edd61270e7a2bceb8ff046e911276dfc"
+  },
+  {
+   "from": "data/raw/geology/rover/MSL_waypoints.json",
+   "to": "layers/L4_rover/sources/MSL_waypoints.json",
+   "bytes": 665124,
+   "md5": "0814c64e1508c7c799002e7f319876a0"
+  },
+  {
+   "from": "data/raw/geology/rover/MSL_waypoints_current.json",
+   "to": "layers/L4_rover/sources/MSL_waypoints_current.json",
+   "bytes": 550,
+   "md5": "b23e88d86501b6e751f0b1a7f8b538d9"
+  },
+  {
+   "from": "trials/nasa_data_v2/inputs/localized_interp.csv",
+   "to": "layers/L4_rover/sources/localized_interp.csv",
+   "bytes": 11755643,
+   "md5": "23bbc2b6b50da3464e3033b83f70ef75"
+  },
+  {
+   "from": "trials/nasa_data_v2/inputs/localized_interp.csv.xml",
+   "to": "layers/L4_rover/sources/localized_interp.csv.xml",
+   "bytes": 14556,
+   "md5": "961a964ac972c932d3f91d1dec439fe4"
+  },
+  {
+   "from": "possible_output/layer5_poi/derived/layer5_poi.gpkg",
+   "to": "layers/L5_poi/layer5_poi.gpkg",
+   "bytes": 176128,
+   "md5": "3d9a77dc08ec0b3b94cba2a39fa61d35"
+  },
+  {
+   "from": "possible_output/layer5_poi/exports/eva_stops.geojson",
+   "to": "layers/L5_poi/exports/eva_stops.geojson",
+   "bytes": 40567,
+   "md5": "14570d015acbf51a50d4ed4e0d6f6c71"
+  },
+  {
+   "from": "possible_output/layer5_poi/exports/poi_box.geojson",
+   "to": "layers/L5_poi/exports/poi_box.geojson",
+   "bytes": 10763,
+   "md5": "8bcf90fb07380fb79a59d295a537dd04"
+  },
+  {
+   "from": "possible_output/layer5_poi/exports/poi_cards.json",
+   "to": "layers/L5_poi/exports/poi_cards.json",
+   "bytes": 9634,
+   "md5": "997396ebf54f6f82f1527066772822f4"
+  },
+  {
+   "from": "possible_output/layer5_poi/exports/poi_gale.geojson",
+   "to": "layers/L5_poi/exports/poi_gale.geojson",
+   "bytes": 26964,
+   "md5": "22be51790841e6fb076d51c8943b6753"
+  },
+  {
+   "from": "possible_output/layer5_poi/sources.json",
+   "to": "layers/L5_poi/sources.json",
+   "bytes": 3108,
+   "md5": "94412fea3c6addb491e044d37c4acfcb"
+  },
+  {
+   "from": "possible_output/layer5_poi/qgis/styles/eva_stops.qml",
+   "to": "layers/L5_poi/styles/eva_stops.qml",
+   "bytes": 30146,
+   "md5": "f67cb6908ff4666ae35baa4e5f09ceba"
+  },
+  {
+   "from": "possible_output/layer5_poi/qgis/styles/poi.qml",
+   "to": "layers/L5_poi/styles/poi.qml",
+   "bytes": 49826,
+   "md5": "fec559fd2447fb84127b07b785998364"
+  },
+  {
+   "from": "possible_output/layer5_poi/qgis/styles/surface_view_sites.qml",
+   "to": "layers/L5_poi/styles/surface_view_sites.qml",
+   "bytes": 26922,
+   "md5": "f8702c78190e5f4e8eeecd7048b0ca21"
+  },
+  {
+   "from": "possible_output/layer5_poi/docs/preview_box.png",
+   "to": "layers/L5_poi/docs/preview_box.png",
+   "bytes": 1625882,
+   "md5": "326b736761a5782b32e129f8dcbba19e"
+  },
+  {
+   "from": "possible_output/layer5_poi/docs/preview_gale.png",
+   "to": "layers/L5_poi/docs/preview_gale.png",
+   "bytes": 223980,
+   "md5": "83fe1cfb56997aabd0275a829ce6b364"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/nasa_location_map_config.json",
+   "to": "layers/L5_poi/sources/nasa_location_map_config.json",
+   "bytes": 4983,
+   "md5": "37109dbe565e99021ff386b7b01f9609"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/probe_MSL_SurfaceSites.json",
+   "to": "layers/L5_poi/sources/probe_MSL_SurfaceSites.json",
+   "bytes": 1297,
+   "md5": "fc7c4342eb4d4ac0bbb9c9c561a2f82d"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.cpg",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.cpg",
+   "bytes": 5,
+   "md5": "ae3b3df9970b49b6523e608759bc957d"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.dbf",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.dbf",
+   "bytes": 5310762,
+   "md5": "4078cfc0b24d68d611554a61598918af"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.prj",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.prj",
+   "bytes": 171,
+   "md5": "a7e51bd8b97ca9497ae0e6fce60b5075"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.shp",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.shp",
+   "bytes": 57640,
+   "md5": "744dfbbbcaffc425bbd60293a873239d"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.shx",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.shx",
+   "bytes": 16540,
+   "md5": "c87f3ae8ec5f6afefada0ff825e40621"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/MARS_nomenclature_center_pts.zip",
+   "to": "layers/L5_poi/sources/iau_gazetteer/MARS_nomenclature_center_pts.zip",
+   "bytes": 5421247,
+   "md5": "d15c18a36a6116f8dd1d451b45bf6de1"
+  },
+  {
+   "from": "possible_output/layer5_poi/raw/iau_gazetteer/metadata_nomenclature_points_MARS.xml",
+   "to": "layers/L5_poi/sources/iau_gazetteer/metadata_nomenclature_points_MARS.xml",
+   "bytes": 35257,
+   "md5": "5ca201e5bfb1762ecf86e58cea0abc31"
+  },
+  {
+   "from": "pipeline/00_download_geology_kit.py",
+   "to": "pipeline/build_history/downloads/00_download_geology_kit.py",
+   "bytes": 13061,
+   "md5": "32dbad0b81d7590c081379a9c13a8ee3"
+  },
+  {
+   "from": "possible_output/scripts/01_fetch_windows.py",
+   "to": "pipeline/build_history/L2_elevation/01_fetch_windows.py",
+   "bytes": 3924,
+   "md5": "a5ce45771b152e9a23b1294172f3ce1e"
+  },
+  {
+   "from": "possible_output/scripts/02_box_elevation_contours.py",
+   "to": "pipeline/build_history/L2_elevation/02_box_elevation_contours.py",
+   "bytes": 2500,
+   "md5": "a35ea24ac1e86294da1ea02b1356a8d0"
+  },
+  {
+   "from": "possible_output/scripts/03_regional_crater.py",
+   "to": "pipeline/build_history/L2_elevation/03_regional_crater.py",
+   "bytes": 3661,
+   "md5": "ca66ccb6be597691e87097928f079c1d"
+  },
+  {
+   "from": "possible_output/scripts/04_frame_and_datum_tests.py",
+   "to": "pipeline/build_history/L2_elevation/04_frame_and_datum_tests.py",
+   "bytes": 6645,
+   "md5": "d4be8d13074959a7595896e3f8926d3d"
+  },
+  {
+   "from": "possible_output/scripts/05_mola_shot_check.py",
+   "to": "pipeline/build_history/L2_elevation/05_mola_shot_check.py",
+   "bytes": 3072,
+   "md5": "a7b44d1b20010120cc7a59e5b4f6c480"
+  },
+  {
+   "from": "possible_output/scripts/06_galeframe_layers.py",
+   "to": "pipeline/build_history/L2_elevation/06_galeframe_layers.py",
+   "bytes": 6113,
+   "md5": "13051caa4b8cc8614d040f5d406530f0"
+  },
+  {
+   "from": "possible_output/scripts/07_galeframe_contours_hillshade.py",
+   "to": "pipeline/build_history/L2_elevation/07_galeframe_contours_hillshade.py",
+   "bytes": 1587,
+   "md5": "3b37e079dc944ccbf1a50e2c37068d16"
+  },
+  {
+   "from": "possible_output/scripts/08_exports.py",
+   "to": "pipeline/build_history/L2_elevation/08_exports.py",
+   "bytes": 8374,
+   "md5": "a54a6de8e8d34b317d57674c77de688e"
+  },
+  {
+   "from": "possible_output/scripts/09_qgis_project.py",
+   "to": "pipeline/build_history/L2_elevation/09_qgis_project.py",
+   "bytes": 8330,
+   "md5": "4b9b73ae80163b55152b4fe62f74c128"
+  },
+  {
+   "from": "possible_output/layer1_basemap/scripts/20_fetch_basemap_25cm.py",
+   "to": "pipeline/build_history/L1_basemap/20_fetch_basemap_25cm.py",
+   "bytes": 5025,
+   "md5": "caf24034c721a5397cd9a4e0715a646e"
+  },
+  {
+   "from": "possible_output/layer1_basemap/scripts/21_qgis_project.py",
+   "to": "pipeline/build_history/L1_basemap/21_qgis_project.py",
+   "bytes": 3752,
+   "md5": "9df291c0cf5293031ab356d3b9bd7fea"
+  },
+  {
+   "from": "possible_output/layer4_rover/scripts/40_build_rover_layer.py",
+   "to": "pipeline/build_history/L4_rover/40_build_rover_layer.py",
+   "bytes": 6686,
+   "md5": "b7156d0f87a07caffb41120d1bb4cf54"
+  },
+  {
+   "from": "possible_output/layer4_rover/scripts/41_qgis_project.py",
+   "to": "pipeline/build_history/L4_rover/41_qgis_project.py",
+   "bytes": 6436,
+   "md5": "8bf93ed380bb92102461af003bfcb734"
+  },
+  {
+   "from": "possible_output/layer5_poi/scripts/10_build_poi.py",
+   "to": "pipeline/build_history/L5_poi/10_build_poi.py",
+   "bytes": 14521,
+   "md5": "499d450194ffa509cef6ac28e340e97e"
+  },
+  {
+   "from": "possible_output/layer5_poi/scripts/11_qgis_project.py",
+   "to": "pipeline/build_history/L5_poi/11_qgis_project.py",
+   "bytes": 6185,
+   "md5": "6e893f15125c82318f5bfacc48888107"
+  },
+  {
+   "from": "possible_output/layer5_poi/scripts/12_render_preview.py",
+   "to": "pipeline/build_history/L5_poi/12_render_preview.py",
+   "bytes": 1320,
+   "md5": "fb99aecff79e1898484cda9e0bd8ff58"
+  },
+  {
+   "from": "possible_output/scripts/qgz_view.py",
+   "to": "pipeline/qgz_view.py",
+   "bytes": 2148,
+   "md5": "cf246baf22ff9597c5ef8c5ecdacb621"
+  },
+  {
+   "from": "SESSION_HANDOFF.md",
+   "to": "docs/history/SESSION_HANDOFF.md",
+   "bytes": 14713,
+   "md5": "6cbba0b1f97b40c4eeb2d42ef3b6330d"
+  },
+  {
+   "from": "DATA_SOURCES.md",
+   "to": "docs/history/DATA_SOURCES.md",
+   "bytes": 26980,
+   "md5": "c02e5883e4fb19a7c6ba5fc10fa89081"
+  },
+  {
+   "from": "data/raw/geology/manifest.json",
+   "to": "docs/history/manifest.json",
+   "bytes": 33792,
+   "md5": "52de41c20d3e0c9937cc062a58ad1736"
+  },
+  {
+   "from": "possible_output/METADATA.md",
+   "to": "docs/history/METADATA.md",
+   "bytes": 16926,
+   "md5": "a2f586a854981979f16dbc3339abdf8b"
+  },
+  {
+   "from": "possible_output/README.md",
+   "to": "docs/history/L2_README_original.md",
+   "bytes": 2874,
+   "md5": "4b5d3b4e558a5e5dd371e5b9e019bc7b"
+  },
+  {
+   "from": "possible_output/sources.json",
+   "to": "docs/history/L2_sources.json",
+   "bytes": 2511,
+   "md5": "f992352d2925d2e49d2f26ebb86641a5"
+  },
+  {
+   "from": "possible_output/layer1_basemap/README.md",
+   "to": "docs/history/L1_README_original.md",
+   "bytes": 2399,
+   "md5": "c5cc35f44b2de73d551dd7da283b598d"
+  },
+  {
+   "from": "possible_output/layer4_rover/README.md",
+   "to": "docs/history/L4_README_original.md",
+   "bytes": 3065,
+   "md5": "83ecf508e8d52a981b333d69a517a679"
+  },
+  {
+   "from": "possible_output/layer5_poi/PLAN.md",
+   "to": "docs/history/L5_PLAN.md",
+   "bytes": 10210,
+   "md5": "308fb0c872a08f1b9739d4ac67b7af38"
+  },
+  {
+   "from": "trials/nasa_data_trial/README_TRIAL.md",
+   "to": "docs/history/trial_nasa_data_v1_README.md",
+   "bytes": 5848,
+   "md5": "16314676ee46072a0e454cda5edf9bb3"
+  },
+  {
+   "from": "trials/nasa_data_v2/REPORT_V2TRIAL.md",
+   "to": "docs/history/trial_nasa_data_v2_REPORT.md",
+   "bytes": 6733,
+   "md5": "b9798c4c941735dc5c2e95c99573c7c6"
+  },
+  {
+   "from": "trials/nasa_data_v2/ANALYSIS.md",
+   "to": "docs/history/trial_nasa_data_v2_ANALYSIS.md",
+   "bytes": 8763,
+   "md5": "36746efe909472bd98abd56b606a2633"
+  },
+  {
+   "from": "research/38102_NASA-MSL-Curiosity-Rover-Map-of-Lower-Mount-Sharp-Geology-pia18781 (1).jpg",
+   "to": "docs/research/38102_NASA-MSL-Curiosity-Rover-Map-of-Lower-Mount-Sharp-Geology-pia18781 (1).jpg",
+   "bytes": 4622187,
+   "md5": "a2c10959868122e726c9314c6d477ff0"
+  },
+  {
+   "from": "research/Martian Map Field Manual.html",
+   "to": "docs/research/Martian Map Field Manual.html",
+   "bytes": 125582,
+   "md5": "1c1619278859a3889c0b2ef3ed6d2322"
+  },
+  {
+   "from": "research/Martian Map Mission Journal.html",
+   "to": "docs/research/Martian Map Mission Journal.html",
+   "bytes": 70319,
+   "md5": "fe5817b34aa6f87f00bba35d48031228"
+  },
+  {
+   "from": "research/Martian_Map_3D_Guide.pdf",
+   "to": "docs/research/Martian_Map_3D_Guide.pdf",
+   "bytes": 472686,
+   "md5": "67922d7d6e6b821fd80199597a356276"
+  },
+  {
+   "from": "research/Mission Journal_ Filled Example.html",
+   "to": "docs/research/Mission Journal_ Filled Example.html",
+   "bytes": 80154,
+   "md5": "418a972841cd0dc7a94cc5fd71daa056"
+  },
+  {
+   "from": "research/Mount Sharp Team Plan.html",
+   "to": "docs/research/Mount Sharp Team Plan.html",
+   "bytes": 84834,
+   "md5": "028afbf5debf9c6eaa6d72541560ea43"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/sim3292_clip.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/sim3292_clip.py",
+   "bytes": 2118,
+   "md5": "970f39da0532a79f38265079084050ec"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/qgz_add_sim3292.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/qgz_add_sim3292.py",
+   "bytes": 5945,
+   "md5": "5a2b73014e413d3d4fd128e746552c19"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/qgz_restore_canvas.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/qgz_restore_canvas.py",
+   "bytes": 2108,
+   "md5": "a69849d337bc88c081ffd34c64859dd4"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/qgz_supersede.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/qgz_supersede.py",
+   "bytes": 2974,
+   "md5": "f1b88d0da5cb18ac63609ca7a436e9c1"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/check_coverage.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/check_coverage.py",
+   "bytes": 5285,
+   "md5": "9afaec3c49f621710489736b614f8c77"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/qgz_inspect.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/qgz_inspect.py",
+   "bytes": 940,
+   "md5": "4d5d5e2908da18c42e15dec4c3b42221"
+  },
+  {
+   "from": "C:/Users/pc/AppData/Local/Temp/claude/2d26843f87afcf41/940d3dc9-b641-4d58-a81c-f4212f6f0aac/scratchpad/qgz_render_saved_view.py",
+   "to": "pipeline/build_history/L3_geology_and_qgis_fixes/qgz_render_saved_view.py",
+   "bytes": 1768,
+   "md5": "3e0a973553dff893e62ee18f542c8fe6"
+  },
+  {
+   "from": "qgis/geology_DRAFT_GALEFRAME.gpkg (layers units, contacts; + status field)",
+   "to": "layers/L3_geology/geology_GALEFRAME.gpkg",
+   "bytes": 573440,
+   "md5": "b73c3ce26f959fcda2b83fc8d02032c0"
+  }
+ ]
+}

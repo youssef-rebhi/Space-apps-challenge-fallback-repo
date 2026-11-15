@@ -1,0 +1,88 @@
+source 180000x280000 px, uint8, nodata=0.0, res=(0.25, 0.25), crs=+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs=True
+window 10290x12661 px at col 62494 row 168273; transfer ~2.28 GB
+  rows 256/12661  15s  ~3.1 MB/s
+  rows 512/12661  40s  ~2.3 MB/s
+  rows 768/12661  59s  ~2.3 MB/s
+  rows 1024/12661  76s  ~2.4 MB/s
+  rows 1280/12661  98s  ~2.3 MB/s
+  rows 1536/12661  124s  ~2.2 MB/s
+  rows 1792/12661  147s  ~2.2 MB/s
+  rows 2048/12661  168s  ~2.2 MB/s
+  rows 2304/12661  183s  ~2.3 MB/s
+  rows 2560/12661  202s  ~2.3 MB/s
+  rows 2816/12661  222s  ~2.3 MB/s
+  rows 3072/12661  244s  ~2.3 MB/s
+  rows 3328/12661  265s  ~2.3 MB/s
+  rows 3584/12661  281s  ~2.3 MB/s
+  rows 3840/12661  296s  ~2.3 MB/s
+  rows 4096/12661  309s  ~2.4 MB/s
+  rows 4352/12661  328s  ~2.4 MB/s
+  rows 4608/12661  343s  ~2.4 MB/s
+  rows 4864/12661  360s  ~2.4 MB/s
+  rows 5120/12661  378s  ~2.4 MB/s
+  rows 5376/12661  406s  ~2.4 MB/s
+  rows 5632/12661  417s  ~2.4 MB/s
+  rows 5888/12661  428s  ~2.5 MB/s
+  rows 6144/12661  445s  ~2.5 MB/s
+  rows 6400/12661  460s  ~2.5 MB/s
+  rows 6656/12661  472s  ~2.5 MB/s
+  rows 6912/12661  494s  ~2.5 MB/s
+  rows 7168/12661  511s  ~2.5 MB/s
+  rows 7424/12661  533s  ~2.5 MB/s
+  rows 7680/12661  551s  ~2.5 MB/s
+  rows 7936/12661  572s  ~2.5 MB/s
+  rows 8192/12661  592s  ~2.5 MB/s
+  rows 8448/12661  610s  ~2.5 MB/s
+  rows 8704/12661  620s  ~2.5 MB/s
+  rows 8960/12661  637s  ~2.5 MB/s
+  rows 9216/12661  650s  ~2.6 MB/s
+  rows 9472/12661  668s  ~2.6 MB/s
+  rows 9728/12661  684s  ~2.6 MB/s
+  rows 9984/12661  701s  ~2.6 MB/s
+  rows 10240/12661  726s  ~2.5 MB/s
+  rows 10496/12661  741s  ~2.6 MB/s
+  rows 10752/12661  759s  ~2.5 MB/s
+  rows 11008/12661  775s  ~2.6 MB/s
+  rows 11264/12661  787s  ~2.6 MB/s
+  rows 11520/12661  809s  ~2.6 MB/s
+  rows 11776/12661  827s  ~2.6 MB/s
+  rows 12032/12661  849s  ~2.6 MB/s
+  rows 12288/12661  890s  ~2.5 MB/s
+  rows 12544/12661  922s  ~2.4 MB/s
+  rows 12661/12661  946s  ~2.4 MB/s
+done: {
+ "source_url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif",
+ "source": {
+  "width": 180000,
+  "height": 280000,
+  "crs": "+proj=eqc +lat_ts=0 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +R=3396190 +units=m +no_defs=True",
+  "res": [
+   0.25,
+   0.25
+  ],
+  "nodata": 0.0
+ },
+ "bbox_lonlat_requested": [
+  137.3583,
+  -4.8317,
+  137.4017,
+  -4.7783
+ ],
+ "pixel_window": [
+  62494,
+  168273,
+  10290,
+  12661
+ ],
+ "transfer_bytes": 2278980000,
+ "seconds": 954.9,
+ "local_file": "raw/usgs_msl_gale_ortho_25cm_box.tif",
+ "local_md5": "d04ddd301f6333ef1bc726ee9b3c3582",
+ "valid_fraction": 0.99998,
+ "stretch_p2_p98": [
+  66.0,
+  194.0
+ ],
+ "citation": "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex",
+ "fetched_at": "2026-11-15T01:53:33+01:00"
+}

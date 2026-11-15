@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mission Journal: Filled Example</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Malak's notebook style: lined paper, red margin, yellow highlighter, coloured boxes. Single light theme by choice (it's paper). One page shown at a time. */
+  --paper:#fdfcf7; --desk:#e9e4d8; --ink:#1f2a44; --pencil:#5d6478; --rule:#c9dcef; --margin:#e35b5b;
+  --hi:#ffe970; --red:#d43d3d; --blue:#2f63b5; --green:#2e8b4a; --orange:#e07a1f;
+  --hand:"Patrick Hand","Comic Sans MS",cursive; --title:"Caveat","Comic Sans MS",cursive;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--desk);color:var(--ink);font-family:var(--hand);font-size:19px;line-height:30px}
+a{color:var(--blue)}
+button:focus-visible,a:focus-visible,textarea:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.top{position:sticky;top:0;z-index:5;background:var(--ink);color:#fff;display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 14px;flex-wrap:wrap}
+.top b{font-family:var(--title);font-size:26px;font-weight:700;letter-spacing:.5px}
+.top select{font:16px var(--hand);padding:4px 6px;border-radius:6px;max-width:58vw}
+.prog{flex-basis:100%;height:6px;background:#ffffff33;border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;background:var(--hi);width:0}
+.book{max-width:860px;margin:18px auto 80px;padding:0 12px}
+.page{display:none;position:relative;background-color:var(--paper);
+  background-image:linear-gradient(90deg,transparent 54px,var(--margin) 54px,var(--margin) 56px,transparent 56px),
+  repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--rule) 29px,var(--rule) 30px);
+  box-shadow:0 2px 0 #0000000d,0 10px 26px #00000022;border-radius:4px;padding:30px 22px 40px 74px;min-height:80vh}
+.page.on{display:block}
+.page::before{content:"";position:absolute;left:18px;top:40px;bottom:40px;width:14px;
+  background:radial-gradient(circle at 7px 7px,var(--desk) 5px,transparent 6px) 0 0/14px 60px repeat-y}
+@media (max-width:560px){.page{padding:24px 12px 34px 44px;background-image:linear-gradient(90deg,transparent 32px,var(--margin) 32px,var(--margin) 34px,transparent 34px),repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--rule) 29px,var(--rule) 30px)}.page::before{left:8px;width:12px}}
+h1,h2,h3{font-family:var(--title);font-weight:700;margin:0;line-height:1.1}
+h1{font-size:46px;color:var(--red)}
+h2{font-size:40px;color:var(--ink);margin:4px 0 6px}
+h3{font-size:30px;color:var(--blue);margin-top:18px}
+.pno{font-family:var(--title);font-size:24px;color:var(--red)}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 10px}
+.tag{border:2px solid var(--ink);border-radius:14px 10px 16px 9px;padding:0 10px;font-size:16px;background:#fff}
+.tag.r{border-color:var(--red);color:var(--red)}
+mark{background:linear-gradient(transparent 35%,var(--hi) 35%,var(--hi) 88%,transparent 88%);color:inherit;padding:0 2px}
+.u{text-decoration:underline wavy var(--red);text-underline-offset:4px}
+p{margin:0 0 10px}
+ul,ol{margin:4px 0 12px;padding-left:24px}
+li{margin:0}
+.box{border:2.5px solid var(--ink);border-radius:18px 8px 20px 10px;padding:10px 14px;margin:14px 0;background:#fff9}
+.box.goal{border-color:var(--red);background:#fff0f0cc}
+.box.tip{border-color:var(--green);background:#eef9f0cc}
+.box.warn{border-color:var(--orange);background:#fff4e6cc}
+.box.blue{border-color:var(--blue);background:#eef4ffcc}
+.box.yellow{border-color:#c9a400;background:#fffbd9cc}
+.box h4{font-family:var(--title);font-size:26px;margin:0 0 2px}
+.box.goal h4{color:var(--red)} .box.tip h4{color:var(--green)} .box.warn h4{color:var(--orange)} .box.blue h4{color:var(--blue)}
+pre{font-family:var(--mono);font-size:13px;line-height:20px;background:#1f2a44;color:#f4f1e6;padding:12px 14px;border-radius:8px;overflow-x:auto;margin:10px 0}
+code{font-family:var(--mono);font-size:14px;background:#fff3a6;padding:0 4px;border-radius:3px}
+pre code{background:none;padding:0;font-size:13px}
+pre .c{color:#9fb4d8}
+.todo{list-style:none;padding-left:0}
+.todo label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.todo input{width:20px;height:20px;margin-top:5px;accent-color:var(--red);flex:none}
+.todo input:checked + span{text-decoration:line-through;text-decoration-color:var(--red);color:var(--pencil)}
+.q{margin:10px 0 14px}
+.q label{display:block;font-weight:normal;color:var(--ink)}
+.q label b{color:var(--red);font-family:var(--title);font-size:24px;margin-right:4px}
+textarea{width:100%;min-height:62px;font:19px/30px var(--hand);color:var(--blue);border:0;border-bottom:2px dashed var(--pencil);
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 29px,var(--rule) 29px,var(--rule) 30px);resize:vertical;padding:0 4px}
+textarea::placeholder{color:#9aa0b0}
+details.st{border:2px dashed var(--red);border-radius:12px;padding:6px 12px;margin:8px 0;background:#fff}
+details.st summary{cursor:pointer;color:var(--red)}
+details.st p{margin:6px 0 2px;color:var(--green)}
+figure{margin:12px 0}
+figure .sk{overflow-x:auto;background:#fffdf3;border:2px solid #d8d2c0;border-radius:6px;padding:4px}
+figure svg{display:block;width:100%;height:auto;min-width:500px;color:var(--ink)}
+figcaption{font-size:16px;color:var(--pencil)}
+.sk text{font-family:var(--title)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px;flex-wrap:wrap}
+.nav button,.btn{font:20px var(--hand);background:#fff;border:2.5px solid var(--ink);border-radius:16px 8px 18px 9px;padding:4px 16px;cursor:pointer;color:var(--ink)}
+.nav button.next{background:var(--hi)}
+.done{border:3px double var(--green);padding:8px 12px;margin-top:14px;border-radius:10px;color:var(--green);background:#f3fbf4}
+.tbl{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;min-width:520px;width:100%;font-size:17px;background:#fff}
+th,td{border:1.5px solid var(--ink);padding:3px 8px;text-align:left;vertical-align:top}
+th{background:#fffbd9;font-family:var(--title);font-size:22px}
+.copyrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:8px}
+.small{font-size:16px;color:var(--pencil)}
+.stamp{position:absolute;right:18px;top:18px;transform:rotate(8deg);border:3px solid var(--red);color:var(--red);font-family:var(--title);font-size:22px;padding:0 10px;border-radius:8px;background:#fff8}
+@media (max-width:560px){.stamp{display:none}}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <filter id="rough" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.8"/></filter>
+  <pattern id="dots" width="6" height="6" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="1.2" fill="#c98a12"/></pattern>
+  <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="currentColor"/></marker>
+</defs></svg>
+
+<div class="top">
+  <b>Mission Journal · filled</b>
+  <label class="small" style="color:#fff">Page
+    <select id="jump" aria-label="Jump to page"></select>
+  </label>
+  <div class="prog" aria-hidden="true"><i id="progbar"></i></div>
+</div>
+
+<div class="book">
+
+<!-- COVER -->
+<section class="page" id="pg0" data-title="Cover">
+  <div class="pno">cover</div>
+  <h1>Martian Map · Mission Journal</h1>
+  <p>NASA Space Apps 2026 · <mark>14–15 Nov</mark> · Interplanetary Survival Guide: Martian Map</p>
+  <figure><div class="sk"><svg viewBox="0 0 600 220" role="img" aria-label="Sketch of Mount Sharp with an astronaut walking a dotted route around a sand patch to boxwork ridges">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <path d="M10 190 L170 110 L260 60 L330 40 L420 80 L520 130 L590 190" />
+      <path d="M260 60 l-20 40 M330 40 l10 50 M420 80 l-15 40" opacity=".5"/>
+      <ellipse cx="200" cy="190" rx="70" ry="14" fill="url(#dots)" stroke="#c98a12"/>
+      <path d="M380 150 l14 -14 l14 14 l14 -14 l14 14 l14 -14 M380 165 h84 M394 136 v30 M422 136 v30 M450 136 v30" stroke="var(--blue)"/>
+      <path d="M60 200 C120 170 160 160 260 168 S350 172 380 158" stroke="var(--red)" stroke-dasharray="7 6"/>
+      <circle cx="60" cy="180" r="7"/><path d="M60 187 v16 M60 192 l-8 6 M60 192 l8 4 M60 203 l-6 10 M60 203 l6 10"/>
+    </g>
+    <text x="250" y="32" font-size="22" fill="currentColor">Mount Sharp</text>
+    <text x="160" y="215" font-size="20" fill="#a46e0a">sand!</text>
+    <text x="470" y="150" font-size="22" fill="var(--blue)">boxwork</text>
+    <text x="20" y="160" font-size="20" fill="var(--red)">Amira</text>
+  </svg></div></figure>
+  <div class="box warn"><h4>This is the filled example</h4><p>Answers are written for you to brainstorm from: edit anything, your edits save in this browser. <mark>___</mark> blanks and "(fill…)" lines need real results from the weekend. Names in [brackets] are for your team to decide.</p></div>
+  <div class="box goal"><h4>How this journal works</h4>
+    <ul>
+      <li>One page = one step. Do them in order.</li>
+      <li>Each page has a <b>goal</b>, a <b>time box</b>, <b>steps to tick</b>, <b>journal questions</b> to answer, and a <b>self-test</b>.</li>
+      <li>Your answers save in this browser by themselves. Use <b>Copy my answers</b> at the bottom of a page to paste them to Claude or your team.</li>
+      <li>The <b>Field Manual</b> is your textbook. This journal tells you what to do with it.</li>
+    </ul>
+  </div>
+  <div class="box yellow"><h4>The plan at a glance</h4>
+    <ul>
+      <li><b>Tonight (Fri 13):</b> pages 1–3, understand, decide, set up.</li>
+      <li><b>Sat 14 morning:</b> pages 4–7, brainstorm, choose the place, train, put a live map online.</li>
+      <li><b>Sat afternoon/night:</b> pages 8–11, terrain, AI on the map, route planner, validation.</li>
+      <li><b>Sun 15:</b> pages 12–17, polish, freeze, video, project page, submit.</li>
+      <li><b>After:</b> page 18, README and CV line.</li>
+    </ul>
+  </div>
+  <div class="nav"><span></span><button class="next" data-go="1">Start page 1 →</button></div>
+</section>
+
+<!-- P1 -->
+<section class="page" id="pg1" data-title="1 · Mission brief">
+  <div class="stamp">TONIGHT</div>
+  <div class="pno">page 1</div>
+  <h2>The Mission Brief</h2>
+  <div class="meta"><span class="tag r">⏱ 15 min</span><span class="tag">you alone</span><span class="tag">Manual: ch. 01, 03</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Explain the project in 20 seconds, without notes.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p1-t1"><span>Read the official box + resource table (Manual ch. 01).</span></label></li>
+    <li><label><input type="checkbox" id="p1-t2"><span>Read the "Needs → questions → data → features" table (ch. 03).</span></label></li>
+    <li><label><input type="checkbox" id="p1-t3"><span>Answer the 7 questions below in your own words.</span></label></li>
+    <li><label><input type="checkbox" id="p1-t4"><span>Say your one sentence out loud, timed. Under 20 s?</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 170" role="img" aria-label="Sketch: danger arrows pointing to data sources">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.2">
+      <rect x="10" y="20" width="150" height="40" rx="10" stroke="var(--red)"/><rect x="10" y="70" width="150" height="40" rx="10" stroke="var(--red)"/><rect x="10" y="120" width="150" height="40" rx="10" stroke="var(--red)"/>
+      <rect x="380" y="20" width="210" height="40" rx="10" stroke="var(--blue)"/><rect x="380" y="70" width="210" height="40" rx="10" stroke="var(--blue)"/><rect x="380" y="120" width="210" height="40" rx="10" stroke="var(--blue)"/>
+      <path d="M160 40 h218 M160 90 h218 M160 140 h218" marker-end="url(#arr)"/>
+    </g>
+    <g font-size="20" fill="currentColor"><text x="22" y="46">sinking in sand</text><text x="22" y="96">steep slope</text><text x="22" y="146">big rocks</text>
+    <text x="392" y="46">AI on Navcam + dunes</text><text x="392" y="96">DTM → slope</text><text x="392" y="146">AI "big rock" + HiRISE</text></g>
+  </svg></div><figcaption>Example of Q5: danger → data. Write your own.</figcaption></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p1-q1"><b>Q1</b>Where on Mars? Why there?</label><textarea id="p1-q1" placeholder="Hint: what example did NASA itself give?">Mount Sharp, Gale crater: the boxwork region Curiosity explored in 2025.
+Why: 1) it&#x27;s NASA&#x27;s own example in the brief, 2) our AI4Mars images are Curiosity Navcam photos, so we have real ground truth there, 3) lots of orbital data (HiRISE, CTX, THEMIS, MOLA) covers it.</textarea></div>
+  <div class="q"><label for="p1-q2"><b>Q2</b>Science goal: what will the astronaut study?</label><textarea id="p1-q2">Boxwork: criss-cross ridges of mineral-hardened rock that may record ancient groundwater flowing through cracks. Amira samples a ridge and a hollow, photographs the pattern, and maps how far it extends.</textarea></div>
+  <div class="q"><label for="p1-q3"><b>Q3</b>The user in one line (role, suit, EVA length)</label><textarea id="p1-q3">Commander Amira, EVA geologist. Pressurized suit, thick gloves, carries a sampling kit. 4-hour EVA budget. Works with a partner and can use a pressurized rover. No GPS, 4–22 min delay to Earth, so no live help.</textarea></div>
+  <div class="q"><label for="p1-q4"><b>Q4</b>Her 3 biggest dangers on this walk</label><textarea id="p1-q4">1) Sinking or slipping in soft sand (stuck rover, wasted time, like Curiosity in Hidden Valley).
+2) Big rocks and steep slopes: blocked path, falls, damaged wheels.
+3) Running out of time or consumables too far from the habitat (walk-back limit).
+Bonus: radiation dose and dust storms.</textarea></div>
+  <div class="q"><label for="p1-q5"><b>Q5</b>Danger → dataset that answers it</label><textarea id="p1-q5">Sand → AI on Curiosity Navcam (sand class) + USGS dune database + THEMIS night infrared
+Big rocks → AI &#x27;big rock&#x27; class + HiRISE images
+Slope → terrain model (HiRISE DTM / MOLA) → slope map
+Time / walk-back → terrain + Tobler walking model → route time, turn-back point
+Radiation → Curiosity RAD surface dose (~0.6–0.7 mSv/day)
+Science → USGS geologic map + CRISM minerals + boxwork targets</textarea></div>
+  <div class="q"><label for="p1-q6"><b>Q6</b>What makes us different from ARES//NAV (same place)?</label><textarea id="p1-q6" placeholder="Hint: what can ONLY our team build?">ARES//NAV plans routes from slope, oxygen and dose. We know WHAT THE GROUND IS MADE OF: our DeepLabV3+ model, trained on AI4Mars, reads real Curiosity photos and maps sand and big rocks at each stop, then we check it against orbital sand evidence. Plus point-of-view photos with the terrain colored in, and routes that differ for a walker vs a rover.</textarea></div>
+  <div class="q"><label for="p1-q7"><b>Q7</b>"Our project helps ___ do ___ by ___."</label><textarea id="p1-q7">Our project helps Mars astronauts walk safely to the boxwork on Mount Sharp by combining NASA orbital maps with AI that reads rover photos to flag the sand and big rocks that slope maps can&#x27;t see.</textarea></div>
+  <h3>Self-test</h3>
+  <details class="st"><summary>Why Mount Sharp and not Jezero?</summary><p>NASA's own example is boxwork on Mount Sharp, and Curiosity (our AI4Mars images) drove there. Our ground truth lives in Gale crater.</p></details>
+  <details class="st"><summary>Name 3 kinds of data from the official list we cover.</summary><p>Optical (CTX/HiRISE), thermal (THEMIS), topographic (MOLA/DTM). Bonus: radiation (RAD).</p></details>
+  <div class="done">✔ Done when: the 7 answers are written and your sentence fits in 20 seconds.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg1">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="0">← back</button><button class="next" data-go="2">page 2 →</button></div>
+</section>
+
+<!-- P2 -->
+<section class="page" id="pg2" data-title="2 · Team & cut list">
+  <div class="stamp">TONIGHT</div>
+  <div class="pno">page 2</div>
+  <h2>Team Roles &amp; the Cut List</h2>
+  <div class="meta"><span class="tag r">⏱ 30 min</span><span class="tag">whole team (call)</span><span class="tag">Manual: ch. 12, 16</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Everyone knows <mark>what they own</mark>, what we build first, and what we drop if we're late.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p2-t1"><span>Share page 1's sentence with the team. Agree or fix it.</span></label></li>
+    <li><label><input type="checkbox" id="p2-t2"><span>Give each person one role (table below).</span></label></li>
+    <li><label><input type="checkbox" id="p2-t3"><span>Go through the feature menu (Manual ch. 12). Mark MUST / SHOULD / WOW / CUT.</span></label></li>
+    <li><label><input type="checkbox" id="p2-t4"><span>Write the 3 cut rules: what gets dropped at hour 30 if behind.</span></label></li>
+    <li><label><input type="checkbox" id="p2-t5"><span>Create the team group chat and a shared folder.</span></label></li>
+  </ul>
+  <div class="tbl"><table>
+    <tr><th>Role</th><th>Owns</th><th>Who?</th></tr>
+    <tr><td>ML lead</td><td>Training, inference, stops.json, metrics</td><td>Malak</td></tr>
+    <tr><td>Geo-data</td><td>Area of interest, slope, dunes, overlays, cost grid</td><td></td></tr>
+    <tr><td>Frontend</td><td>Map, layers, planner, GO card, deploy</td><td></td></tr>
+    <tr><td>Story &amp; product</td><td>Script, video, slides, project page, testing as "Amira"</td><td></td></tr>
+  </table></div>
+  <figure><div class="sk"><svg viewBox="0 0 600 150" role="img" aria-label="Sketch of a pyramid: must at the base, should in the middle, wow at the top">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M300 10 L560 140 L40 140 Z"/><path d="M215 52 h170 M128 96 h344"/></g>
+    <text x="275" y="45" font-size="22" fill="var(--orange)">WOW</text><text x="255" y="88" font-size="22" fill="var(--blue)">SHOULD</text><text x="240" y="130" font-size="24" fill="var(--green)">MUST (build first, fully)</text>
+  </svg></div><figcaption>Never start the top before the base works end to end.</figcaption></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p2-q1"><b>Q1</b>Team: name → role</label><textarea id="p2-q1">Malak → ML lead (training, inference, stops.json, metrics)
+[name] → Geo-data (area, slope, dunes, overlays, grid.json)
+[name] → Frontend (map, layers, planner, GO card, deploy)
+[name] → Story &amp; product (script, video, slides, project page, plays Amira)
+(5–6 people: second frontend person on HUD + charts)</textarea></div>
+  <div class="q"><label for="p2-q2"><b>Q2</b>Our MUST list (max 6)</label><textarea id="p2-q2">1) Live 2D map of Mount Sharp (CTX + MOLA) with layer panel + legends
+2) Slope layer with NO-GO above 20°
+3) AI stops: sand / big-rock % with point-of-view photos and overlays
+4) Route planner A → B, on foot vs rover
+5) GO / NO-GO card that explains why
+6) Boxwork targets as destinations</textarea></div>
+  <div class="q"><label for="p2-q3"><b>Q3</b>Cut rules: "If at hour 30 ___ doesn't work, we drop ___."</label><textarea id="p2-q3">If at hour 30 the orbit-vs-ground validation doesn&#x27;t work → we show AI-only results and state the limit.
+If the planner on the real grid is too slow → we use a coarser grid (40 m cells).
+If HUD mode isn&#x27;t done → it becomes a mockup slide.
+3D fly-through and the second ML model are cut from the start unless we&#x27;re ahead at hour 24.</textarea></div>
+  <div class="q"><label for="p2-q4"><b>Q4</b>Team name + project name ideas</label><textarea id="p2-q4">Project names: Firm Ground · SandSense · Groundtruth Mars · Safe Steps · Boxwork Trail
+Favourite: Firm Ground (&quot;know the ground before you step on it&quot;)
+Team name: [vote]</textarea></div>
+  <details class="st"><summary>Why is "3D fly-through" not a MUST?</summary><p>It's slow to build and risky, and rivals already have strong 3D. Our edge is the decision quality (AI ground truth), not the globe.</p></details>
+  <div class="done">✔ Done when: every row of the role table has a name and the cut rules are written.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg2">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="1">← page 1</button><button class="next" data-go="3">page 3 →</button></div>
+</section>
+
+<!-- P3 -->
+<section class="page" id="pg3" data-title="3 · Set up tonight">
+  <div class="stamp">TONIGHT</div>
+  <div class="pno">page 3</div>
+  <h2>Set Up Your Tools</h2>
+  <div class="meta"><span class="tag r">⏱ 60 min</span><span class="tag">everyone</span><span class="tag">Manual: ch. 10</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Tomorrow, nobody loses an hour installing things. <mark>Setup is fine before the event; building the project is not.</mark></p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p3-t1"><span>Everyone registered + on the team's Members tab on spaceappschallenge.org.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t2"><span>Create an empty public GitHub repo. Add all teammates.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t3"><span>Open Google Colab → Runtime → change runtime type → GPU. Check <code>!nvidia-smi</code> works.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t4"><span>Test that AI4Mars loads (code below). Don't train yet.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t5"><span>Open Mars Trek in the browser. Find Gale crater and Mount Sharp.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t6"><span>Install QGIS (free) on one laptop for looking at map files.</span></label></li>
+    <li><label><input type="checkbox" id="p3-t7"><span>Create a Vercel or Netlify account (frontend person).</span></label></li>
+    <li><label><input type="checkbox" id="p3-t8"><span>Ask your Local Lead: schedule, pitch format, time limit.</span></label></li>
+  </ul>
+  <h3>Smoke test in Colab</h3>
+<pre><code><span class="c"># cell 1</span>
+!pip -q install datasets segmentation-models-pytorch
+<span class="c"># cell 2: only check it loads, look at one row</span>
+from datasets import load_dataset
+test = load_dataset("hassanjbara/AI4MARS", split="test_min3")
+print(test)                 <span class="c"># how many rows? which columns?</span>
+row = test[0]
+print(row.keys())
+row["image"]                <span class="c"># shows the rover photo</span></code></pre>
+  <h3>Repo layout to create (empty folders)</h3>
+<pre><code>martian-map/
+  README.md
+  DATA_SOURCES.md     <span class="c"># every URL you download from</span>
+  pipeline/           <span class="c"># python: slope, overlays, cost grid</span>
+  ml/                 <span class="c"># notebooks, metrics.json</span>
+  web/                <span class="c"># the app</span>
+    public/data/      <span class="c"># files the app loads</span></code></pre>
+  <h3>Journal</h3>
+  <div class="q"><label for="p3-q1"><b>Q1</b>How many rows in test_min3? What columns did you see?</label><textarea id="p3-q1">(fill after running cell 2)
+Expected columns: image, label_mask, rover_mask, range_mask, has_labels (check names exactly; the code must match them).</textarea></div>
+  <div class="q"><label for="p3-q2"><b>Q2</b>Local event schedule + pitch length</label><textarea id="p3-q2">[ask Local Lead] Opening time · submission deadline (local time) · pitch length · live pitch or video only</textarea></div>
+  <div class="q"><label for="p3-q3"><b>Q3</b>Anything that failed tonight?</label><textarea id="p3-q3"></textarea></div>
+  <details class="st"><summary>Why do we keep DATA_SOURCES.md from minute one?</summary><p>The project page's References must list every external resource. Writing it at the end means forgetting half of them.</p></details>
+  <div class="done">✔ Done when: Colab shows a rover photo from AI4Mars and the repo exists. Then sleep!</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg3">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="2">← page 2</button><button class="next" data-go="4">page 4 →</button></div>
+</section>
+
+<!-- P4 -->
+<section class="page" id="pg4" data-title="4 · Brainstorm (H0–H2)">
+  <div class="stamp">SAT · H0</div>
+  <div class="pno">page 4</div>
+  <h2>Brainstorm &amp; Demo Script First</h2>
+  <div class="meta"><span class="tag r">⏱ 90 min</span><span class="tag">whole team</span><span class="tag">Manual: ch. 14, 15</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Leave the room with a <mark>30-second script</mark> and the <mark>file formats</mark> everyone codes against.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p4-t1"><span>Re-check the official Resources tab (new ones may appear).</span></label></li>
+    <li><label><input type="checkbox" id="p4-t2"><span>10 min: everyone writes "How might we…" questions on sticky notes.</span></label></li>
+    <li><label><input type="checkbox" id="p4-t3"><span>5 min: write the persona card for Commander Amira. Stick it on the wall.</span></label></li>
+    <li><label><input type="checkbox" id="p4-t4"><span>8 min: Crazy 8s, 8 screen sketches in 8 minutes each.</span></label></li>
+    <li><label><input type="checkbox" id="p4-t5"><span>15 min: put ideas on the impact/effort square. Pick.</span></label></li>
+    <li><label><input type="checkbox" id="p4-t6"><span>15 min: write the 30-second video script (template in Manual ch. 15).</span></label></li>
+    <li><label><input type="checkbox" id="p4-t7"><span>15 min: agree on the data file formats below. Commit them to the repo.</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 220" role="img" aria-label="Sketch of eight boxes for the Crazy 8s exercise">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.2">
+      <rect x="10" y="10" width="580" height="200"/><path d="M155 10 v200 M300 10 v200 M445 10 v200 M10 110 h580"/>
+      <path d="M30 80 C60 40 100 60 130 30" stroke="var(--blue)"/><rect x="175" y="30" width="100" height="60" rx="6"/><path d="M330 90 l40 -50 l40 50z"/><circle cx="515" cy="60" r="28"/>
+    </g>
+    <text x="20" y="200" font-size="20" fill="var(--red)">1 min per box · ugly is fine · no talking</text>
+  </svg></div></figure>
+  <h3>File formats (the contract)</h3>
+<pre><code><span class="c">// web/public/data/stops.json: one object per rover stop</span>
+[{ "sol": 709, "lon": 137.41, "lat": -4.66,
+   "sand_pct": 0.62, "bedrock_pct": 0.10, "soil_pct": 0.25, "bigrock_pct": 0.03,
+   "image": "img/sol0709_overlay.jpg", "note": "Hidden Valley" }]
+
+<span class="c">// web/public/data/grid.json: routing grid for the area</span>
+{ "w": 400, "h": 300, "cell_m": 20, "bounds": [W, S, E, N],
+  "elev": [...], "sand": [...], "bigrock": [...] }     <span class="c">// flat arrays, row by row</span>
+
+<span class="c">// web/public/data/layers.json: overlay images with corners</span>
+[{ "id": "slope", "url": "ov/slope.png", "bounds": [[S,W],[N,E]], "legend": "0–30°" }]</code></pre>
+  <p class="small">Numbers above are examples. The frontend codes against <b>fake files with this shape</b> until the real ones exist.</p>
+  <h3>Journal</h3>
+  <div class="q"><label for="p4-q1"><b>Q1</b>Our 3 best "How might we…" questions</label><textarea id="p4-q1">1) How might we tell an astronaut where the ground is soft before she steps on it?
+2) How might every crew photo make tomorrow&#x27;s map safer?
+3) How might we prove our sand map is right?</textarea></div>
+  <div class="q"><label for="p4-q2"><b>Q2</b>The 30-second script (6 lines)</label><textarea id="p4-q2" style="min-height:180px">0–4 s · real Navcam view of sand ripples · &quot;2014: Curiosity drove into a valley that looked safe.&quot;
+4–8 s · slope map, valley looks green · &quot;Slope maps said go. The sand said no.&quot;
+8–15 s · AI colours sand + big rocks on rover photos, dots appear on Mount Sharp · &quot;Our AI reads rover photos and maps what the ground is made of.&quot;
+15–22 s · route bends around sand to the boxwork, GO card · &quot;Astronauts get a safe route to the boxwork, with time, walk-back and what they&#x27;ll see.&quot;
+22–27 s · validation chart + mission names · &quot;Checked against orbital data from five NASA missions.&quot;
+27–30 s · title over boxwork view · &quot;Firm Ground. Know the ground before you step on it.&quot;</textarea></div>
+  <div class="q"><label for="p4-q3"><b>Q3</b>Changes we made to the file formats</label><textarea id="p4-q3">Added a &quot;bigrock&quot; array to grid.json (big rock cells = forbidden).
+Added &quot;type&quot;: &quot;boxwork&quot; | &quot;stop&quot; to points so the map can draw targets differently.</textarea></div>
+  <details class="st"><summary>Why write the video script before coding?</summary><p>The script decides which screens must exist. Anything not in the script is optional.</p></details>
+  <div class="done">✔ Done when: script and formats are in the repo, and everyone starts their role.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg4">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="3">← page 3</button><button class="next" data-go="5">page 5 →</button></div>
+</section>
+
+<!-- P5 -->
+<section class="page" id="pg5" data-title="5 · Choose the area">
+  <div class="stamp">SAT · H2</div>
+  <div class="pno">page 5</div>
+  <h2>Choose the Area of Interest</h2>
+  <div class="meta"><span class="tag r">⏱ 45 min</span><span class="tag">geo-data + ML</span><span class="tag">Manual: ch. 02, 06, 08</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A <mark>bounding box</mark> (west, south, east, north) and a list of <mark>sols</mark> whose rover photos fall inside it.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p5-t1"><span>Open NASA's "Where is Curiosity" map (MMGIS). Find the boxwork region on Mount Sharp along the 2025 traverse.</span></label></li>
+    <li><label><input type="checkbox" id="p5-t2"><span>Export Curiosity's waypoints as GeoJSON. Save the source in DATA_SOURCES.md.</span></label></li>
+    <li><label><input type="checkbox" id="p5-t3"><span>Draw a box around the start (habitat), the boxwork target and the route between them, about 2–4 km wide.</span></label></li>
+    <li><label><input type="checkbox" id="p5-t4"><span>List the sols inside the box. Those are the Navcam images to run the model on.</span></label></li>
+    <li><label><input type="checkbox" id="p5-t5"><span>Optional second box: Hidden Valley (sols ~703–712), for the replay story.</span></label></li>
+    <li><label><input type="checkbox" id="p5-t6"><span>Check that HiRISE / Mars Trek data covers your box.</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 230" role="img" aria-label="Sketch of a bounding box drawn around a rover traverse with habitat and boxwork target">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.3">
+      <rect x="120" y="30" width="360" height="170" stroke="var(--red)" stroke-dasharray="8 6"/>
+      <path d="M40 210 C120 190 170 170 230 150 S330 110 360 100 S430 80 470 60 L560 30" stroke="var(--blue)"/>
+      <circle cx="180" cy="168" r="4" fill="var(--blue)"/><circle cx="250" cy="143" r="4" fill="var(--blue)"/><circle cx="320" cy="118" r="4" fill="var(--blue)"/><circle cx="390" cy="90" r="4" fill="var(--blue)"/><circle cx="450" cy="68" r="4" fill="var(--blue)"/>
+      <rect x="150" y="160" width="26" height="16" rx="5"/>
+      <path d="M420 60 l10 -10 l10 10 l10 -10 l10 10"/>
+    </g>
+    <g font-size="20" fill="currentColor"><text x="125" y="24" fill="var(--red)">W,N</text><text x="440" y="222" fill="var(--red)">E,S</text>
+    <text x="120" y="196">habitat</text><text x="420" y="45">boxwork</text><text x="260" y="175" fill="var(--blue)">• = rover stop (sol)</text></g>
+  </svg></div></figure>
+  <div class="box warn"><h4>Remember</h4><p>Mars longitudes are east-positive 0–360°. Gale is ~137°E, so the same in both systems, but always write the convention next to your numbers.</p></div>
+  <h3>Journal</h3>
+  <div class="q"><label for="p5-q1"><b>Q1</b>Bounding box (W, S, E, N in degrees)</label><textarea id="p5-q1">W ___ , S ___ , E ___ , N ___ (degrees, planetocentric, °E)
+Fill from MMGIS: draw a 2–4 km box around the 2025 boxwork part of Curiosity&#x27;s traverse.
+Reference point I&#x27;m sure of: Curiosity&#x27;s landing site ≈ 4.59°S, 137.44°E; Mount Sharp is to its south.</textarea></div>
+  <div class="q"><label for="p5-q2"><b>Q2</b>Habitat point and boxwork target (lon, lat)</label><textarea id="p5-q2">Habitat: a flat, firm spot at the start of the box (check slope &lt; 5° and no sand on our layers)
+Target: boxwork ridges along the 2025 traverse (pick 2–3 pins from MMGIS / NASA route map)</textarea></div>
+  <div class="q"><label for="p5-q3"><b>Q3</b>Sols inside the box (range or list)</label><textarea id="p5-q3">Boxwork area: the 2025 sols in the box (read from MMGIS waypoints)
+Hidden Valley replay (optional second box): sols ~703–712</textarea></div>
+  <details class="st"><summary>Why keep the box small (a few km)?</summary><p>Smaller files, faster processing, and the brief asks for EVA-scale detail, not regional views.</p></details>
+  <div class="done">✔ Done when: box, points and sol list are written in the repo README.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg5">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="4">← page 4</button><button class="next" data-go="6">page 6 →</button></div>
+</section>
+
+<!-- P6 -->
+<section class="page" id="pg6" data-title="6 · Train the model">
+  <div class="stamp">SAT · H2–H8</div>
+  <div class="pno">page 6</div>
+  <h2>Train the Terrain Model</h2>
+  <div class="meta"><span class="tag r">⏱ 5–6 h (mostly waiting)</span><span class="tag">Malak</span><span class="tag">Manual: ch. 08 + your AI4Mars sheet</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A saved model + a <mark>metrics table</mark>: IoU per class vs the all-soil baseline.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p6-t1"><span>Write <code>prepare(row)</code>: image → RGB, mask → one channel, rover + range masks → 255.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t2"><span>Resize images bilinear, masks <mark>nearest</mark>, to 512×512.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t3"><span>Hold out 10% of train as validation. Don't touch test.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t4"><span>Compute class weights from 2,000 images (1 − share).</span></label></li>
+    <li><label><input type="checkbox" id="p6-t5"><span>Compute the all-soil baseline IoU on test_min3.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t6"><span>Train DeepLabV3+ (ResNet-50, ImageNet) 3–5 epochs. Save weights to Drive each epoch.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t7"><span>Evaluate on test_min3 and test_min1. Fill the table below.</span></label></li>
+    <li><label><input type="checkbox" id="p6-t8"><span>While it trains: help geo-data, or prepare page 9.</span></label></li>
+  </ul>
+<pre><code>import torch, numpy as np, segmentation_models_pytorch as smp
+from torch.utils.data import Dataset, DataLoader
+import torch.nn.functional as F
+
+class Mars(Dataset):
+    def __init__(self, hf, size=512): self.hf, self.size = hf, size
+    def __len__(self): return len(self.hf)
+    def __getitem__(self, i):
+        img, lab = prepare(self.hf[i])                      <span class="c"># from your sheet</span>
+        x = torch.tensor(img).permute(2,0,1).float()/255
+        x = F.interpolate(x[None], size=self.size, mode="bilinear")[0]
+        y = torch.tensor(lab)[None,None].float()
+        y = F.interpolate(y, size=self.size, mode="nearest")[0,0].long()
+        if np.random.rand() < .5: x, y = x.flip(-1), y.flip(-1)   <span class="c"># same flip!</span>
+        x = (x - torch.tensor([.485,.456,.406])[:,None,None]) / torch.tensor([.229,.224,.225])[:,None,None]
+        return x, y
+
+model = smp.DeepLabV3Plus("resnet50", encoder_weights="imagenet", classes=4).cuda()
+loss_fn = torch.nn.CrossEntropyLoss(weight=torch.tensor(weights, dtype=torch.float32).cuda(), ignore_index=255)
+opt = torch.optim.AdamW(model.parameters(), lr=1e-4)
+for epoch in range(4):
+    model.train()
+    for x, y in DataLoader(Mars(train_split), batch_size=8, shuffle=True, num_workers=2):
+        opt.zero_grad(); loss = loss_fn(model(x.cuda()), y.cuda()); loss.backward(); opt.step()
+    torch.save(model.state_dict(), f"/content/drive/MyDrive/mars_e{epoch}.pt")</code></pre>
+  <figure><div class="sk"><svg viewBox="0 0 600 150" role="img" aria-label="Sketch of IoU: two overlapping shapes, intersection over union">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="230" cy="75" r="55" stroke="var(--blue)"/><circle cx="300" cy="75" r="55" stroke="var(--red)"/></g>
+    <text x="150" y="20" font-size="20" fill="var(--blue)">predicted sand</text><text x="300" y="20" font-size="20" fill="var(--red)">true sand</text>
+    <text x="390" y="70" font-size="22" fill="currentColor">IoU = overlap ÷ both together</text><text x="390" y="100" font-size="20" fill="var(--pencil)">1 = perfect · 0 = no overlap</text>
+  </svg></div></figure>
+  <h3>Journal: metrics</h3>
+  <div class="tbl"><table>
+    <tr><th>Class</th><th>Baseline IoU</th><th>Model IoU (min3)</th><th>Model IoU (min1)</th></tr>
+    <tr><td>soil</td><td></td><td></td><td></td></tr><tr><td>bedrock</td><td>0</td><td></td><td></td></tr>
+    <tr><td>sand</td><td>0</td><td></td><td></td></tr><tr><td>big rock</td><td>0</td><td></td><td></td></tr><tr><td><b>mean</b></td><td></td><td></td><td></td></tr>
+  </table></div>
+  <div class="q"><label for="p6-q1"><b>Q1</b>Paste your numbers here (also save as ml/metrics.json)</label><textarea id="p6-q1" style="min-height:120px">(fill after evaluation: per-class IoU + mean IoU on test_min3 and test_min1, baseline next to it)</textarea></div>
+  <div class="q"><label for="p6-q2"><b>Q2</b>Which classes get confused? (confusion matrix)</label><textarea id="p6-q2">Expected: sand ↔ soil (both loose, similar colour) and big rock ↔ bedrock (both rock). Check the confusion matrix and confirm.</textarea></div>
+  <details class="st"><summary>Why must the flip be applied to image AND mask?</summary><p>Otherwise the labels point at the wrong pixels: the left-side sand would be labeled on the right.</p></details>
+  <details class="st"><summary>Why is big rock IoU "jumpy" between runs?</summary><p>Very few test pixels are big rock, so a few mistakes change the score a lot. Say so honestly.</p></details>
+  <div class="done">✔ Done when: weights saved on Drive + metrics table full.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg6">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="5">← page 5</button><button class="next" data-go="7">page 7 →</button></div>
+</section>
+
+<!-- P7 -->
+<section class="page" id="pg7" data-title="7 · Live map skeleton">
+  <div class="stamp">CHECKPOINT H8</div>
+  <div class="pno">page 7</div>
+  <h2>A Live Map Online</h2>
+  <div class="meta"><span class="tag r">⏱ 3 h</span><span class="tag">frontend</span><span class="tag">Manual: ch. 06, 10, 11</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A <mark>public URL</mark> showing Mount Sharp on a Mars basemap, with a layer panel and fake stops.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p7-t1"><span><code>npm create vite@latest web</code> (vanilla or React). Add Leaflet.</span></label></li>
+    <li><label><input type="checkbox" id="p7-t2"><span>Open the Mars Trek <code>WMTSCapabilities.xml</code> for the CTX mosaic. Copy the tile URL template.</span></label></li>
+    <li><label><input type="checkbox" id="p7-t3"><span>Show the CTX layer, centred on your box from page 5.</span></label></li>
+    <li><label><input type="checkbox" id="p7-t4"><span>Load a fake <code>stops.json</code> and draw coloured dots (red = sandy).</span></label></li>
+    <li><label><input type="checkbox" id="p7-t5"><span>Layer panel with checkboxes + legend.</span></label></li>
+    <li><label><input type="checkbox" id="p7-t6"><span>Deploy to Vercel/Netlify. Open it on a phone.</span></label></li>
+  </ul>
+<pre><code>const map = L.map("map", { crs: L.CRS.EPSG4326 }).setView([LAT, LON], 12);
+L.tileLayer(TREK_CTX, { tileSize: 256, attribution: "NASA/JPL Mars Trek" }).addTo(map);
+const stops = await (await fetch("data/stops.json")).json();
+for (const s of stops) {
+  L.circleMarker([s.lat, s.lon], { radius: 7, color: s.sand_pct > .3 ? "#d43d3d" : "#2e8b4a" })
+   .bindPopup(`sol ${s.sol} · sand ${(s.sand_pct*100).toFixed(0)}%`).addTo(map);
+}</code></pre>
+  <figure><div class="sk"><svg viewBox="0 0 600 200" role="img" aria-label="Wireframe: layer panel on the left, map on the right with dots">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.3">
+      <rect x="10" y="10" width="580" height="180" rx="8"/><rect x="20" y="20" width="130" height="160" rx="6"/>
+      <path d="M32 46 h12 v12 h-12z M32 76 h12 v12 h-12z M32 106 h12 v12 h-12z"/>
+      <path d="M200 160 C260 140 300 110 360 100 S470 70 540 50" stroke="var(--blue)"/>
+      <circle cx="260" cy="140" r="6" stroke="var(--green)"/><circle cx="360" cy="100" r="6" stroke="var(--red)"/><circle cx="450" cy="74" r="6" stroke="var(--green)"/>
+    </g>
+    <g font-size="19" fill="currentColor"><text x="52" y="58">CTX</text><text x="52" y="88">slope</text><text x="52" y="118">AI stops</text><text x="370" y="130" fill="var(--red)">sandy stop</text></g>
+  </svg></div></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p7-q1"><b>Q1</b>Live URL</label><textarea id="p7-q1"></textarea></div>
+  <div class="q"><label for="p7-q2"><b>Q2</b>The Trek tile template we used</label><textarea id="p7-q2">Read the ResourceURL template from the Mars Trek CTX WMTSCapabilities.xml, then turn its {TileMatrix}/{TileRow}/{TileCol} into Leaflet&#x27;s {z}/{y}/{x}.</textarea></div>
+  <details class="st"><summary>Why <code>EPSG4326</code> on Mars?</summary><p>It only tells Leaflet the tiles are plain lat/lon squares (equirectangular). The degrees are Mars degrees.</p></details>
+  <div class="done">✔ Done when: teammates open the URL on their phones and see Mount Sharp with dots.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg7">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="6">← page 6</button><button class="next" data-go="8">page 8 →</button></div>
+</section>
+
+<!-- P8 -->
+<section class="page" id="pg8" data-title="8 · Terrain layers">
+  <div class="stamp">SAT · H2–H12</div>
+  <div class="pno">page 8</div>
+  <h2>Terrain: Elevation → Slope → Overlays</h2>
+  <div class="meta"><span class="tag r">⏱ 4 h</span><span class="tag">geo-data</span><span class="tag">Manual: ch. 06, 07</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Slope, dune and night-IR overlays as PNGs with corners, plus <code>grid.json</code> for the planner.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p8-t1"><span>Download a terrain model covering the box (HiRISE DTM if one exists there; else HRSC/MOLA).</span></label></li>
+    <li><label><input type="checkbox" id="p8-t2"><span>Inspect: CRS, pixel size, NoData, min/max (Manual ch. 07 step 2).</span></label></li>
+    <li><label><input type="checkbox" id="p8-t3"><span>Clip to the box. Mask NoData.</span></label></li>
+    <li><label><input type="checkbox" id="p8-t4"><span>Compute slope in degrees. Colour it: green &lt;15°, orange 15–20°, red &gt;20°.</span></label></li>
+    <li><label><input type="checkbox" id="p8-t5"><span>Dune polygons (MGD3) → rasterize onto the same grid.</span></label></li>
+    <li><label><input type="checkbox" id="p8-t6"><span>THEMIS night IR → reproject onto the grid (bilinear).</span></label></li>
+    <li><label><input type="checkbox" id="p8-t7"><span>Export PNG overlays + bounds, and <code>grid.json</code> at ~20 m cells.</span></label></li>
+  </ul>
+<pre><code>elev = src.read(1, masked=True).filled(np.nan)
+dzdy, dzdx = np.gradient(elev, src.res[0])            <span class="c"># res in METERS</span>
+slope = np.degrees(np.arctan(np.hypot(dzdx, dzdy)))
+rgba = np.zeros((*slope.shape, 4), np.uint8)
+rgba[slope < 15] = (46,139,74,140); rgba[(slope>=15)&amp;(slope<20)] = (224,122,31,160)
+rgba[slope >= 20] = (212,61,61,180); rgba[np.isnan(slope)] = 0
+from PIL import Image; Image.fromarray(rgba).save("web/public/data/ov/slope.png")</code></pre>
+  <div class="box warn"><h4>Classic bug check</h4><p>If almost everything is red, your pixel size is in degrees, not meters. If you see a giant hole, NoData wasn't masked.</p></div>
+  <h3>Journal</h3>
+  <div class="q"><label for="p8-q1"><b>Q1</b>Terrain file used + resolution + source URL</label><textarea id="p8-q1"></textarea></div>
+  <div class="q"><label for="p8-q2"><b>Q2</b>Max slope in the box, and % of area &gt;20°</label><textarea id="p8-q2"></textarea></div>
+  <details class="st"><summary>Bilinear or nearest for the dune raster?</summary><p>Nearest: it's a yes/no class map. Bilinear would invent "half-dune" values.</p></details>
+  <div class="done">✔ Done when: slope overlay shows on the live map at the right place.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg8">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="7">← page 7</button><button class="next" data-go="9">page 9 →</button></div>
+</section>
+
+<!-- P9 -->
+<section class="page" id="pg9" data-title="9 · AI on the map">
+  <div class="stamp">SAT · H8–H16</div>
+  <div class="pno">page 9</div>
+  <h2>Put the AI on the Map</h2>
+  <div class="meta"><span class="tag r">⏱ 4 h</span><span class="tag">Malak</span><span class="tag">Manual: ch. 08 B</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A real <code>stops.json</code>: every rover stop in the box with sand / rock percentages and a coloured photo.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p9-t1"><span>For each sol in your list, get its Navcam images (AI4Mars if present, else PDS raw).</span></label></li>
+    <li><label><input type="checkbox" id="p9-t2"><span>Run the model. Keep only pixels closer than 30 m (range mask) and not the rover body.</span></label></li>
+    <li><label><input type="checkbox" id="p9-t3"><span>Compute sand / soil / bedrock / big-rock % per stop.</span></label></li>
+    <li><label><input type="checkbox" id="p9-t4"><span>Save the photo with a semi-transparent colour overlay (sand yellow, big rock red).</span></label></li>
+    <li><label><input type="checkbox" id="p9-t5"><span>Join sol → waypoint lon/lat. Write stops.json. Hand it to frontend.</span></label></li>
+    <li><label><input type="checkbox" id="p9-t6"><span>Check: are any of these images in your training set? Note it.</span></label></li>
+  </ul>
+<pre><code>model.eval(); out = []
+for sol, img, valid in navcam_images:                     <span class="c"># valid = range &amp; rover mask</span>
+    with torch.no_grad():
+        pred = model(to_tensor(img)[None].cuda()).argmax(1)[0].cpu().numpy()
+    p = pred[valid]; n = max(len(p), 1)
+    wp = waypoints[sol]                                    <span class="c"># from MMGIS GeoJSON</span>
+    out.append({"sol": sol, "lon": wp.lon, "lat": wp.lat,
+                "soil_pct": (p==0).sum()/n, "bedrock_pct": (p==1).sum()/n,
+                "sand_pct": (p==2).sum()/n, "bigrock_pct": (p==3).sum()/n,
+                "image": save_overlay(img, pred, sol)})
+json.dump(out, open("web/public/data/stops.json","w"), indent=1)</code></pre>
+  <figure><div class="sk"><svg viewBox="0 0 600 170" role="img" aria-label="Sketch: rover photo, model, coloured overlay, dot on map">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.3">
+      <rect x="10" y="40" width="120" height="90"/><path d="M10 100 q30 -15 60 0 t60 0"/>
+      <rect x="175" y="55" width="90" height="60" rx="10" stroke="var(--blue)"/>
+      <rect x="310" y="40" width="120" height="90"/><path d="M310 100 q30 -15 60 0 t60 0" stroke="#c98a12"/><rect x="315" y="102" width="110" height="24" fill="url(#dots)" stroke="none"/>
+      <circle cx="520" cy="85" r="10" stroke="var(--red)"/><path d="M470 120 C500 110 540 70 580 60" stroke="var(--blue)"/>
+      <path d="M130 85 h42 M265 85 h42 M430 85 h78" marker-end="url(#arr)"/>
+    </g>
+    <g font-size="19" fill="currentColor"><text x="20" y="30">Navcam, sol N</text><text x="185" y="90" fill="var(--blue)">model</text><text x="320" y="30">overlay</text><text x="490" y="120">map dot</text></g>
+  </svg></div></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p9-q1"><b>Q1</b>How many stops? Which is the sandiest?</label><textarea id="p9-q1"></textarea></div>
+  <div class="q"><label for="p9-q2"><b>Q2</b>Leakage check result</label><textarea id="p9-q2">Check each sol&#x27;s image IDs against the AI4Mars train list. If any are in training → say so on the page, or hold them out and retrain.</textarea></div>
+  <details class="st"><summary>Why only pixels closer than 30 m?</summary><p>Far pixels weren't labeled reliably, and the waypoint only says where the rover was. Near pixels are about that spot.</p></details>
+  <div class="done">✔ Done when: real dots on the live map open real coloured photos.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg9">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="8">← page 8</button><button class="next" data-go="10">page 10 →</button></div>
+</section>
+
+<!-- P10 -->
+<section class="page" id="pg10" data-title="10 · Route planner">
+  <div class="stamp">CHECKPOINT H16</div>
+  <div class="pno">page 10</div>
+  <h2>Route Planner + GO / NO-GO</h2>
+  <div class="meta"><span class="tag r">⏱ 5 h</span><span class="tag">frontend + geo-data</span><span class="tag">Manual: ch. 09</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Click start → click goal → a route with distance, time, sand metres, steepest step, and a <mark>GO / NO-GO card that says why</mark>.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p10-t1"><span>Copy the Dijkstra/Tobler code from the Manual's demo into a Web Worker.</span></label></li>
+    <li><label><input type="checkbox" id="p10-t2"><span>Load grid.json. Click → grid cell; cell → lon/lat for drawing.</span></label></li>
+    <li><label><input type="checkbox" id="p10-t3"><span>Traveller toggle: on foot (sand ×1.3) / rover (sand ×4.5). Big rock = forbidden.</span></label></li>
+    <li><label><input type="checkbox" id="p10-t4"><span>Show "slope-only" route in dashed red next to ours, for comparison.</span></label></li>
+    <li><label><input type="checkbox" id="p10-t5"><span>GO card rules: NO-GO if a step &gt;20°, or return time &gt; EVA budget.</span></label></li>
+    <li><label><input type="checkbox" id="p10-t6"><span>Write all assumptions in one <code>ASSUMPTIONS.md</code>.</span></label></li>
+  </ul>
+<pre><code><span class="c">// GO / NO-GO with a reason</span>
+const reasons = [];
+if (stats.maxSlope > 20) reasons.push(`step of ${stats.maxSlope.toFixed(0)}° (limit 20°)`);
+if (2 * stats.minutes > EVA_BUDGET_MIN) reasons.push(`round trip ${2*stats.minutes} min > ${EVA_BUDGET_MIN}`);
+if (stats.sandM > 0 && mode === "rover") reasons.push(`${stats.sandM} m of likely sand`);
+card.status = reasons.length ? "NO-GO" : "GO";
+card.why = reasons.length ? reasons.join(" · ")
+         : `detour +${extraMin} min avoids ${avoidedSandM} m of sand`;</code></pre>
+  <figure><div class="sk"><svg viewBox="0 0 600 160" role="img" aria-label="Sketch of a GO card next to a NO-GO card">
+    <g filter="url(#rough)" fill="none" stroke-width="2.6"><rect x="20" y="15" width="250" height="130" rx="14" stroke="var(--green)"/><rect x="330" y="15" width="250" height="130" rx="14" stroke="var(--red)"/></g>
+    <g font-size="22"><text x="40" y="50" fill="var(--green)">GO ✓</text><text x="40" y="80" fill="currentColor">1.8 km · 52 min</text><text x="40" y="110" fill="currentColor">why: detour +3 min,</text><text x="40" y="134" fill="currentColor">avoids 550 m sand</text>
+    <text x="350" y="50" fill="var(--red)">NO-GO ✗</text><text x="350" y="80" fill="currentColor">round trip 290 min</text><text x="350" y="110" fill="currentColor">&gt; 240 min budget</text></g>
+  </svg></div></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p10-q1"><b>Q1</b>Our assumptions (slope limit, suit factor, sand penalties, EVA budget)</label><textarea id="p10-q1">Slope limit: 20° (NO-GO above)
+Suit factor: 0.8 × Tobler speed
+Sand penalty: on foot ×1.3, pressurized rover ×4.5
+Big rock: forbidden cell
+EVA budget: 240 min (4 h) round trip
+Grid: 20 m cells
+All are our assumptions, written in ASSUMPTIONS.md.</textarea></div>
+  <div class="q"><label for="p10-q2"><b>Q2</b>Result: slope-only vs our route (metres of sand, minutes)</label><textarea id="p10-q2">(fill from the app: slope-only route = ___ m of sand, ___ min · ours = ___ m of sand, ___ min)</textarea></div>
+  <details class="st"><summary>Why run the planner in a Web Worker?</summary><p>Searching a big grid takes time. In a worker, the map doesn't freeze while it computes.</p></details>
+  <div class="done">✔ Done when: the comparison shows our route avoiding sand that slope-only crosses.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg10">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="9">← page 9</button><button class="next" data-go="11">page 11 →</button></div>
+</section>
+
+<!-- P11 -->
+<section class="page" id="pg11" data-title="11 · Validation">
+  <div class="stamp">SAT NIGHT</div>
+  <div class="pno">page 11</div>
+  <h2>Prove It: Orbit vs Ground</h2>
+  <div class="meta"><span class="tag r">⏱ 2 h</span><span class="tag">Malak + geo-data</span><span class="tag">Manual: ch. 08 C, E</span></div>
+  <div class="box goal"><h4>Goal</h4><p>One honest number and one chart: <mark>how often orbit agrees with the AI on the ground</mark>.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p11-t1"><span>Build the orbital sand score (dunes + cold-at-night). Write the weights in ASSUMPTIONS.md.</span></label></li>
+    <li><label><input type="checkbox" id="p11-t2"><span>Sample it at every stop. Compare with sand_pct &gt; 30%.</span></label></li>
+    <li><label><input type="checkbox" id="p11-t3"><span>Make a 2×2 table: orbit yes/no × ground yes/no.</span></label></li>
+    <li><label><input type="checkbox" id="p11-t4"><span>Optional: Hidden Valley replay (sols ~703–712).</span></label></li>
+    <li><label><input type="checkbox" id="p11-t5"><span>Write the one-line conclusion for the pitch.</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 190" role="img" aria-label="Sketch of a two by two agreement table">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="160" y="30" width="300" height="140"/><path d="M310 30 v140 M160 100 h300"/></g>
+    <g font-size="20" fill="currentColor"><text x="190" y="22">ground: sand</text><text x="335" y="22">ground: no sand</text>
+    <text x="40" y="70">orbit: sand</text><text x="30" y="140">orbit: no sand</text>
+    <text x="210" y="72" fill="var(--green)">✓ agree</text><text x="350" y="72" fill="var(--orange)">false alarm</text>
+    <text x="190" y="142" fill="var(--red)">MISSED (ripples!)</text><text x="355" y="142" fill="var(--green)">✓ agree</text></g>
+  </svg></div><figcaption>The "missed" box is your best argument: orbit can't see small ripple fields. Crews need ground AI.</figcaption></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p11-q1"><b>Q1</b>The 4 numbers of the 2×2 table + agreement %</label><textarea id="p11-q1">(fill: orbit yes/ground yes ___ · orbit yes/ground no ___ · orbit no/ground yes ___ · orbit no/ground no ___ · agreement ___%)</textarea></div>
+  <div class="q"><label for="p11-q2"><b>Q2</b>One-line conclusion for judges</label><textarea id="p11-q2">&quot;Orbit finds the big dune fields, but it misses small ripple patches. That&#x27;s exactly why crews need AI that reads ground-level photos.&quot;</textarea></div>
+  <details class="st"><summary>Is low agreement bad news?</summary><p>Not if you explain it. It shows why ground-level AI matters. Hiding it would be bad.</p></details>
+  <div class="done">✔ Done when: the validation panel is on the site with the numbers.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg11">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="10">← page 10</button><button class="next" data-go="12">page 12 →</button></div>
+</section>
+
+<!-- P12 -->
+<section class="page" id="pg12" data-title="12 · POV, rocks, HUD">
+  <div class="stamp">SUN · H24</div>
+  <div class="pno">page 12</div>
+  <h2>What You'll See + Big Rocks + HUD</h2>
+  <div class="meta"><span class="tag r">⏱ 4 h</span><span class="tag">frontend + Malak</span><span class="tag">official brief</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Hit the three things the official brief names: <mark>point-of-view images</mark>, <mark>avoiding large rocks</mark>, a <mark>helmet HUD</mark> format.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p12-t1"><span>"What you'll see" card: click a stop → photo + overlay + "expect: 40% bedrock, ripples ahead".</span></label></li>
+    <li><label><input type="checkbox" id="p12-t2"><span>Big-rock markers on the map, from stops with bigrock_pct high.</span></label></li>
+    <li><label><input type="checkbox" id="p12-t3"><span>Boxwork target pins (from the Curiosity 2025 traverse / NASA route map).</span></label></li>
+    <li><label><input type="checkbox" id="p12-t4"><span>HUD mode: dark, huge text, 3 numbers only: turn-back time, next stop, hazard ahead.</span></label></li>
+    <li><label><input type="checkbox" id="p12-t5"><span>Conditions strip: Mars local time, season (Ls), radiation estimate for the EVA.</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 190" role="img" aria-label="Sketch of a helmet visor with three big numbers">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M60 170 C40 60 160 15 300 15 C440 15 560 60 540 170 Z"/></g>
+    <g font-size="28" fill="var(--blue)"><text x="110" y="95">⟲ 1:42</text><text x="250" y="95">▶ 320 m</text><text x="400" y="95" fill="var(--red)">⚠ sand</text></g>
+    <g font-size="18" fill="var(--pencil)"><text x="105" y="125">turn back in</text><text x="250" y="125">next stop</text><text x="400" y="125">ahead</text></g>
+  </svg></div><figcaption>Only 3 numbers. A gloved hand and a busy mind can't read a dashboard.</figcaption></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p12-q1"><b>Q1</b>The 3 HUD numbers we chose and why</label><textarea id="p12-q1">1) Turn-back countdown: the most important safety number.
+2) Distance to next stop: navigation.
+3) Hazard ahead (sand / big rock / steep): what to watch.
+Everything else stays on the tablet / habitat screen.</textarea></div>
+  <div class="q"><label for="p12-q2"><b>Q2</b>Radiation estimate method (and the source)</label><textarea id="p12-q2" placeholder="e.g. hours × ~0.67 mSv/day ÷ 24, Curiosity RAD surface average">EVA dose ≈ hours outside × (~0.67 mSv per day ÷ 24), from the Curiosity RAD surface average (Hassler et al. 2013). Clearly labeled an estimate: no suit shielding, no solar storms.</textarea></div>
+  <details class="st"><summary>Which line of the official brief does the photo card answer?</summary><p>"Consider how you might include these point-of-view images… so the astronaut knows what to expect when they arrive."</p></details>
+  <div class="done">✔ Done when: you can tap a stop and "see" the place, and HUD mode works on a phone.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg12">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="11">← page 11</button><button class="next" data-go="13">page 13 →</button></div>
+</section>
+
+<!-- P13 -->
+<section class="page" id="pg13" data-title="13 · Freeze & cut">
+  <div class="stamp">H32 FREEZE</div>
+  <div class="pno">page 13</div>
+  <h2>Feature Freeze &amp; Test as Amira</h2>
+  <div class="meta"><span class="tag r">⏱ 3 h</span><span class="tag">everyone</span><span class="tag">cut rules from page 2</span></div>
+  <div class="box goal"><h4>Goal</h4><p><mark>No new features after this.</mark> Fix, polish, and make sure everything shown is real.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p13-t1"><span>Apply the cut rules. Hide anything half-working.</span></label></li>
+    <li><label><input type="checkbox" id="p13-t2"><span>Story person plays Amira: plan a walk to boxwork, phone only, no help. Note every confusion.</span></label></li>
+    <li><label><input type="checkbox" id="p13-t3"><span>Test on phone + laptop, light network.</span></label></li>
+    <li><label><input type="checkbox" id="p13-t4"><span>Every number has a unit. Every layer has a legend and a source.</span></label></li>
+    <li><label><input type="checkbox" id="p13-t5"><span>Prepare the demo state: route already set, layers on (a link like <code>?demo=1</code>).</span></label></li>
+  </ul>
+  <h3>Journal</h3>
+  <div class="q"><label for="p13-q1"><b>Q1</b>What did we cut?</label><textarea id="p13-q1"></textarea></div>
+  <div class="q"><label for="p13-q2"><b>Q2</b>Amira test: top 3 confusions + fixes</label><textarea id="p13-q2"></textarea></div>
+  <details class="st"><summary>Why freeze at hour 32 and not 44?</summary><p>The video, page and pitch need the last hours, and late features break things right before submission.</p></details>
+  <div class="done">✔ Done when: the demo link works first time, every time.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg13">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="12">← page 12</button><button class="next" data-go="14">page 14 →</button></div>
+</section>
+
+<!-- P14 -->
+<section class="page" id="pg14" data-title="14 · Video & slides">
+  <div class="stamp">SUN · H34</div>
+  <div class="pno">page 14</div>
+  <h2>The 30-Second Video</h2>
+  <div class="meta"><span class="tag r">⏱ 3 h</span><span class="tag">story person + Malak</span><span class="tag">Manual: ch. 15</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A public video <mark>≤ 30 seconds</mark>, English or English subtitles. (Or ≤ 7 slides.)</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p14-t1"><span>Record the screen in the demo state (OBS or the phone's recorder).</span></label></li>
+    <li><label><input type="checkbox" id="p14-t2"><span>Follow the 6-beat script: hook, problem, AI, route, proof, title.</span></label></li>
+    <li><label><input type="checkbox" id="p14-t3"><span>Add subtitles. Most judges watch muted.</span></label></li>
+    <li><label><input type="checkbox" id="p14-t4"><span>Check the length: 30 s or less!</span></label></li>
+    <li><label><input type="checkbox" id="p14-t5"><span>Upload to YouTube (unlisted is OK if allowed) or Drive with public link. Test in a private window.</span></label></li>
+  </ul>
+  <figure><div class="sk"><svg viewBox="0 0 600 120" role="img" aria-label="Sketch of a timeline split into six beats over thirty seconds">
+    <g filter="url(#rough)" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="10" y="40" width="580" height="44" rx="8"/><path d="M87 40 v44 M164 40 v44 M300 40 v44 M435 40 v44 M532 40 v44"/></g>
+    <g font-size="18" fill="currentColor"><text x="20" y="68">hook</text><text x="95" y="68">problem</text><text x="190" y="68" fill="var(--blue)">AI sees sand</text><text x="320" y="68" fill="var(--green)">safe route</text><text x="450" y="68">proof</text><text x="540" y="68" fill="var(--red)">title</text>
+    <text x="10" y="30">0s</text><text x="80" y="30">4</text><text x="157" y="30">8</text><text x="292" y="30">15</text><text x="427" y="30">22</text><text x="524" y="30">27</text><text x="570" y="30">30</text></g>
+  </svg></div></figure>
+  <h3>Journal</h3>
+  <div class="q"><label for="p14-q1"><b>Q1</b>Final subtitles, line by line</label><textarea id="p14-q1" style="min-height:150px">1. 2014: Curiosity drove into a valley that looked safe.
+2. Slope maps said go. The sand said no.
+3. Our AI reads rover photos and maps what the ground is made of.
+4. Astronauts get a safe route to the boxwork, with time, walk-back and what they&#x27;ll see.
+5. Checked against orbital data from five NASA missions.
+6. Firm Ground. Know the ground before you step on it.</textarea></div>
+  <div class="q"><label for="p14-q2"><b>Q2</b>Video link</label><textarea id="p14-q2"></textarea></div>
+  <details class="st"><summary>What must be visible in the first 4 seconds?</summary><p>The hook: a real Mars image and the danger. Never the team logo.</p></details>
+  <div class="done">✔ Done when: a friend watches it muted and can tell you what the app does.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg14">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="13">← page 13</button><button class="next" data-go="15">page 15 →</button></div>
+</section>
+
+<!-- P15 -->
+<section class="page" id="pg15" data-title="15 · Project page">
+  <div class="stamp">SUN · H38</div>
+  <div class="pno">page 15</div>
+  <h2>The Project Page &amp; References</h2>
+  <div class="meta"><span class="tag r">⏱ 2 h</span><span class="tag">story person + everyone checks</span><span class="tag">Manual: ch. 15, 19</span></div>
+  <div class="box goal"><h4>Goal</h4><p>A page a judge in another country understands <mark>without you there</mark>.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p15-t1"><span>High-level summary (~100 words): problem, solution, why it matters.</span></label></li>
+    <li><label><input type="checkbox" id="p15-t2"><span>Project details: how it works, AI method, metrics, validation, limits.</span></label></li>
+    <li><label><input type="checkbox" id="p15-t3"><span>Space agency data: every NASA dataset with its mission.</span></label></li>
+    <li><label><input type="checkbox" id="p15-t4"><span>References: copy DATA_SOURCES.md + every library, model, image.</span></label></li>
+    <li><label><input type="checkbox" id="p15-t5"><span>Links: live app, video, GitHub. 2–3 clear screenshots.</span></label></li>
+  </ul>
+  <h3>Journal: draft the summary here</h3>
+  <div class="q"><label for="p15-q1"><b>Q1</b>High-level summary (~100 words)</label><textarea id="p15-q1" style="min-height:180px">The first astronauts on Mars will walk across ground no human has seen. Slope maps show where it&#x27;s steep, but not where it&#x27;s soft: in 2014 Curiosity backed out of a flat valley whose sand was too slippery. Firm Ground is a layered map of the boxwork region of Mount Sharp. An AI model trained on NASA&#x27;s AI4Mars reads real Curiosity photos and maps sand and big rocks at each stop; we check it against orbital evidence from HiRISE, THEMIS and the USGS dune database. Astronauts get a route to the boxwork with time, walk-back limit, a GO / NO-GO with reasons, and a preview of what they&#x27;ll see.</textarea></div>
+  <div class="q"><label for="p15-q2"><b>Q2</b>NASA data list (dataset · mission · use)</label><textarea id="p15-q2" style="min-height:120px">MOLA elevation · Mars Global Surveyor · base terrain + slope
+CTX mosaic (via Mars Trek) · Mars Reconnaissance Orbiter · basemap
+HiRISE images / DTM · Mars Reconnaissance Orbiter · detail, boulders, slope
+THEMIS night infrared · Mars Odyssey · loose vs rocky ground
+Navcam images + AI4Mars labels · Curiosity (MSL) · ground truth, AI training
+RAD · Curiosity (MSL) · radiation estimate
+USGS geologic map · USGS-NASA mapping program · science context
+MMGIS waypoints · Curiosity (MSL) · where each photo was taken
+Perseverance raw images · Mars 2020 · model test on a second rover</textarea></div>
+  <details class="st"><summary>Do we cite the ImageNet weights and segmentation-models-pytorch?</summary><p>Yes. Every external resource, even open source, goes in References.</p></details>
+  <div class="done">✔ Done when: someone outside the team reads it and explains it back correctly.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg15">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="14">← page 14</button><button class="next" data-go="16">page 16 →</button></div>
+</section>
+
+<!-- P16 -->
+<section class="page" id="pg16" data-title="16 · Rehearse">
+  <div class="stamp">SUN · H40</div>
+  <div class="pno">page 16</div>
+  <h2>Rehearse the Pitch</h2>
+  <div class="meta"><span class="tag r">⏱ 2 h</span><span class="tag">presenters</span><span class="tag">Manual: ch. 15</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Pitch <mark>3 times</mark> with a timer, and answer the hard questions calmly.</p></div>
+  <h3>Steps</h3>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p16-t1"><span>Rehearsal 1: just get through it. Time it.</span></label></li>
+    <li><label><input type="checkbox" id="p16-t2"><span>Cut everything over the limit. Rehearsal 2.</span></label></li>
+    <li><label><input type="checkbox" id="p16-t3"><span>Teammates fire the hard questions. Rehearsal 3.</span></label></li>
+    <li><label><input type="checkbox" id="p16-t4"><span>Backup: the video on a laptop, offline.</span></label></li>
+  </ul>
+  <h3>Hard questions: write your answers</h3>
+  <div class="q"><label for="p16-q1"><b>Q1</b>"Why not just use slope?"</label><textarea id="p16-q1">Because slope doesn&#x27;t see material. Hidden Valley was flat and still nearly trapped Curiosity. Our demo shows the slope-only route crossing sand that ours avoids.</textarea></div>
+  <div class="q"><label for="p16-q2"><b>Q2</b>"How accurate is your AI?"</label><textarea id="p16-q2">On NASA&#x27;s expert-labeled test set we reach ___ mean IoU and ___ on sand, vs ___ for an always-soil baseline. Big rock is our weakest class because the test set has very few big-rock pixels, so its score varies between runs. We say that openly.</textarea></div>
+  <div class="q"><label for="p16-q3"><b>Q3</b>"Rover images aren't astronaut boots. Does it apply?"</label><textarea id="p16-q3">Not directly: wheels sink where boots may only slow down. That&#x27;s why the planner has a traveller setting: sand costs a walker a little time but is a NO-GO for a wheeled rover. The terrain map itself (where the sand is) is the same for both.</textarea></div>
+  <div class="q"><label for="p16-q4"><b>Q4</b>"What's new compared with NASA's SPOC?"</label><textarea id="p16-q4">SPOC is JPL&#x27;s internal tool for rover drivers. We built an open, smaller version, put its output on a map for astronauts, checked it against orbital data, and turned it into routes, GO / NO-GO decisions and previews of each stop.</textarea></div>
+  <div class="q"><label for="p16-q5"><b>Q5</b>"What would you do with 3 more months?"</label><textarea id="p16-q5">Run on all Curiosity and Perseverance images, train an orbital model on HiRISE so the sand map covers areas with no rover photos, add live crew-photo updates, and test with NASA EVA experts.</textarea></div>
+  <details class="st"><summary>Best way to start the live pitch?</summary><p>With the story ("Curiosity almost got stuck…"), not "Hi, we are team…".</p></details>
+  <div class="done">✔ Done when: rehearsal 3 fits the time limit and nobody reads from notes.</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg16">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="15">← page 15</button><button class="next" data-go="17">page 17 →</button></div>
+</section>
+
+<!-- P17 -->
+<section class="page" id="pg17" data-title="17 · Submit">
+  <div class="stamp">SUBMIT EARLY</div>
+  <div class="pno">page 17</div>
+  <h2>Submit</h2>
+  <div class="meta"><span class="tag r">⏱ 30 min</span><span class="tag">team owner</span><span class="tag">Manual: ch. 17</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Submitted <mark>at least 2 hours before the deadline</mark>, every link working.</p></div>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p17-t1"><span>Demo link public (≤ 30 s video or ≤ 7 slides), English or subtitled.</span></label></li>
+    <li><label><input type="checkbox" id="p17-t2"><span>All required fields filled, in English.</span></label></li>
+    <li><label><input type="checkbox" id="p17-t3"><span>References complete.</span></label></li>
+    <li><label><input type="checkbox" id="p17-t4"><span>Live app + repo open in a private window on a phone.</span></label></li>
+    <li><label><input type="checkbox" id="p17-t5"><span>Every teammate is on the Members tab.</span></label></li>
+    <li><label><input type="checkbox" id="p17-t6"><span>Terms and original-work boxes checked. Submit. Screenshot the confirmation.</span></label></li>
+  </ul>
+  <div class="q"><label for="p17-q1"><b>Note</b>Submission time + confirmation</label><textarea id="p17-q1"></textarea></div>
+  <div class="done">✔ Done when: confirmation screenshot is in the team chat. Then celebrate 🎉</div>
+  <div class="copyrow"><button class="btn copy" data-page="pg17">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="16">← page 16</button><button class="next" data-go="18">page 18 →</button></div>
+</section>
+
+<!-- P18 -->
+<section class="page" id="pg18" data-title="18 · After">
+  <div class="pno">page 18</div>
+  <h2>After the Hackathon</h2>
+  <div class="meta"><span class="tag r">⏱ 1 h</span><span class="tag">you</span></div>
+  <div class="box goal"><h4>Goal</h4><p>Turn 48 hours into a <mark>portfolio piece</mark>.</p></div>
+  <ul class="todo">
+    <li><label><input type="checkbox" id="p18-t1"><span>README: overlay image at the top, what it does, metrics, how to run, limits.</span></label></li>
+    <li><label><input type="checkbox" id="p18-t2"><span>Write the CV line with your real numbers.</span></label></li>
+    <li><label><input type="checkbox" id="p18-t3"><span>LinkedIn post: the Hidden Valley story + your video.</span></label></li>
+    <li><label><input type="checkbox" id="p18-t4"><span>Write down 3 lessons for next time.</span></label></li>
+  </ul>
+  <div class="box blue"><h4>CV line template</h4><p>"Built an AI terrain-mapping tool for NASA Space Apps 2026: DeepLabV3+ on JPL's AI4Mars reached <mark>X</mark> mean IoU and <mark>Y</mark> sand IoU (vs <mark>Z</mark> all-soil baseline), integrated with orbital data from <mark>N</mark> NASA missions into a Marswalk route planner."</p></div>
+  <div class="q"><label for="p18-q1"><b>Q1</b>My CV line</label><textarea id="p18-q1">Built an AI terrain-mapping tool for NASA Space Apps 2026: DeepLabV3+ on JPL&#x27;s AI4Mars reached ___ mean IoU and ___ sand IoU (vs ___ all-soil baseline), integrated with orbital data from 5 NASA missions into a Marswalk route planner.</textarea></div>
+  <div class="q"><label for="p18-q2"><b>Q2</b>3 lessons</label><textarea id="p18-q2"></textarea></div>
+  <div class="copyrow"><button class="btn copy" data-page="pg18">Copy my answers</button><span class="small copied" aria-live="polite"></span></div>
+  <div class="nav"><button data-go="17">← page 17</button><button data-go="0">back to cover</button></div>
+</section>
+
+</div>
+
+<script>
+(function(){
+  var pages=[].slice.call(document.querySelectorAll('.page'));
+  var sel=document.getElementById('jump');
+  pages.forEach(function(p,i){var o=document.createElement('option');o.value=i;o.textContent=p.dataset.title;sel.appendChild(o);});
+  function show(i){
+    i=Math.max(0,Math.min(pages.length-1,i|0));
+    pages.forEach(function(p,k){p.classList.toggle('on',k===i);});
+    sel.value=i;
+    var h='p'+i; if(location.hash!=='#'+h){try{history.replaceState(null,'','#'+h);}catch(e){location.hash=h;}}
+    window.scrollTo(0,0);
+  }
+  function fromHash(){var m=/^#p(\d+)$/.exec(location.hash);return m?+m[1]:0;}
+  sel.addEventListener('change',function(){show(+sel.value);});
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-go]');if(b){show(+b.dataset.go);}});
+  window.addEventListener('hashchange',function(){show(fromHash());});
+  show(fromHash());
+
+  // storage
+  var store={}; try{store=JSON.parse(localStorage.getItem('mm-journal-filled')||'{}');}catch(e){}
+  function save(){try{localStorage.setItem('mm-journal-filled',JSON.stringify(store));}catch(e){}}
+  var boxes=[].slice.call(document.querySelectorAll('.todo input'));
+  function prog(){var n=boxes.filter(function(b){return b.checked;}).length;document.getElementById('progbar').style.width=(100*n/boxes.length)+'%';}
+  boxes.forEach(function(b){if(store[b.id])b.checked=true;b.addEventListener('change',function(){store[b.id]=b.checked;save();prog();});});
+  document.querySelectorAll('textarea').forEach(function(t){if(store[t.id])t.value=store[t.id];t.addEventListener('input',function(){store[t.id]=t.value;save();});});
+  prog();
+
+  // copy answers
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var pg=document.getElementById(btn.dataset.page), out=[pg.dataset.title.toUpperCase()];
+      pg.querySelectorAll('.q').forEach(function(q){var l=q.querySelector('label').innerText.trim(),v=q.querySelector('textarea').value.trim();out.push(l+'\n'+(v||'(empty)'));});
+      var txt=out.join('\n\n'), msg=btn.parentNode.querySelector('.copied');
+      try{navigator.clipboard.writeText(txt).then(function(){msg.textContent='Copied ✓ paste it to Claude or the team';},function(){msg.textContent='Copy was blocked: select the text in the boxes and copy by hand.';});}
+      catch(e){msg.textContent='Copy was blocked: select the text in the boxes and copy by hand.';}
+    });
+  });
+})();
+</script>
+</body>
+</html>

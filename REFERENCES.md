@@ -38,6 +38,31 @@ Download URLs, byte ranges and MD5 sums are in `Map_layer/Layer2_Elevation/raw/f
 - **Geologic context**: Tanaka, K. L., et al. (2014). Geologic map of Mars. USGS Scientific Investigations Map 3292. https://doi.org/10.3133/sim3292
 - **Mars Trek**, NASA. https://trek.nasa.gov/mars/ (viewer, not used as data)
 
+## GIS map, 3D map and GO/NO-GO (`Map_layer/martian_map/`)
+
+Every source is also listed inside the folder: `docs/SOURCES.md`, `pipeline/sources_gonogo.json`, `pipeline/live_gates_rules.json`, `layers/L5_poi/sources.json`, and in each GeoTIFF's tags.
+
+**Data** (besides the USGS 1 m DEM, 25 cm orthophoto, MOLA and HiRISE products listed above):
+- **Curiosity traverse, waypoints and current position**, NASA/JPL MMGIS. https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json (also `MSL_waypoints.json`, `MSL_waypoints_current.json`, `MSL_SurfaceSites.json`)
+- **MSL PLACES localizations** (`localized_interp.csv`), NASA PDS. https://planetarydata.jpl.nasa.gov/img/data/msl/msl_places/data_localizations/
+- **IAU Gazetteer of Planetary Nomenclature**, Mars centre points, USGS Astrogeology. https://asc-planetarynames-data.s3.us-west-2.amazonaws.com/MARS_nomenclature_center_pts.zip
+- **Persaud 2021 marker-bed and unit traces**, Zenodo record 5819267 (reference layer only).
+- **Points of interest**: NASA/JPL news, blogs and image releases (PIA23179, PIA26306, PIA26017), the PDS Analyst's Notebook, PDS CheMin and APXS pages. Full list with URLs in `Map_layer/martian_map/layers/L5_poi/sources.json`.
+- **Team EVA stops with AI certainty**: `Ai_model/results/stops_v2.json` and `Application/data/stops.json` in this repository.
+
+**Facts behind the GO/NO-GO rules:**
+- **Curiosity tilt limits** (designed for 45°, onboard fault protection at 30°), NASA/JPL MSL "Planetary mobility" page, archived 2009. https://webarchive.library.unt.edu/eot2008/20090512223236/http://mars.jpl.nasa.gov/msl/mission/technology/planetarymobility
+- **Curiosity's record 31° tilt** (2020), JPL news. https://www.jpl.nasa.gov/news/nasas-curiosity-mars-rover-takes-a-new-selfie-before-record-climb/
+- **Boxwork ridges and sediment-filled hollows**: Siebach et al., GSA Connects 2025 abstract. https://gsameetings.secure-platform.com/connects25/solicitations/103002/sessiongallery/schedule/items/95386/application/10634
+- **Boxwork campaign, drilling on a ridge and in a hollow**, NASA. https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/ ; https://science.nasa.gov/blog/curiosity-blog-sols-4709-4715-drilling-high-and-low-in-the-boxwork-unit
+- **Hidden Valley sand lesson** (sols 709–710), NASA. https://mars.nasa.gov/resources/6493/curiosity-tracks-in-hidden-valley-on-mars/
+- **Surface radiation 0.67 mSv/day**, SwRI release on Hassler et al. 2014. https://www.swri.org/press-release/swri-scientists-publish-first-radiation-measurements-surface-mars ; NASA NTRS record: https://ntrs.nasa.gov/citations/20180007641
+- **Career effective dose limit 600 mSv**, NASA OCHMO technical brief (NASA-STD-3001 Vol. 1). https://www.nasa.gov/wp-content/uploads/2023/03/radiation-protection-technical-brief-ochmo.pdf
+- **Opportunity lost in the 2018 global dust storm**, NASA. https://science.nasa.gov/mission/mer-opportunity/
+- **MEDA wind sensor damaged by blowing sand**, EPSC-DPS 2025 abstract. https://meetingorganizer.copernicus.org/EPSC-DPS2025/EPSC-DPS2025-1461.html
+
+**Software:** QGIS 4.2.3; Python 3.12 with rasterio, geopandas, pyogrio, shapely, pyproj, SciPy, scikit-image (`MCP_Geometric` least-cost paths) and Pillow, pinned in `Map_layer/martian_map/requirements.lock.txt`; three.js 0.160.0 for the 3D viewer.
+
 ## Application (`Application/`)
 
 - **SuperCam** (idea behind the simulated "zap and listen" scout): Maurice, S., et al. (2021). The SuperCam instrument suite on the Mars 2020 rover. *Space Science Reviews*, 217, 47. https://doi.org/10.1007/s11214-021-00807-w

@@ -1,0 +1,22 @@
+{
+  "generated": "2026-11-14",
+  "note": "Machine-readable index; human version METADATA.md. Earlier-session per-file list: ../data/raw/geology/manifest.json",
+  "downloaded_here": [
+    {"id": "msl_gale_dem_1m_v3", "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif", "local": "raw/msl_gale_dem_1m_box.tif", "bbox": [137.3565, -4.8335, 137.4035, -4.7765], "crs": "+proj=eqc +lon_0=0 +R=3396190", "vertical": "m, Mars areoid", "use": ["primary box elevation", "slope", "contours", "exports", "frame/datum tests"]},
+    {"id": "hrsc_mola_blend_200m_v2", "url": "https://planetarymaps.usgs.gov/mosaic/Mars/HRSC_MOLA_Blend/Mars_HRSC_MOLA_BlendDEM_Global_200mp_v2.tif", "local": "raw/hrsc_mola_blend_200m_gale.tif", "bbox": [136.2, -7.0, 139.4, -3.8], "crs": "+proj=longlat +R=3396190", "use": ["regional whole-crater elevation"]},
+    {"id": "mola_dem_463m", "url": "https://planetarymaps.usgs.gov/mosaic/Mars_MGS_MOLA_DEM_mosaic_global_463m.tif", "local": "raw/mola_463m_gale.tif", "bbox": [136.2, -7.0, 139.4, -3.8], "crs": "+proj=eqc +lon_0=0 +R=3396190", "use": ["cross-check of blend"]},
+    {"id": "mola_pedr_shots", "url": "https://oderest.rsl.wustl.edu/livegds/?query=molapedr&results=vsi&minlat=-4.8335&maxlat=-4.7765&westernlon=137.3565&easternlon=137.4035", "local": "raw/mola_pedr/MolaPEDR_box_pts_csv.csv", "count": 53, "use": ["absolute vertical check"]}
+  ],
+  "used_from_earlier_sessions": [
+    {"id": "hirise_dtm_DTEEC_019698_1750_019988_1750_U01", "local": "../data/clean/geology/dtm_box.tif (clip)", "vertical": "m above Mars 2000 areoid (label)"},
+    {"id": "hirise_ESP_019698_1750_RED_C", "local": "../data/raw/geology/hirise/ESP_019698_1750_RED_C_01_ORTHO.JP2"},
+    {"id": "msl_waypoints_mmgis", "url": "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json", "local": "../data/raw/geology/rover/MSL_waypoints.json"},
+    {"id": "study_box", "local": "../data/clean/geology/study_box.gpkg"},
+    {"id": "msl_gale_ortho_25cm_v3_windows", "url": "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_Orthophoto_Mosaic_25cm_v3.tif", "local": "../trials/nasa_data_trial/output/"}
+  ],
+  "decisions": {
+    "reference_frame": "USGS MSL Gale mosaic frame; HiRISE products shift by [-29.87, +32.05] m (eqc grid E, N)",
+    "vertical": "USGS Gale DEM heights (match rover exactly); HiRISE DTM is +15.2 m; MOLA shots +14.9 m vs USGS",
+    "slope_thresholds_deg_ASSUMPTION": [15, 25], "slope_baseline_m_ASSUMPTION": 3
+  }
+}

@@ -1,0 +1,462 @@
+{
+ "cost_model": {
+  "class_cost": {
+   "GO": 1.0,
+   "CAUTION": 5.0,
+   "UNKNOWN": 8.0,
+   "NO-GO": -1.0
+  },
+  "driven_factor": 0.6,
+  "status": "team app 'Safest' weights (repo ASSUMPTIONS.md, routes.js PROFILES); NO-GO never crossed",
+  "neighbourhood": "8-connected, true ground metres"
+ },
+ "profiles": {
+  "foot": {
+   "box": {
+    "UNKNOWN": 0.0052,
+    "GO": 0.5565,
+    "CAUTION": 0.2726,
+    "NO-GO": 0.1658
+   },
+   "box_before_rover_rule": {
+    "UNKNOWN": 0.0052,
+    "GO": 0.5576,
+    "CAUTION": 0.2715,
+    "NO-GO": 0.1658
+   },
+   "curiosity_path_before_rover_rule": {
+    "UNKNOWN": 0.0006,
+    "GO": 0.8555,
+    "CAUTION": 0.1343,
+    "NO-GO": 0.0097
+   },
+   "curiosity_path": {
+    "UNKNOWN": 0.0,
+    "GO": 0.7971,
+    "CAUTION": 0.1957,
+    "NO-GO": 0.0072
+   },
+   "cells_changed_by_rover_rule": 928,
+   "connectivity": {
+    "passable_share": 0.8342,
+    "components": 1276,
+    "largest_component_share_of_passable": 0.9817
+   },
+   "strictness_verdict": "OK: Curiosity's real path is 1.0% NO-GO before the rover rule (target <= 5 %)",
+   "strictness_table": {
+    "NO-GO >= 20 deg": {
+     "box": {
+      "UNKNOWN": 0.0049,
+      "GO": 0.5565,
+      "CAUTION": 0.1814,
+      "NO-GO": 0.2572
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1278,
+      "NO-GO": 0.0162
+     }
+    },
+    "NO-GO >= 25 deg": {
+     "box": {
+      "UNKNOWN": 0.0052,
+      "GO": 0.5565,
+      "CAUTION": 0.2726,
+      "NO-GO": 0.1658
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1343,
+      "NO-GO": 0.0097
+     }
+    },
+    "NO-GO >= 30 deg": {
+     "box": {
+      "UNKNOWN": 0.0054,
+      "GO": 0.5565,
+      "CAUTION": 0.3392,
+      "NO-GO": 0.0989
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.139,
+      "NO-GO": 0.0049
+     }
+    },
+    "NO-GO >= 35 deg": {
+     "box": {
+      "UNKNOWN": 0.0057,
+      "GO": 0.5565,
+      "CAUTION": 0.3856,
+      "NO-GO": 0.0523
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1419,
+      "NO-GO": 0.0021
+     }
+    }
+   },
+   "reachable_share_from_base": 0.8189,
+   "legs": [
+    {
+     "from": "Sulfate unit to boxwork contact",
+     "to": "Altadena (first boxwork drill)",
+     "sol_from": 4534,
+     "sol_to": 4564,
+     "route_m": 271,
+     "straight_m": 216,
+     "detour_ratio": 1.25,
+     "curiosity_waypoint_chain_m": 237,
+     "route_cost": 205,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.987,
+      "CAUTION": 0.013,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.654,
+     "slope_mean_deg": 5.6,
+     "slope_max_deg": 13.1
+    },
+    {
+     "from": "Altadena (first boxwork drill)",
+     "to": "Monte Grande (boxwork hollow) / Valle de la Luna (44th drill hole)",
+     "sol_from": 4564,
+     "sol_to": 4693,
+     "route_m": 564,
+     "straight_m": 496,
+     "detour_ratio": 1.14,
+     "curiosity_waypoint_chain_m": 919,
+     "route_cost": 613,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.905,
+      "CAUTION": 0.095,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.393,
+     "slope_mean_deg": 7.6,
+     "slope_max_deg": 22.1
+    },
+    {
+     "from": "Monte Grande (boxwork hollow) / Valle de la Luna (44th drill hole)",
+     "to": "Nevado Sajama (ridge-top drill) / Nevado Sajama 2 (second ridge drill)",
+     "sol_from": 4693,
+     "sol_to": 4718,
+     "route_m": 10,
+     "straight_m": 10,
+     "detour_ratio": 1.01,
+     "curiosity_waypoint_chain_m": 12,
+     "route_cost": 31,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.0,
+      "CAUTION": 1.0,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 1.0,
+     "slope_mean_deg": 17.0,
+     "slope_max_deg": 19.1
+    },
+    {
+     "from": "Nevado Sajama (ridge-top drill) / Nevado Sajama 2 (second ridge drill)",
+     "to": "Nazca (49th drill hole)",
+     "sol_from": 4718,
+     "sol_to": 5050,
+     "route_m": 1195,
+     "straight_m": 1062,
+     "detour_ratio": 1.13,
+     "curiosity_waypoint_chain_m": 1817,
+     "route_cost": 891,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.982,
+      "CAUTION": 0.018,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.798,
+     "slope_mean_deg": 8.0,
+     "slope_max_deg": 22.3
+    },
+    {
+     "from": "Nazca (49th drill hole)",
+     "to": "Curiosity position, sol 5073 (latest in data)",
+     "sol_from": 5050,
+     "sol_to": 5073,
+     "route_m": 149,
+     "straight_m": 110,
+     "detour_ratio": 1.35,
+     "curiosity_waypoint_chain_m": 139,
+     "route_cost": 91,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 1.0,
+      "CAUTION": 0.0,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 1.0,
+     "slope_mean_deg": 9.9,
+     "slope_max_deg": 13.1
+    }
+   ]
+  },
+  "rover": {
+   "box": {
+    "UNKNOWN": 0.0054,
+    "GO": 0.5565,
+    "CAUTION": 0.3392,
+    "NO-GO": 0.0989
+   },
+   "box_before_rover_rule": {
+    "UNKNOWN": 0.0054,
+    "GO": 0.5576,
+    "CAUTION": 0.3382,
+    "NO-GO": 0.0988
+   },
+   "curiosity_path_before_rover_rule": {
+    "UNKNOWN": 0.0006,
+    "GO": 0.8555,
+    "CAUTION": 0.139,
+    "NO-GO": 0.0049
+   },
+   "curiosity_path": {
+    "UNKNOWN": 0.0,
+    "GO": 0.7971,
+    "CAUTION": 0.1957,
+    "NO-GO": 0.0072
+   },
+   "cells_changed_by_rover_rule": 907,
+   "connectivity": {
+    "passable_share": 0.9011,
+    "components": 676,
+    "largest_component_share_of_passable": 0.9888
+   },
+   "strictness_verdict": "OK: Curiosity's real path is 0.5% NO-GO before the rover rule (target <= 5 %)",
+   "strictness_table": {
+    "NO-GO >= 20 deg": {
+     "box": {
+      "UNKNOWN": 0.0049,
+      "GO": 0.5565,
+      "CAUTION": 0.1814,
+      "NO-GO": 0.2572
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1278,
+      "NO-GO": 0.0162
+     }
+    },
+    "NO-GO >= 25 deg": {
+     "box": {
+      "UNKNOWN": 0.0052,
+      "GO": 0.5565,
+      "CAUTION": 0.2726,
+      "NO-GO": 0.1658
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1343,
+      "NO-GO": 0.0097
+     }
+    },
+    "NO-GO >= 30 deg": {
+     "box": {
+      "UNKNOWN": 0.0054,
+      "GO": 0.5565,
+      "CAUTION": 0.3392,
+      "NO-GO": 0.0989
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.139,
+      "NO-GO": 0.0049
+     }
+    },
+    "NO-GO >= 35 deg": {
+     "box": {
+      "UNKNOWN": 0.0057,
+      "GO": 0.5565,
+      "CAUTION": 0.3856,
+      "NO-GO": 0.0523
+     },
+     "curiosity_path_before_rover_rule": {
+      "UNKNOWN": 0.0006,
+      "GO": 0.8555,
+      "CAUTION": 0.1419,
+      "NO-GO": 0.0021
+     }
+    }
+   },
+   "reachable_share_from_base": 0.891,
+   "legs": [
+    {
+     "from": "Sulfate unit to boxwork contact",
+     "to": "Altadena (first boxwork drill)",
+     "sol_from": 4534,
+     "sol_to": 4564,
+     "route_m": 271,
+     "straight_m": 216,
+     "detour_ratio": 1.25,
+     "curiosity_waypoint_chain_m": 237,
+     "route_cost": 205,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.987,
+      "CAUTION": 0.013,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.654,
+     "slope_mean_deg": 5.6,
+     "slope_max_deg": 13.1
+    },
+    {
+     "from": "Altadena (first boxwork drill)",
+     "to": "Monte Grande (boxwork hollow) / Valle de la Luna (44th drill hole)",
+     "sol_from": 4564,
+     "sol_to": 4693,
+     "route_m": 564,
+     "straight_m": 496,
+     "detour_ratio": 1.14,
+     "curiosity_waypoint_chain_m": 919,
+     "route_cost": 613,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.905,
+      "CAUTION": 0.095,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.393,
+     "slope_mean_deg": 7.6,
+     "slope_max_deg": 22.1
+    },
+    {
+     "from": "Monte Grande (boxwork hollow) / Valle de la Luna (44th drill hole)",
+     "to": "Nevado Sajama (ridge-top drill) / Nevado Sajama 2 (second ridge drill)",
+     "sol_from": 4693,
+     "sol_to": 4718,
+     "route_m": 10,
+     "straight_m": 10,
+     "detour_ratio": 1.01,
+     "curiosity_waypoint_chain_m": 12,
+     "route_cost": 31,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.0,
+      "CAUTION": 1.0,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 1.0,
+     "slope_mean_deg": 17.0,
+     "slope_max_deg": 19.1
+    },
+    {
+     "from": "Nevado Sajama (ridge-top drill) / Nevado Sajama 2 (second ridge drill)",
+     "to": "Nazca (49th drill hole)",
+     "sol_from": 4718,
+     "sol_to": 5050,
+     "route_m": 1195,
+     "straight_m": 1062,
+     "detour_ratio": 1.13,
+     "curiosity_waypoint_chain_m": 1817,
+     "route_cost": 891,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 0.982,
+      "CAUTION": 0.018,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 0.798,
+     "slope_mean_deg": 8.0,
+     "slope_max_deg": 22.3
+    },
+    {
+     "from": "Nazca (49th drill hole)",
+     "to": "Curiosity position, sol 5073 (latest in data)",
+     "sol_from": 5050,
+     "sol_to": 5073,
+     "route_m": 149,
+     "straight_m": 110,
+     "detour_ratio": 1.35,
+     "curiosity_waypoint_chain_m": 139,
+     "route_cost": 91,
+     "classes_on_route": {
+      "UNKNOWN": 0.0,
+      "GO": 1.0,
+      "CAUTION": 0.0,
+      "NO-GO": 0.0
+     },
+     "share_within_10m_of_curiosity_path": 1.0,
+     "slope_mean_deg": 9.9,
+     "slope_max_deg": 13.1
+    }
+   ]
+  }
+ },
+ "stops": [
+  {
+   "poi_id": "L5-0005",
+   "names": [
+    "Sulfate unit to boxwork contact"
+   ],
+   "sol": 4534,
+   "x": 8143539.443632538,
+   "y": -284377.33385073126
+  },
+  {
+   "poi_id": "L5-0006",
+   "names": [
+    "Altadena (first boxwork drill)"
+   ],
+   "sol": 4564,
+   "x": 8143367.861165619,
+   "y": -284509.49271632923
+  },
+  {
+   "poi_id": "L5-0007",
+   "names": [
+    "Monte Grande (boxwork hollow)",
+    "Valle de la Luna (44th drill hole)"
+   ],
+   "sol": 4693,
+   "x": 8143219.312846156,
+   "y": -284983.2119497067
+  },
+  {
+   "poi_id": "L5-0009",
+   "names": [
+    "Nevado Sajama (ridge-top drill)",
+    "Nevado Sajama 2 (second ridge drill)"
+   ],
+   "sol": 4718,
+   "x": 8143217.4634755915,
+   "y": -284993.1932160226
+  },
+  {
+   "poi_id": "L5-0011",
+   "names": [
+    "Nazca (49th drill hole)"
+   ],
+   "sol": 5050,
+   "x": 8143609.251443811,
+   "y": -285980.54370760784
+  },
+  {
+   "poi_id": "L5-0012",
+   "names": [
+    "Curiosity position, sol 5073 (latest in data)"
+   ],
+   "sol": 5073,
+   "x": 8143684.660714002,
+   "y": -286061.0719406751
+  }
+ ],
+ "note": "Curiosity waypoint chain = straight lines between end-of-drive waypoints, so it is SHORTER than what the rover actually drove. The rover also went to targets we do not route to. Use it as a sanity check, not a race."
+}
