@@ -25,7 +25,7 @@ function sampler(src, bounds) {
   });
 }
 
-export default function Terrain3D({ stops, route, picks = [], pathPts, pathUnsure, selected, onSelect, onPick, colourFor, onFail }) {
+export default function Terrain3D({ stops, route, picks = [], pathPts, pathUnsure, hoverCoord = null, selected, onSelect, onPick, colourFor, onFail }) {
   const cv = useRef(null), hits = useRef({ pins: [], cells: [] }), drag = useRef(null);
   const [g, setG] = useState(null);
   const [skin, setSkin] = useState("gonogo");
@@ -116,6 +116,22 @@ export default function Terrain3D({ stops, route, picks = [], pathPts, pathUnsur
       if (sel) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y - h, 13, 0, 7); ctx.stroke(); }
     });
     hits.current.pins = pins.map(({ s, x, y }) => ({ s, x, y: y - (selected === s ? 26 : 16) }));
+
+    // Profile hover location in 3D
+    if (hoverCoord && hoverCoord.lat != null) {
+      const hp = P(hoverCoord.lon, hoverCoord.lat, hoverCoord.elev ?? Z(hoverCoord.lat, hoverCoord.lon));
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 3;
+      ctx.fillStyle = hoverCoord.color || "#3cff8f";
+      ctx.beginPath();
+      ctx.moveTo(hp[0], hp[1]);
+      ctx.lineTo(hp[0], hp[1] - 24);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(hp[0], hp[1] - 24, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+    }
     // north arrow + text
     const nA = P(lon0, lat0 + 0.004, zmax), nB = P(lon0, lat0, zmax);
     const ang = Math.atan2(nA[1] - nB[1], nA[0] - nB[0]);
@@ -124,7 +140,7 @@ export default function Terrain3D({ stops, route, picks = [], pathPts, pathUnsur
     ctx.restore(); ctx.fillStyle = "#fff"; ctx.font = "bold 13px system-ui"; ctx.fillText("N", W - 54, 92);
     ctx.fillStyle = "#eee"; ctx.font = "13px system-ui";
     ctx.fillText(`USGS MSL Gale DEM 1 m · ${SKINS[skin].label} · heights ×${exag} · ${Math.round(zmax - zmin)} m low to high`, 14, H - 14);
-  }, [g, mesh, stops, route, picks, pathPts, pathUnsure, selected, view, colourFor, skin]);
+  }, [g, mesh, stops, route, picks, pathPts, pathUnsure, hoverCoord, selected, view, colourFor, skin]);
 
   const pos = (e) => { const r = cv.current.getBoundingClientRect(); return [((e.clientX - r.left) / r.width) * cv.current.width, ((e.clientY - r.top) / r.height) * cv.current.height]; };
   if (!g) return <p className="muted">Loading 3D terrain…</p>;

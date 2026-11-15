@@ -253,3 +253,85 @@ export function safePath(geo, stops, a, b) {
   pts[0] = { lat: a.lat, lon: a.lon }; pts[pts.length - 1] = { lat: b.lat, lon: b.lon };
   return pts;
 }
+
+// ── Multi-Waypoint Traverse & Abort Corridors ───────────────────────────
+export function multiWaypointRoute(geo, stops, waypoints, profile = "safest") {
+  if (!waypoints || waypoints.length < 2) return null;
+  const C = grid(geo, stops), P = PROFILES[profile] || PROFILES.safest, wt = weightFn(C, P);
+  const allCells = [];
+  const legStats = [];
+
+  for (let k = 0; k < waypoints.length - 1; k++) {
+    const from = waypoints[k], to = waypoints[k + 1];
+    const cells = dijkstra(C, wt, from, to);
+    if (!cells) {
+      return { error: `No safe path between W${k} (${from.label || "point"}) and W${k + 1} (${to.label || "point"}). Terrain is blocked by steep slopes (≥ 25°) or deep sand.` };
+    }
+    const legDesc = describe(C, cells, from, to, stops);
+    legStats.push({ fromIndex: k, toIndex: k + 1, ...legDesc });
+    if (k === 0) allCells.push(...cells);
+    else allCells.push(...cells.slice(1));
+  }
+
+  const stitched = describe(C, allCells, waypoints[0], waypoints[waypoints.length - 1], stops);
+  const goPct = stitched.len > 0 ? Math.round(100 * (1 - (stitched.caution + stitched.unknown) / stitched.len)) : 100;
+  const warn = [];
+  if (stitched.caution > 20) warn.push(`${Math.round(stitched.caution)} m on CAUTION ground (15–25° slope or rough)`);
+  if (stitched.unknown > 5) warn.push(`${Math.round(stitched.unknown)} m on UNKNOWN ground`);
+  if (stitched.sandNear > 5) warn.push(`${Math.round(stitched.sandNear)} m near sand our AI saw`);
+
+  return {
+    id: "multi-traverse",
+    label: `Multi-Stop Traverse (${waypoints.length} waypoints)`,
+    colour: P.colour || "#3cff8f",
+    tags: ["custom traverse", `${waypoints.length} stops`],
+    goPct,
+    warn,
+    legStats,
+    ...stitched,
+  };
+}
+
+export function calculateAbortCorridors(geo, stops, waypoints, stitchedRoute, evaMin = 240) {
+  if (!waypoints || waypoints.length < 2 || !stitchedRoute?.pts) return null;
+  const C = grid(geo, stops), safeW = weightFn(C, PROFILES.safest);
+  const base = waypoints[0];
+  const abortPaths = [];
+  const O2_LIMIT_MIN = Math.min(evaMin, 8 * 60 - 30); // 8h - 30 min reserve
+  let pnrIndex = null;
+
+  for (let k = 1; k < waypoints.length; k++) {
+    const wp = waypoints[k];
+    const cells = dijkstra(C, safeW, wp, base);
+    if (!cells) continue;
+    const desc = describe(C, cells, wp, base, stops);
+
+    // Calculate outbound time to waypoint k
+    let outDist = 0;
+    for (let j = 0; j < k; j++) {
+      outDist += dist(waypoints[j], waypoints[j + 1]);
+    }
+    const outMin = outDist / SPEED / 60;
+    const workMin = (k - 1) * 15; // 15 min at each intermediate stop
+    const abortMin = desc.len / SPEED / 60;
+    const totalMinAtAbort = outMin + workMin + abortMin;
+    const pastPNR = totalMinAtAbort > O2_LIMIT_MIN;
+
+    if (pastPNR && pnrIndex === null) {
+      pnrIndex = k;
+    }
+
+    abortPaths.push({
+      fromIndex: k,
+      fromPt: wp,
+      pts: desc.pts,
+      dist: desc.len,
+      minutes: abortMin,
+      totalMinAtAbort,
+      pastPNR,
+    });
+  }
+
+  return { abortPaths, pnrIndex };
+}
+
