@@ -62,6 +62,7 @@ The path median is 8.2°. Curiosity chose gentle ground through steep terrain, w
 **Viewer:**
 - three.js 0.160.0.
 - Controls: a profile switch (crew on foot or rover), a layer menu built from `layers.json`, exaggeration 1–5×, and toggles for routes, path, POIs, EVA stops and 2 m detail.
+- Points of interest (Layer 5): the 8 in-box POIs as 5 numbered pins, coloured by category, each with a ring draped on the terrain at the exact spot. POIs closer than 25 m share one pin: Monte Grande, Valle de la Luna, Nevado Sajama and Nevado Sajama 2 are all within 6 m. A list in the left panel flies the camera to a pin. A pin's card shows every POI in it, with its NASA source. Each label moves to the side of its pin that is clear, every frame.
 - Hover readout: lon/lat, elevation and class.
 - A legend with each layer's parameter, rule, basis, sources and shares (box and Curiosity's path).
 - A simulated live-gate panel that tints the map: red for NO-GO, grey for stale data.

@@ -25,6 +25,7 @@ Anything not measured or published is listed here. Change a value in the script 
 | A19 | Suit O2 left after the walk back: NO-GO < **30 min**, CAUTION < **60 min** | live gates | 30 min = the team's reserve that is never planned into (repo `ASSUMPTIONS.md`, after NASA ISS EVA planning); 60 min = our ASSUMPTION | live_gates_rules.json |
 | A20 | Live reading stale after **6 h** → grey | live gates | Team choice (Team Plan "live-data expiry") | live_gates_rules.json |
 | A21 | Vertical exaggeration **2×** by default (range 1–5×) | 3D display only | Readability; all analysis uses true heights | 30 |
+| A22 | POIs closer than **25 m** share one numbered pin; pin colours by category | 3D display and preview only | 4 POIs lie within 6 m and their labels would overlap; the POI data are unchanged | 60 |
 
 ## Consistency with the team repo `ASSUMPTIONS.md`
 | Item | Team repo | This map | Why |

@@ -10,7 +10,7 @@ The map combines three readings of the same ground:
 |---|---|---|
 | AI terrain reading | What is the ground made of (soil, bedrock, sand, big rock)? From Curiosity's own Navcam photos. | [`Ai_model/`](Ai_model/) |
 | Elevation and slope | How steep is it? 1 m elevation model in the rover's own frame. | [`Map_layer/`](Map_layer/) |
-| GIS map, GO/NO-GO and 3D | Where can we walk? All five map layers in QGIS, one GO/NO-GO layer per input, a combined GO/NO-GO map with routes, and a 3D viewer. | [`Map_layer/martian_map/`](Map_layer/martian_map/) |
+| GIS map, GO/NO-GO and 3D | Where can we walk? All five map layers in QGIS, one GO/NO-GO layer per input, a combined GO/NO-GO map with routes, and a 3D viewer with the points of interest as numbered pins. | [`Map_layer/martian_map/`](Map_layer/martian_map/) |
 | Scout drone (simulated) | What lies between the stops, where no photo exists? A laser-ranging drone flies ahead. | [`Drone/`](Drone/) |
 
 The [`Application/`](Application/) folder is the tablet and helmet app that puts these together for the astronaut.
