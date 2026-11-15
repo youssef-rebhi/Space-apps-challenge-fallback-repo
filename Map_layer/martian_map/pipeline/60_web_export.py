@@ -10,7 +10,7 @@ Writes into web/:
   docs/preview_*.png ..... quick-look images (combined map + routes) for slides and review
 Run (from martian_map/): .venv/Scripts/python.exe -I -X utf8 pipeline/60_web_export.py
 """
-import json, math, os, shutil, sys
+import json, math, os, re, shutil, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import numpy as np, rasterio, geopandas as gpd
 from PIL import Image, ImageDraw, ImageFont
@@ -164,6 +164,32 @@ for i, r in enumerate(eva.itertuples()):
                             "sand": r.sand_pct, "bigrock": r.bigrock_pct, "soil": r.soil_pct, "bedrock": r.bedrock_pct,
                             "certainty": k["certainty"], "team_class": k["team_class"]})
 ov["base"] = next(p for p in ov["pois"] if p["sol"] == 5073)
+
+# ---------- POI layer for the 3D map: POIs closer than SITE_M share one numbered pin (display choice, not data)
+SITE_M = 25.0
+ov["poi_categories"] = {
+    "rover_position": {"label": "Base: Curiosity's latest position", "color": "#ff9e3d"},
+    "drill_site": {"label": "Drill site", "color": "#ff5fd2"},
+    "science_target": {"label": "Science target", "color": "#b388ff"},
+    "discovery": {"label": "Geologic contact / discovery", "color": "#4da3ff"},
+}
+sites = []
+for p in sorted(ov["pois"], key=lambda q: (q["sol"], q["poi_id"])):
+    s = next((s for s in sites if math.hypot(s["_x0"] - p["x"], s["_y0"] - p["y"]) <= SITE_M), None)
+    if s is None:
+        s = {"_x0": p["x"], "_y0": p["y"], "members": []}; sites.append(s)
+    s["members"].append(p)
+ov["poi_sites"] = []
+for i, s in enumerate(sites, 1):
+    m = s["members"]; cats = [q["category"] for q in m]
+    cat = "rover_position" if "rover_position" in cats else max(dict.fromkeys(cats), key=cats.count)
+    x, y = float(np.mean([q["x"] for q in m])), float(np.mean([q["y"] for q in m]))
+    sols = sorted({q["sol"] for q in m})
+    ov["poi_sites"].append({
+        "site": i, "category": cat, "x": round(x, 2), "y": round(y, 2), "z": float(local([x + L], [y + B])[2][0]),
+        "spread_m": round(max(math.hypot(q["x"] - x, q["y"] - y) for q in m), 1),
+        "names": [re.sub(r",? sol \d+$", "", q["name"].split(" (")[0]) for q in m], "poi_ids": [q["poi_id"] for q in m],
+        "sol_label": f"sol {sols[0]}" if len(sols) == 1 else f"sols {sols[0]}–{sols[-1]}"})
 json.dump(ov, open(os.path.join(WEB, "overlays.json"), "w"), separators=(",", ":"))
 
 json.dump({"terrain": "terrain/terrain.json", "overlays": "overlays.json", "gates": "data/live_gates.json",
@@ -185,6 +211,9 @@ for pid in ("foot", "rover"):
     out[f"combined_{pid}"] = read(os.path.join(GONOGO, f"combined_{pid}.tif"))[np.ix_(rows, cols)].tolist()
 for name in ("slope_foot", "roughness", "terrain", "groundtruth"):
     out[f"conv_{name}"] = read(os.path.join(GONOGO, f"conv_{name}.tif"))[np.ix_(rows, cols)].tolist()
+out["poi_sites"] = [{"site": s["site"], "x_m": s["x"], "y_m": s["y"], "z": s["z"], "category": s["category"],
+                     "color": ov["poi_categories"][s["category"]]["color"], "names": s["names"], "sol_label": s["sol_label"]}
+                    for s in ov["poi_sites"]]
 json.dump(out, open(os.path.join(WEB, "plotly", "gonogo_300.json"), "w"), separators=(",", ":"))
 
 # ---------- quick-look previews (combined over photo + routes + Curiosity path + POIs)
@@ -198,10 +227,24 @@ for pid in ("foot",):
     for r in ov["routes"]:
         if r["profile"] == pid:
             dr.line([to_px(p[0], p[1]) for p in r["xyz"]], fill=(0, 220, 255), width=4)
-    for p in ov["pois"]:
-        cx, cy = to_px(p["x"], p["y"]); dr.ellipse([cx - 7, cy - 7, cx + 7, cy + 7], outline=(0, 0, 0), fill=(255, 255, 255), width=2)
+    try:
+        font = ImageFont.truetype("arialbd.ttf", 15)
+    except OSError:
+        font = ImageFont.load_default()
+    for s in ov["poi_sites"]:
+        cx, cy = to_px(s["x"], s["y"]); col = ov["poi_categories"][s["category"]]["color"]
+        dr.ellipse([cx - 11, cy - 11, cx + 11, cy + 11], outline=(0, 0, 0), fill=col, width=2)
+        dr.text((cx, cy), str(s["site"]), fill=(0, 0, 0), font=font, anchor="mm")
+        lines = (["BASE: " + s["names"][0]] if s["category"] == "rover_position" else list(s["names"])) + [s["sol_label"]]
+        crowded = any(o is not s and o["x"] > s["x"] and math.hypot(o["x"] - s["x"], o["y"] - s["y"]) < 150 for o in ov["poi_sites"])
+        w = max(dr.textlength(t, font=font) for t in lines); right = cx + 15 + w < im.width - 6 and not crowded
+        for j, t in enumerate(lines):
+            dr.text((cx + 15 if right else cx - 15, cy + (j - (len(lines) - 1) / 2) * 18), t, font=font, anchor="lm" if right else "rm",
+                    fill=(255, 255, 255) if j < len(lines) - 1 else (215, 215, 215), stroke_width=3, stroke_fill=(0, 0, 0))
     dr.rectangle([0, 0, im.width, 34], fill=(0, 0, 0))
-    dr.text((8, 9), f"Combined GO/NO-GO ({pid}) | cyan = planned routes | white = Curiosity's path | dots = Layer 5 POIs", fill=(255, 255, 255))
+    dr.text((8, 9), f"Combined GO/NO-GO ({pid}) | cyan = planned routes | white = Curiosity's path | numbered pins = Layer 5 POIs",
+            fill=(255, 255, 255))
     im.save(os.path.join(MM, "docs", "img", f"preview_combined_{pid}.jpg"), quality=88)
 print(len(layers), "layers;", {l["id"]: l["file"] for l in layers})
 print("overlays:", len(ov["routes"]), "routes,", len(ov["curiosity_path"]), "path pieces,", len(ov["pois"]), "POIs,", len(ov["eva_stops"]), "EVA stops")
+print("POI sites:", [(s["site"], s["category"], s["names"], s["sol_label"], s["spread_m"]) for s in ov["poi_sites"]])

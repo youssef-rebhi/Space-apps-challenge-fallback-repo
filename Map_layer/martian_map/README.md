@@ -21,7 +21,7 @@ Every number in this workspace either comes from a NASA, USGS or published sourc
 | 2a. 3D map | Heightmaps (2 m and 4 m) plus photo and hillshade textures, for three.js and Plotly | `web/terrain/`, `web/plotly/terrain_300.json` |
 | 2b. GO/NO-GO conversion layers | One 4-colour layer per input (slope, roughness, terrain units, ground truth) plus certainty. Each is labelled with its parameter. Radiation and weather are **live-sensor gates**, not maps. | `gonogo/conv_*.tif`, `gonogo/live_gates.json` |
 | 3. Combined GO/NO-GO map | Worst-of rule, calibrated on Curiosity's real path, plus least-cost routes between the POIs and a reach map from the base | `gonogo/combined_*.tif`, `gonogo/routes.gpkg`, `gonogo/calibration/combined_report.json` |
-| 4. 3D colored map | The combined map draped on the 3D terrain (switchable in the viewer) | `web/textures/combined_over_photo_*.jpg`, `web/viewer3d/index.html` |
+| 4. 3D colored map | The combined map draped on the 3D terrain (switchable in the viewer), with the Layer 5 points of interest as numbered pins | `web/textures/combined_over_photo_*.jpg`, `web/viewer3d/index.html` |
 
 ## Which layer feeds what
 | Layer | 3D | GO/NO-GO | Why |

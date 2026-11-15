@@ -51,6 +51,7 @@ The GIS map uses the team values above as they are: the stop colours (sand > 30 
 | Strictness check | Curiosity's own path must be ≤ 5 % red on the orbital data (result: 1.0 % on foot, 0.5 % rover) | `50_combined_routes.py` |
 | Live gates for the whole map | radiation caution > 2×, NO-GO > 10× the 0.67 mSv/day baseline; career dose 80 % / 95 % of 600 mSv; dust τ 1 / 2; wind 10 / 20 m/s; O2 after the walk back caution < 60 min, NO-GO < 30 min; reading stale after 6 h | `pipeline/live_gates_rules.json` |
 | 3D view height exaggeration | 2× by default (display only) | `web/viewer3d/index.html` |
+| Points of interest on the 3D map | POIs closer than 25 m share one numbered pin (display only; four drill-site POIs lie within 6 m) | `pipeline/60_web_export.py` |
 
 ## Route planner (A → B options)
 
