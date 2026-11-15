@@ -2,6 +2,7 @@ import { execFileSync } from "child_process";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { copyMap3d } from "./scripts/map3d.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const esbuildPath = path.join(__dirname, "node_modules", "esbuild", "bin", "esbuild");
@@ -25,4 +26,6 @@ if (fs.existsSync(generatedCss)) {
   fs.copyFileSync(generatedCss, outCss);
   console.log("Synced CSS bundle to index-BPlUwsGe.css");
 }
+// the 3D layer map shown in the tablet (copied from Map_layer/martian_map/web, see scripts/map3d.mjs)
+copyMap3d(path.join(__dirname, "..", "firmground-app-built", "map3d"));
 console.log("Build complete.");

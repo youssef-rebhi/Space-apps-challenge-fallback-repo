@@ -12,7 +12,13 @@
           terrain units (L3), ground truth (L4 path + L5 EVA stops); 3D map -> L1 photo + L2 elevation (pipeline/30_terrain_package.py)
   Reads only existing files: ../layers.json, ../terrain/terrain.json, ../terrain/height_4m.bin and the textures listed in layers.json.
   Gap, see-through, relief height and motion are display settings, not data.
-  URL options: ?step=0|1|2  &profile=foot|rover  &theme=dark|light  &ui=0  &caption=0  &autoplay=1
+  URL options: ?step=0|1|2  &profile=foot|rover  &theme=dark|light  &ui=0  &caption=0  &autoplay=1  &exag=1..5 (relief height, display only)
+  Firm Ground app (Application/fg-app, shown inside the tablet):
+    &embed=1                 no panels, no caption, clicks do not step; the app drives the steps with postMessage
+    &route=lat,lon;lat,lon…  draws that route (and A / B pins) on the 3D map and on the 2D map sheets
+    &rc=3cff8f               route colour (hex, no #)
+    &base=1                  with a section: the flat 2D colored map of the area around it is drawn under the 3D piece
+  postMessage (same origin, {fg3d: 1, type}): app -> page 'next' | 'step' (step) | 'reset';  page -> app 'ready' | 'state' (step, caption) | 'error'
 -->
 <style>
 :root{--bg1:#1c2029;--bg2:#08090c;--panel:rgba(20,22,28,.9);--tagbg:rgba(14,16,21,.82);--line:#2c3038;--text:#e8e6e3;--muted:#9aa0a6;--accent:#00dcff;
@@ -69,6 +75,12 @@ border-left:3px solid var(--fam);cursor:pointer;pointer-events:auto;transition:o
 @media (max-width:900px){#settings{width:calc(100% - 24px)}#cap{top:auto;bottom:86px;width:calc(100vw - 24px)}#capMain{font-size:15px}#foot{display:none}
 #info{left:12px;width:auto;top:auto;bottom:80px;max-height:45vh}.tag{max-width:104px;padding:3px 6px;left:10px}.tag .s,.chips{display:none}
 .tag .t{white-space:normal;font-size:11px;line-height:1.25}}
+/* inside the Firm Ground app (?embed=1): app colours, no panels */
+body.embed{--bg1:#2b2119;--bg2:#0d0a08;--tagbg:rgba(18,14,11,.84);--line:#3a3029}
+body.embed #loading{font-size:13px;letter-spacing:.02em}
+.pinAB{width:22px;height:22px;margin-top:-18px;border-radius:50%;display:grid;place-items:center;font:800 12px system-ui,sans-serif;color:#000;
+border:2px solid #000;box-shadow:0 1px 6px #000c;pointer-events:none}
+.pinAB.a{background:#fff}.pinAB.b{background:#ffd84d}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head>
@@ -103,13 +115,19 @@ border-left:3px solid var(--fam);cursor:pointer;pointer-events:auto;transition:o
 import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
 import {CSS2DRenderer, CSS2DObject} from 'three/addons/renderers/CSS2DRenderer.js';
+import {Line2} from 'three/addons/lines/Line2.js';
+import {LineMaterial} from 'three/addons/lines/LineMaterial.js';
+import {LineGeometry} from 'three/addons/lines/LineGeometry.js';
 import * as SEC from '../lib/sections.js';
 
 const BASE = '../';
 const $ = s => document.querySelector(s);
 const Q = new URLSearchParams(location.search);
+const EMBED = Q.get('embed') === '1';
+if (EMBED) { document.body.classList.add('embed'); $('#loading').textContent = 'Loading the 3D map…'; }
+const post = m => { if (EMBED && parent !== window) parent.postMessage({fg3d: 1, ...m}, location.origin); };   // to the Firm Ground app
 const J = async p => { const r = await fetch(BASE + p); if (!r.ok) throw new Error(p + ' ' + r.status); return r.json(); };
-const fail = e => { $('#loading').textContent = 'Could not load: ' + e.message + '. Serve the web/ folder (see README).'; throw e; };
+const fail = e => { $('#loading').textContent = 'Could not load: ' + e.message + '. Serve the web/ folder (see README).'; post({type: 'error', msg: e.message}); throw e; };
 
 const manifest = await J('layers.json').catch(fail);
 const meta = await J(manifest.terrain).catch(fail);
@@ -135,11 +153,32 @@ if (SECT) { ZMIN = Infinity; ZMAX = -Infinity; for (let r = R0; r <= R1; r++) fo
 const ZMID = (ZMIN + ZMAX) / 2;
 let northMean = 0; for (let c = C0; c <= C1; c++) northMean += heights[R0 * hm.cols + c] / (C1 - C0 + 1);   // top row of the sheet = north edge
 
+// ---------------------------------------------------------------- app extras: a route on the map, the 2D map under a section
+const FRAME = SEC.makeFrame(meta);
+function hAt(x, yN) {                                        // height (m) at x m from the west edge, yN m from the south edge: bilinear on the heightmap
+  const c = cl(x / CW - 0.5, 0, hm.cols - 1), r = cl((HM - yN) / CH - 0.5, 0, hm.rows - 1);
+  const c0 = Math.floor(c), r0 = Math.floor(r), c1 = Math.min(c0 + 1, hm.cols - 1), r1 = Math.min(r0 + 1, hm.rows - 1), fc = c - c0, fr = r - r0, H = (a, b) => heights[a * hm.cols + b];
+  const z = (H(r0, c0) * (1 - fc) + H(r0, c1) * fc) * (1 - fr) + (H(r1, c0) * (1 - fc) + H(r1, c1) * fc) * fr;
+  return Number.isFinite(z) ? z : ZMID;
+}
+const ROUTE = (() => {                                       // [[x, yN], ...] local metres, only points inside the box
+  const t = Q.get('route'); if (!t) return null;
+  const P = t.split(/[;|]/).filter(Boolean).map(s => s.split(',').map(Number)).filter(p => p.length === 2 && p.every(Number.isFinite))
+    .map(([lat, lon]) => FRAME.toXY({lat, lon})).filter(([x, y]) => FRAME.inBox(x, y));
+  return P.length > 1 ? P : null;
+})();
+const ROUTE_COL = /^[0-9a-f]{6}$/i.test(Q.get('rc') || '') ? parseInt(Q.get('rc'), 16) : 0x3cff8f;
+const BASE_ON = !!SECT && Q.get('base') === '1';
+const BASEX = (() => {                                       // the 2D map under a section: the section plus one section size around it, inside the box
+  const pad = Math.max(VW, VH) * 0.6, w0 = VCX - VW / 2, w1 = VCX + VW / 2, n0 = VCZ - VH / 2, n1 = VCZ + VH / 2;
+  return {x0: Math.max(0, w0 - pad) - VCX, x1: Math.min(WM, w1 + pad) - VCX, z0: Math.max(0, n0 - pad) - VCZ, z1: Math.min(HM, n1 + pad) - VCZ};
+})();
+
 // ---------------------------------------------------------------- settings (display only)
 const S = {
   step: Math.max(0, Math.min(2, parseInt(Q.get('step') || '0', 10) || 0)),
   profile: Q.get('profile') === 'rover' ? 'rover' : 'foot',
-  gap: SECT ? cl(Math.round(380 * Math.max(VW, VH) / Math.max(WM, HM) / 10) * 10, 60, 1200) : 380, see: 0.85, exag: 1, faint: true, labels: true, float: true,   // A36: the gap scales with a section
+  gap: SECT ? cl(Math.round(380 * Math.max(VW, VH) / Math.max(WM, HM) / 10) * 10, 60, 1200) : 380, see: 0.85, exag: cl(+Q.get('exag') || 1, 1, 5), faint: true, labels: true, float: true,   // A36: the gap scales with a section
   auto: Q.get('autoplay') === '1', theme: Q.get('theme') === 'light' ? 'light' : 'dark',
 };
 const FAINT_ALPHA = 0.1, SKIRT = 30, D = 1.2;               // display only (docs/ASSUMPTIONS.md A23-A30): faint grey alpha, slab thickness (m), split time (s)
@@ -292,6 +331,46 @@ function famLabel(title, sub, cssVar) {
   w.innerHTML = `<div class="fam" style="--famc:var(${cssVar})"><b>${title}</b><span>${sub}</span></div>`;
   const o = new CSS2DObject(w); scene.add(o); return o;
 }
+// the flat 2D colored map under a section (?base=1), its footprint and four guide lines up to the 3D piece
+const BS = {y: 0, yDisp: 0};
+let baseMesh = null, guides = null;
+if (BASE_ON) {
+  const {x0, x1, z0, z1} = BASEX, g = new THREE.BufferGeometry(), P = [], UV = [], E = [];
+  for (const [x, z, ex, ez] of [[x0, z0, 0, 0], [x1, z0, 1, 0], [x0, z1, 0, 1], [x1, z1, 1, 1]]) { P.push(x, 0, z); UV.push((x + VCX) / WM, 1 - (z + VCZ) / HM); E.push(ex, ez); }
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P, 3)); g.setAttribute('uv', new THREE.Float32BufferAttribute(UV, 2));
+  g.setAttribute('eg', new THREE.Float32BufferAttribute(E, 2)); g.setIndex([0, 2, 1, 1, 2, 3]);
+  const fade = new THREE.Vector2(Math.min(0.2, 0.6 * VW / (x1 - x0)), Math.min(0.2, 0.6 * VH / (z1 - z0)));
+  baseMesh = new THREE.Mesh(g, new THREE.ShaderMaterial({transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    uniforms: {map: {value: null}, st: {value: new THREE.Vector4(1, 1, 0, 0)}, baseY: {value: 0}, fade: {value: fade}, opacity: {value: 1}},
+    vertexShader: `attribute vec2 eg; uniform float baseY; varying vec2 vUv; varying vec2 vE;
+      void main() { vUv = uv; vE = eg; vec3 p = position; p.y = baseY; gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0); }`,
+    fragmentShader: `uniform sampler2D map; uniform vec4 st; uniform vec2 fade; uniform float opacity; varying vec2 vUv; varying vec2 vE;
+      void main() { vec4 c = texture2D(map, vUv * st.xy + st.zw); vec2 d = min(vE, 1.0 - vE) / fade;
+        gl_FragColor = vec4(c.rgb * 0.8, opacity * smoothstep(0.0, 1.0, min(d.x, d.y))); }`}));
+  baseMesh.frustumCulled = false; baseMesh.renderOrder = 1; scene.add(baseMesh);
+  guides = new THREE.LineSegments(new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(new Float32Array(16 * 3), 3)),
+    new THREE.LineBasicMaterial({color: 0xffffff, transparent: true, opacity: 0.45, depthWrite: false}));
+  guides.frustumCulled = false; guides.renderOrder = 2; scene.add(guides);
+}
+// the route: one dark casing + one coloured line per sheet it rides on; heights follow the sheet (scale.y = relief factor)
+const LIFT = Math.max(1.5, Math.max(VW, VH) * 0.003), routeLines = [], lineMats = [];
+let pinA = null, pinB = null, routePos = null;
+if (ROUTE) {
+  routePos = [];
+  for (let i = 0; i < ROUTE.length; i++) {                  // densify so the line follows the ground between points
+    const [xa, ya] = ROUTE[i], [xb, yb] = ROUTE[Math.min(i + 1, ROUTE.length - 1)], n = i === ROUTE.length - 1 ? 1 : Math.max(1, Math.ceil(Math.hypot(xb - xa, yb - ya) / (CW * 1.5)));
+    for (let k = 0; k < n; k++) { const x = xa + (xb - xa) * k / n, y = ya + (yb - ya) * k / n; routePos.push(x - VCX, hAt(x, y) - ZMID, (HM - y) - VCZ); }
+  }
+  const geo = new LineGeometry(); geo.setPositions(routePos);
+  const mk = (color, width, opacity) => { const m = new LineMaterial({color, linewidth: width, transparent: true, opacity, depthWrite: false}); lineMats.push(m); return m; };
+  for (const key of ['elev', 'comb', 'gt', ...(BASE_ON ? ['base'] : [])]) {
+    const casing = new Line2(geo, mk(0x000000, 7, 0.6)), line = new Line2(geo, mk(ROUTE_COL, 3.5, 1));
+    for (const o of [casing, line]) { o.frustumCulled = false; scene.add(o); }
+    routeLines.push({key, casing, line});
+  }
+  const pin = (t, cls) => { const el = document.createElement('div'); el.className = 'pinAB ' + cls; el.textContent = t; const o = new CSS2DObject(el); scene.add(o); return o; };
+  pinA = pin('A', 'a'); pinB = pin('B', 'b');
+}
 const fam2d = famLabel('GO / NO-GO inputs', 'together they make the 2D colored map', '--fam2d');
 const fam3d = famLabel('Terrain shape and look', 'together they make the plain 3D map', '--fam3d');
 const northEl = document.createElement('div'); northEl.className = 'north'; northEl.textContent = 'N';
@@ -306,11 +385,17 @@ function layout(order) {                                     // stack bottom -> 
     if (i === 0) bottom = -half - (o.key === 'elev' ? SKIRT : 0);
     ys[o.key] = y; top = y + half;
   });
+  if (BASE_ON) { ys.base = bottom - Math.max(S.gap * 1.2, R * 0.5); bottom = ys.base; }   // the 2D map sits one gap under the 3D piece
   const c = (top + bottom) / 2;
   for (const k in ys) ys[k] -= c;
   return {ys, height: top - bottom};
 }
 function targets(step) {
+  const r = targets0(step);
+  if (BASE_ON) r.T.base = {y: r.ys.base};
+  return r;
+}
+function targets0(step) {
   const T = {}, op = S.see;
   if (step === 0) {
     const {ys, height} = layout([{key: 'elev', flat: 0}]);
@@ -318,7 +403,7 @@ function targets(step) {
     T.photo = {y: ys.elev, flat: 0, op: 0, tex: 'photo', lit: 1};
     T.comb = {y: ys.elev, flat: 0, op: 0, tex: 'colored', lit: 1};
     for (const k of KIDS) T[k] = {y: ys.elev, flat: 1, op: 0, tex: 'combined', lit: 0};
-    return {T, height};
+    return {T, height, ys};
   }
   if (step === 1) {
     const {ys, height} = layout([{key: 'elev', flat: 0}, {key: 'comb', flat: 1}]);
@@ -326,14 +411,14 @@ function targets(step) {
     T.photo = {y: ys.elev, flat: 0, op: 0, tex: 'photo', lit: 1};
     T.comb = {y: ys.comb, flat: 1, op, tex: 'combined', lit: 1};
     for (const k of KIDS) T[k] = {y: ys.comb, flat: 1, op: 0, tex: 'combined', lit: 0};
-    return {T, height};
+    return {T, height, ys};
   }
   const {ys, height} = layout([{key: 'elev', flat: 0}, {key: 'photo', flat: 1}, ...KIDS.map(k => ({key: k, flat: 1}))]);
   T.elev = {y: ys.elev, flat: 0, op: 1, tex: 'bare', lit: 1};
   T.photo = {y: ys.photo, flat: 1, op, tex: 'photo', lit: 1};
   T.comb = {y: (ys.slope + ys.gt) / 2, flat: 1, op: 0, tex: 'combined', lit: 1};
   for (const k of KIDS) T[k] = {y: ys[k], flat: 1, op, tex: k, lit: 0};
-  return {T, height};
+  return {T, height, ys};
 }
 
 // ---------------------------------------------------------------- motion
@@ -357,16 +442,21 @@ function fitDistance(height) {                               // smallest camera 
     _p.set(x, y, z); const k = _p.dot(_dir);
     d = Math.max(d, k + Math.abs(_p.dot(_rt)) / (view.mh * ht), k + Math.abs(_p.dot(_up)) / (view.mv * vt));
   }
+  if (BASE_ON) for (const x of [BASEX.x0, BASEX.x1]) for (const z of [BASEX.z0, BASEX.z1]) {   // the 2D map: its faded rim may leave the screen
+    _p.set(x * 0.5, -height / 2, z * 0.5); const k = _p.dot(_dir);
+    d = Math.max(d, k + Math.abs(_p.dot(_rt)) / (view.mh * ht), k + Math.abs(_p.dot(_up)) / (view.mv * vt));
+  }
   return d * 1.03;
 }
 function setInstant(step) {
   anim = null; queue = []; S.step = step;
   const {T, height} = targets(step);
   for (const s of sheets) { const t = T[s.key]; Object.assign(s, {y: t.y, yDisp: t.y, flat: t.flat, op: t.op, lit: t.lit, texA: t.tex, texB: t.tex, mix: 0}); }
+  if (T.base) BS.y = BS.yDisp = T.base.y;
   desiredDist = fitDistance(height); floatAmp = 0; updateText();
 }
 function startTransition(step) {
-  const dir = Math.sign(step - S.step) || 1, {T, height} = targets(step), from = {};
+  const dir = Math.sign(step - S.step) || 1, {T, height} = targets(step), from = {base: BS.yDisp};
   for (const s of sheets) {
     from[s.key] = {y: s.yDisp, flat: s.flat, op: s.op, lit: s.lit};
     const shown = s.mix < 0.5 ? s.texA : s.texB;
@@ -393,6 +483,7 @@ function stepAnim(dt) {
     s.mix = s.texA === s.texB ? 0 : ss(0.1, 0.75, tg);
     s.yDisp = s.y;
   }
+  if (anim.to.base) BS.y = BS.yDisp = anim.from.base + (anim.to.base.y - anim.from.base) * easeInOut(tg);
   if (anim.t >= D + MAXDELAY) {
     for (const s of sheets) { s.texA = s.texB; s.mix = 0; }
     anim = null;
@@ -415,7 +506,7 @@ function processQueue() {
 function retarget() {                                       // a slider moved: same step, new spacing / opacity
   const {T, height} = targets(S.step);
   if (anim) anim.to = T;
-  else for (const s of sheets) { const t = T[s.key]; s.y = t.y; s.flat = t.flat; s.op = t.op; s.lit = t.lit; }
+  else { for (const s of sheets) { const t = T[s.key]; s.y = t.y; s.flat = t.flat; s.op = t.op; s.lit = t.lit; } if (T.base) BS.y = BS.yDisp = T.base.y; }
   desiredDist = fitDistance(height);
 }
 
@@ -491,6 +582,7 @@ function updateText() {
   $('#dots').innerHTML = DOTS.map((d, i) => `<button class="dot ${i === S.step ? 'on' : ''}" data-i="${i}"><i></i>${d}</button>`).join('');
   $('#next').textContent = ['Take it apart ▶', 'Split again ▶', 'Rebuild ↺'][S.step];
   $('#back').disabled = S.step === 0;
+  post({type: 'state', step: S.step, caption: c[0]});
 }
 
 // ---------------------------------------------------------------- per frame
@@ -514,8 +606,38 @@ function updateSheets() {
   }
   // draw the sheet farthest from the camera (in height) first, so see-through sheets blend in the right order
   [...sheets].sort((p, q) => Math.abs(cy - q.yDisp) - Math.abs(cy - p.yDisp)).forEach((s, i) => {
-    s.mesh.renderOrder = 10 + i * 2; if (s.skirtMesh) s.skirtMesh.renderOrder = 9 + i * 2;
+    s.mesh.renderOrder = 10 + i * 4; if (s.skirtMesh) s.skirtMesh.renderOrder = 9 + i * 4;   // +1, +2: the route on this sheet
   });
+  updateExtras();
+}
+function updateExtras() {                                    // the 2D map under a section, guide lines, the route and its A / B pins
+  if (baseMesh) {
+    const u = baseMesh.material.uniforms, t = texOf(ROLE.colored());
+    u.map.value = t.t; u.st.value = t.st; u.baseY.value = BS.yDisp;
+    const e = SH.elev, bot = e.yDisp - (ZMID - ZMIN) * S.exag * (1 - e.flat) - SKIRT, top = BS.yDisp + 0.5, a = guides.geometry.attributes.position;
+    const C = [[-VW / 2, -VH / 2], [VW / 2, -VH / 2], [VW / 2, VH / 2], [-VW / 2, VH / 2]];
+    C.forEach(([x, z], i) => {
+      const [x2, z2] = C[(i + 1) % 4];
+      a.setXYZ(i * 2, x, top, z); a.setXYZ(i * 2 + 1, x2, top, z2);           // footprint on the 2D map
+      a.setXYZ(8 + i * 2, x, top, z); a.setXYZ(9 + i * 2, x, bot, z);         // corner up to the 3D piece
+    });
+    a.needsUpdate = true; guides.material.color.set(S.theme === 'dark' ? 0xffffff : 0x2a2d33);
+  }
+  if (!routePos) return;
+  for (const r of routeLines) {
+    let y, k, op, order;
+    if (r.key === 'base') { y = BS.yDisp; k = 0; op = 1; order = 3; }
+    else { const s = SH[r.key]; y = s.yDisp; k = S.exag * (1 - s.flat); op = s.mesh.visible ? Math.min(1, s.op / Math.max(0.3, S.see)) : 0; order = s.mesh.renderOrder; }
+    for (const [o, w] of [[r.casing, 1], [r.line, 2]]) {
+      o.visible = op > 0.05; o.position.y = y + LIFT; o.scale.y = Math.max(k, 1e-4); o.renderOrder = order + w;
+      o.material.opacity = (w === 1 ? 0.6 : 1) * op;
+    }
+  }
+  const e = SH.elev, k = S.exag * (1 - e.flat), n = routePos.length / 3 - 1;
+  for (const [pin, i] of [[pinA, 0], [pinB, n]]) {
+    pin.visible = e.op > 0.5;
+    pin.position.set(routePos[i * 3], e.yDisp + routePos[i * 3 + 1] * k + LIFT, routePos[i * 3 + 2]);
+  }
 }
 function updateLabels() {
   _r.setFromMatrixColumn(camera.matrixWorld, 0); _r.y = 0; _r.normalize();
@@ -572,18 +694,20 @@ function applyView() {                                       // centre the stack
   if (!(innerWidth > 0 && innerHeight > 0)) return;
   const W = innerWidth, H = innerHeight, ui = !document.body.classList.contains('noui'), cap = !document.body.classList.contains('nocap');
   const L = settingsOpen() ? 300 : (S.labels && wide() ? 230 : 16), R = S.labels ? (wide() ? 340 : 118) : 16;
-  const T = wide() ? (cap ? 84 : 20) : 56, B = wide() ? (ui ? 86 : 24) : (ui ? 150 : 24) + (cap ? 50 : 0);
+  let T = wide() ? (cap ? 84 : 20) : 56, B = wide() ? (ui ? 86 : 24) : (ui ? 150 : 24) + (cap ? 50 : 0);
+  if (EMBED) { T = 96; B = 72; }                              // the app's bar and caption (top) and animation button (bottom)
   view.mh = Math.max(0.3, (W - L - R) / W); view.mv = Math.max(0.3, (H - T - B) / H);
   camera.aspect = W / H;
   camera.setViewOffset(W, H, W / 2 - (L + W - R) / 2, H / 2 - (T + H - B) / 2, W, H);
   camera.updateProjectionMatrix();
 }
 const relayout = () => { applyView(); retarget(); autoFit = true; };
-addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); labelR.setSize(innerWidth, innerHeight); relayout(); });
+const lineRes = () => lineMats.forEach(m => m.resolution.set(innerWidth, innerHeight));
+addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight); labelR.setSize(innerWidth, innerHeight); lineRes(); relayout(); });
 let down = null;
 renderer.domElement.addEventListener('pointerdown', e => { down = {x: e.clientX, y: e.clientY, t: performance.now(), b: e.button}; });
 renderer.domElement.addEventListener('pointerup', e => {
-  if (down && down.b === 0 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && performance.now() - down.t < 450) next();
+  if (!EMBED && down && down.b === 0 && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 6 && performance.now() - down.t < 450) next();   // in the app a button steps
   down = null;
 });
 renderer.domElement.addEventListener('wheel', () => { autoFit = false; }, {passive: true});
@@ -621,8 +745,15 @@ for (const key of ['faint', 'labels', 'float', 'auto']) {
 }
 $('#hide').onclick = () => setUI(false);
 $('#fs').onclick = toggleFS;
-if (Q.get('ui') === '0') setUI(false);
-if (Q.get('caption') === '0') document.body.classList.add('nocap');
+if (Q.get('ui') === '0' || EMBED) setUI(false);
+if (Q.get('caption') === '0' || EMBED) document.body.classList.add('nocap');
+addEventListener('message', e => {                           // the Firm Ground app drives the steps
+  const d = e.data;
+  if (!EMBED || e.source !== parent || e.origin !== location.origin || !d || d.fg3d !== 1) return;
+  if (d.type === 'next') next();
+  else if (d.type === 'step') goTo(+d.step || 0);
+  else if (d.type === 'reset') { controls.target.set(0, 0, 0); camera.position.copy(camDir).multiplyScalar(desiredDist); autoFit = true; }
+});
 if (innerWidth <= 900) $('#settings').classList.add('min');
 
 // ---------------------------------------------------------------- record a video of the full sequence (tab capture keeps the labels)
@@ -664,10 +795,11 @@ $('#rec').onclick = async () => {
 
 // ---------------------------------------------------------------- start
 for (const id of Object.values(ROLE)) texOf(id());
-manager.onError = url => { $('#loading').textContent = 'Could not load ' + url; };
+manager.onError = url => { $('#loading').textContent = 'Could not load ' + url; post({type: 'error', msg: 'could not load ' + url}); };
 await new Promise(r => { manager.onLoad = r; });
 $('#loading').remove();
-applyView(); setInstant(S.step);
+lineRes(); applyView(); setInstant(S.step);
+post({type: 'ready', step: S.step, section: SECT ? {label: SECT.label, w: Math.round(VW), h: Math.round(VH)} : null, secErr});
 camera.position.copy(camDir).multiplyScalar(desiredDist); controls.target.set(0, 0, 0); controls.update();
 requestAnimationFrame(frame);
 window.__explode = {S, sheets, goTo, setInstant, camera, controls};   // for debugging in the console

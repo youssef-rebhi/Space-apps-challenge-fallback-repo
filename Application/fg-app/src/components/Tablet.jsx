@@ -3,6 +3,7 @@ import MiniMap from "./MiniMap.jsx";
 import Map3D from "./Map3D.jsx";
 import GeoMap from "./GeoMap.jsx";
 import Terrain3D from "./Terrain3D.jsx";
+import LayerMap3D from "./LayerMap3D.jsx";
 import { SLOPE_TXT, MAP_TXT } from "../lib/geo.js";
 import ScoutResult from "./ScoutResult.jsx";
 import PairQR from "./PairQR.jsx";
@@ -33,7 +34,8 @@ export default function Tablet() {
   const [laser, setLaser] = useState(false);
   const [busy, setBusy] = useState(false);
   const [scouted, setScouted] = useState({}); // sol → live reading
-  const [view3d, setView3d] = useState(false);
+  const [view3d, setView3d] = useState(true); // 3D by default; off = the 2D map
+  const [simple3d, setSimple3d] = useState(false); // the 3D layer map could not start: use the drawn 3D view
   const [change, setChange] = useState(false);
   const [noGeo, setNoGeo] = useState(false);
   const [picks, setPicks] = useState([]); // points the user clicked on the map
@@ -290,6 +292,7 @@ export default function Tablet() {
   if (err) return <p className="err">⚠ {err}. Put stops.json in public/data/.</p>;
 
   const routeStops = route.map(resolve).filter(Boolean);
+  const show3d = view3d && !pickFor; // picking A / B / a waypoint happens on the 2D map
   const plan = missionCheck(routeStops, EVA_MIN);
   const live = sel && scouted[keyOf(sel)];
   const cert = sel && certaintyOf(sel, live);
@@ -309,25 +312,37 @@ export default function Tablet() {
         {astroLive
           ? <span className="tag live">● LIVE astronaut · {astro.running || astro.steps ? "walking to" : "next:"} {astro.next} · {Math.round(astro.d)} m{astro.steps ? ` · ${astro.steps} steps` : ""}</span>
           : <span className="tag muted">helmet not connected</span>}
-        <div className="switch" role="group" aria-label="Map view">
-          <button className={!view3d ? "on" : ""} onClick={() => setView3d(false)}>2D</button>
-          <button className={view3d ? "on" : ""} onClick={() => setView3d(true)}>3D</button>
-        </div>
       </header>
       <main>
         <section className="mapCol">
-          {view3d
-            ? (noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
+          <div className="mapbar">
+            <div className="mapbar-title">
+              <b>{show3d ? "3D GO / NO-GO map" : "2D map"}</b>
+              <span>{pickFor ? `Click the map to set ${pickFor}${view3d ? " · 3D comes back after" : ""}` : show3d ? (options[chosen]?.pts ? `Route: ${options[chosen].label} · ${Math.round(options[chosen].len)} m · layer by layer` : "The whole boxwork area · layer by layer") : "Drag to move · scroll to zoom · click to check a spot"}</span>
+            </div>
+            <label className="toggle" title="3D map on / off">
+              <input type="checkbox" role="switch" checked={view3d} onChange={(e) => setView3d(e.target.checked)} />
+              <i aria-hidden="true" />
+              <span>3D</span>
+            </label>
+          </div>
+          {show3d
+            ? (!simple3d ? <LayerMap3D routePts={options[chosen]?.pts} routeColour={options[chosen]?.colour} onFallback={() => setSimple3d(true)} />
+              : noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
                      : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} hoverCoord={hoverCoord} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
             : (noGeo ? <MiniMap stops={stops} greys={greys} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} />
                      : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} waypoints={waypoints} onMoveWaypoint={handleMoveWaypoint} abortPaths={abortData?.abortPaths || []} hoverCoord={hoverCoord} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
-          <ElevationProfile routePts={options[chosen]?.pts} geo={loadedGeo} stops={stops} onHoverCoord={setHoverCoord} hoveredCoord={hoverCoord} />
           <div className="legend">
-            {["green", "orange", "red", "grey"].map((c) => (
-              <span key={c}><i style={{ background: COLOURS[c] }} />{{ green: "GO · AI sure", orange: "careful · or AI unsure", red: "don't go", grey: "no ground data · send scout" }[c]}</span>
-            ))}
-            <span>🎤 = live scout reading</span>
+            {show3d && !simple3d
+              ? GONOGO_KEY.map(([c, t]) => <span key={t}><i className="sq" style={{ background: c }} />{t}</span>)
+              : <>
+                  {["green", "orange", "red", "grey"].map((c) => (
+                    <span key={c}><i style={{ background: COLOURS[c] }} />{{ green: "GO · AI sure", orange: "careful · or AI unsure", red: "don't go", grey: "no ground data · send scout" }[c]}</span>
+                  ))}
+                  <span>🎤 = live scout reading</span>
+                </>}
           </div>
+          <ElevationProfile routePts={options[chosen]?.pts} geo={loadedGeo} stops={stops} onHoverCoord={setHoverCoord} hoveredCoord={hoverCoord} />
         </section>
         <section className="side">
           <label className="gostop">Go to stop:
@@ -402,3 +417,5 @@ export default function Tablet() {
 }
 
 const pct = (v) => `${Math.round((v ?? 0) * 100)}%`;
+// colours of the combined GO / NO-GO map (Map_layer/martian_map/web/layers.json legend, crew on foot)
+const GONOGO_KEY = [["#1a9850", "GO"], ["#f4c430", "CAUTION"], ["#d73027", "NO-GO"], ["#9e9e9e", "no data · send the scout"]];

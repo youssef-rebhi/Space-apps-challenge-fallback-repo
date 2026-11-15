@@ -14,8 +14,16 @@ npm install
 # put the data: unzip firmground_stops_v2.zip into public/data/  (stops.json + overlays/)
 npm run dev        # http://localhost:5173
 npm run build      # static site in dist/ (deploy to Vercel / Netlify / GitHub Pages)
+node build.js      # or: rebuild straight into ../firmground-app-built (same asset names, keeps data/ and server.py)
 ```
 The phone camera needs **https** → test the camera on the deployed site.
+
+**3D map (on by default, switch it off for the 2D map):** the team's coloured GO / NO-GO 3D map and its
+layer-by-layer animation (`Map_layer/martian_map/web/explode/`), shown in `LayerMap3D.jsx`. Without a route
+it shows the whole box; with a chosen route it shows only the route's section, floating above the 2D map
+around it. One button: 1st click two maps, 2nd click all layers, 3rd click back together.
+Its files are copied from Map_layer at build time as `map3d/` (`scripts/map3d.mjs`, about 18 MB); `npm run dev`
+serves them straight from Map_layer. three.js loads from cdn.jsdelivr.net, so the 3D map needs internet.
 
 ## Files
 | File | What |

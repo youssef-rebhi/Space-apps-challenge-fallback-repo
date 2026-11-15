@@ -90,39 +90,23 @@ export default function Planner({
     if (setAbortData) setAbortData(ab);
   }
 
-  // Coordinate row for A/B or Waypoint
+  // Row for A/B or a waypoint: where it is in words (no coordinates), set it on the map or from the selected stop
   const row = (name, P, onUpdate, onRemove = null, onMoveUp = null, onMoveDown = null, isBase = false) => {
-    const commit = (field, txt) => {
-      const v = parseFloat(String(txt).replace(",", "."));
-      if (isNaN(v)) return;
-      onUpdate({ lat: field === "lat" ? v : P?.lat ?? -4.8, lon: field === "lon" ? v : P?.lon ?? 137.38, label: P?.label || "typed" });
-      setOptions([]);
-    };
-    const inp = (field, ph) => (
-      <input
-        key={`${name}-${field}-${P ? P[field] : "x"}`}
-        aria-label={`${name} ${field === "lat" ? "latitude" : "longitude"}`}
-        inputMode="decimal"
-        defaultValue={P ? P[field].toFixed(5) : ""}
-        placeholder={ph}
-        onBlur={(e) => commit(field, e.target.value)}
-        onKeyDown={(e) => { if (e.key === "Enter") commit(field, e.target.value); }}
-      />
-    );
+    const words = !P ? "not set" : /^sol \d+/.test(P.label || "") ? `Curiosity stop, ${P.label}` : "point on the map";
     return (
-      <div className="prow" key={name}>
+      <div className="prow ab" key={name}>
         <b className={"pin " + (isBase ? "A" : name.startsWith("W") ? "wp" : name)}>{name}</b>
-        {inp("lat", "lat −4.80")}
-        {inp("lon", "lon 137.38")}
+        <span className={"where" + (P ? "" : " unset")}>{words}</span>
         <button
-          className={pickFor === name ? "on" : ""}
+          className={"chipbtn" + (pickFor === name ? " on" : "")}
           onClick={() => setPickFor(pickFor === name ? null : name)}
-          title="Click on the map to set it"
+          title="Then click on the 2D map"
         >
-          📍
+          📍 {pickFor === name ? "Click the map…" : "On map"}
         </button>
         {sel && (
           <button
+            className="chipbtn"
             onClick={() => {
               onUpdate({
                 lat: sel.lat,
@@ -131,9 +115,9 @@ export default function Planner({
               });
               setOptions([]);
             }}
-            title="Use the selected stop / point"
+            title="Use the stop or point selected now"
           >
-            = sel
+            Selected
           </button>
         )}
         {onMoveUp && <button onClick={onMoveUp} title="Move Up" className="smallbtn">↑</button>}
@@ -203,7 +187,6 @@ export default function Planner({
         <>
           {row("A", A, setA, null, null, null, true)}
           {row("B", B, setB)}
-          {pickFor && <small className="ok">Click on the map to set {pickFor}.</small>}
           <div className="prow">
             <label className="muted">Science target
               <select value={via} onChange={(e) => setVia(e.target.value)}>
@@ -213,7 +196,7 @@ export default function Planner({
                 {stops.map((s) => <option key={s.sol + "-" + s.lon} value={"s" + s.sol}>sol {s.sol}</option>)}
               </select>
             </label>
-            <button onClick={() => { const a = A; setA(B); setB(a); setOptions([]); }}>⇅</button>
+            <button onClick={() => { const a = A; setA(B); setB(a); setOptions([]); }} title="Swap A and B" aria-label="Swap A and B">⇅</button>
             <button className="primary" onClick={findDirect} disabled={busy}>{busy ? "Finding…" : "Find routes"}</button>
           </div>
         </>
@@ -237,7 +220,6 @@ export default function Planner({
               {busy ? "Routing…" : "Calculate Multi-Stop Route"}
             </button>
           </div>
-          {pickFor && <small className="ok">Click on the map to set {pickFor}.</small>}
         </div>
       )}
 
@@ -352,7 +334,7 @@ export default function Planner({
         </div>
       )}
 
-      <small className="muted">{RULES} Weights are team assumptions.</small>
+      <details className="rules"><summary>How routes are chosen</summary><small className="muted">{RULES} Weights are team assumptions.</small></details>
     </div>
   );
 }

@@ -1,0 +1,643 @@
+{
+ "terrain": "terrain/terrain.json",
+ "overlays": "overlays.json",
+ "gates": "data/live_gates.json",
+ "rules": "data/gonogo_rules.json",
+ "report": "data/combined_report.json",
+ "class_codes": {
+  "0": "UNKNOWN",
+  "1": "GO",
+  "2": "CAUTION",
+  "3": "NO-GO"
+ },
+ "layers": [
+  {
+   "id": "photo",
+   "group": "Base",
+   "title": "Photo (Layer 1)",
+   "file": "terrain/texture_photo.jpg",
+   "covers_m": [
+    2371,
+    2964
+   ],
+   "legend": null,
+   "parameter": "USGS 25 cm orthomosaic, fixed 2-98 % stretch",
+   "sources": [
+    "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex"
+   ]
+  },
+  {
+   "id": "hillshade",
+   "group": "Base",
+   "title": "Shaded relief (Layer 2)",
+   "file": "terrain/texture_hillshade.jpg",
+   "covers_m": [
+    2371,
+    2964
+   ],
+   "legend": null,
+   "parameter": "Hillshade of the USGS 1 m DEM",
+   "sources": [
+    "Derived from the USGS MSL Gale DEM 1 m v3 (Layer 2)"
+   ]
+  },
+  {
+   "id": "combined_foot",
+   "group": "GO / NO-GO",
+   "profile": "foot",
+   "title": "Combined GO/NO-GO (crew on foot)",
+   "file": "textures/combined_foot.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - send the scout",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "worst of slope, roughness, terrain unit, ground-truth hazard; rover-driven ground capped at CAUTION",
+   "stats": {
+    "UNKNOWN": 0.0052,
+    "GO": 0.5565,
+    "CAUTION": 0.2726,
+    "NO-GO": 0.1658
+   },
+   "sources": [
+    "gonogo/gonogo_rules.json",
+    "gonogo/calibration/combined_report.json"
+   ]
+  },
+  {
+   "id": "combined_over_photo_foot",
+   "group": "GO / NO-GO",
+   "profile": "foot",
+   "title": "3D colored map: GO/NO-GO over photo (foot)",
+   "file": "textures/combined_over_photo_foot.jpg",
+   "covers_m": [
+    2371,
+    2964
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - send the scout",
+     "color": "#9e9e9e"
+    }
+   ],
+   "parameter": "combined classes tinted onto the Layer 1 photo (brightness from the photo)",
+   "stats": {
+    "UNKNOWN": 0.0052,
+    "GO": 0.5565,
+    "CAUTION": 0.2726,
+    "NO-GO": 0.1658
+   },
+   "sources": [
+    "gonogo/combined_foot.tif",
+    "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex"
+   ]
+  },
+  {
+   "id": "reach_foot",
+   "group": "Planning",
+   "profile": "foot",
+   "title": "Reach from base, sol 5073 position (foot)",
+   "file": "textures/reach_foot.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "nearest": true,
+   "overlay_on_photo": true,
+   "legend": [
+    {
+     "label": "near (0 m)",
+     "color": "#3ce6b4"
+    },
+    {
+     "label": "2500+ equiv. m",
+     "color": "#1e78f0"
+    },
+    {
+     "label": "bands = 250 m steps",
+     "color": "#888888"
+    },
+    {
+     "label": "unreachable / NO-GO",
+     "color": "transparent"
+    }
+   ],
+   "parameter": "accumulated route cost from the base (equivalent metres of flat GO ground)",
+   "stats": {
+    "reachable_share": 0.8189
+   },
+   "sources": [
+    "gonogo/reach_from_base_foot.tif"
+   ]
+  },
+  {
+   "id": "combined_rover",
+   "group": "GO / NO-GO",
+   "profile": "rover",
+   "title": "Combined GO/NO-GO (rover)",
+   "file": "textures/combined_rover.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - send the scout",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "worst of slope, roughness, terrain unit, ground-truth hazard; rover-driven ground capped at CAUTION",
+   "stats": {
+    "UNKNOWN": 0.0054,
+    "GO": 0.5565,
+    "CAUTION": 0.3392,
+    "NO-GO": 0.0989
+   },
+   "sources": [
+    "gonogo/gonogo_rules.json",
+    "gonogo/calibration/combined_report.json"
+   ]
+  },
+  {
+   "id": "combined_over_photo_rover",
+   "group": "GO / NO-GO",
+   "profile": "rover",
+   "title": "3D colored map: GO/NO-GO over photo (rover)",
+   "file": "textures/combined_over_photo_rover.jpg",
+   "covers_m": [
+    2371,
+    2964
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - send the scout",
+     "color": "#9e9e9e"
+    }
+   ],
+   "parameter": "combined classes tinted onto the Layer 1 photo (brightness from the photo)",
+   "stats": {
+    "UNKNOWN": 0.0054,
+    "GO": 0.5565,
+    "CAUTION": 0.3392,
+    "NO-GO": 0.0989
+   },
+   "sources": [
+    "gonogo/combined_rover.tif",
+    "Calef, F.J. III, and Parker, T., 2016, MSL Gale Merged Orthophoto Mosaic, v3: USGS Astrogeology Science Center / PDS Annex"
+   ]
+  },
+  {
+   "id": "reach_rover",
+   "group": "Planning",
+   "profile": "rover",
+   "title": "Reach from base, sol 5073 position (rover)",
+   "file": "textures/reach_rover.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "nearest": true,
+   "overlay_on_photo": true,
+   "legend": [
+    {
+     "label": "near (0 m)",
+     "color": "#3ce6b4"
+    },
+    {
+     "label": "2500+ equiv. m",
+     "color": "#1e78f0"
+    },
+    {
+     "label": "bands = 250 m steps",
+     "color": "#888888"
+    },
+    {
+     "label": "unreachable / NO-GO",
+     "color": "transparent"
+    }
+   ],
+   "parameter": "accumulated route cost from the base (equivalent metres of flat GO ground)",
+   "stats": {
+    "reachable_share": 0.891
+   },
+   "sources": [
+    "gonogo/reach_from_base_rover.tif"
+   ]
+  },
+  {
+   "id": "conv_slope_foot",
+   "group": "Conversion layers",
+   "title": "Slope - Crew on foot",
+   "file": "textures/conv_slope_foot.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - no DEM value",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "slope in degrees",
+   "rule": {
+    "GO": "< 15 deg",
+    "CAUTION": "15-25 deg",
+    "NO-GO": ">= 25 deg",
+    "UNKNOWN": "no DEM value (0.5 % of cells)"
+   },
+   "basis": "Team-approved thresholds (Layer 2, 14 Nov 2026). ASSUMPTION: no NASA EVA slope limit found; calibrated: Curiosity's real path is 1.0 % >= 25 deg on this grid.",
+   "stats": {
+    "box": {
+     "UNKNOWN": 0.0046,
+     "GO": 0.6016,
+     "CAUTION": 0.2281,
+     "NO-GO": 0.1658
+    },
+    "curiosity_path": {
+     "UNKNOWN": 0.0006,
+     "GO": 0.9386,
+     "CAUTION": 0.0512,
+     "NO-GO": 0.0097
+    }
+   },
+   "sources": [
+    "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+    "https://webarchive.library.unt.edu/eot2008/20090512223236/http://mars.jpl.nasa.gov/msl/mission/technology/planetarymobility",
+    "https://www.jpl.nasa.gov/news/nasas-curiosity-mars-rover-takes-a-new-selfie-before-record-climb/",
+    "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+   ]
+  },
+  {
+   "id": "conv_slope_rover",
+   "group": "Conversion layers",
+   "title": "Slope - Rover (Curiosity limits)",
+   "file": "textures/conv_slope_rover.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - no DEM value",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "slope in degrees",
+   "rule": {
+    "GO": "< 15 deg",
+    "CAUTION": "15-30 deg",
+    "NO-GO": ">= 30 deg",
+    "UNKNOWN": "no DEM value (0.5 % of cells)"
+   },
+   "basis": "NO-GO 30 deg = Curiosity's default onboard fault-protection tilt limit (NASA/JPL; design tilt 45 deg, record 31 deg in 2020). CAUTION 15 deg = team ASSUMPTION.",
+   "stats": {
+    "box": {
+     "UNKNOWN": 0.0046,
+     "GO": 0.6016,
+     "CAUTION": 0.295,
+     "NO-GO": 0.0988
+    },
+    "curiosity_path": {
+     "UNKNOWN": 0.0006,
+     "GO": 0.9386,
+     "CAUTION": 0.0559,
+     "NO-GO": 0.0049
+    }
+   },
+   "sources": [
+    "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+    "https://webarchive.library.unt.edu/eot2008/20090512223236/http://mars.jpl.nasa.gov/msl/mission/technology/planetarymobility",
+    "https://www.jpl.nasa.gov/news/nasas-curiosity-mars-rover-takes-a-new-selfie-before-record-climb/",
+    "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_waypoints.json"
+   ]
+  },
+  {
+   "id": "conv_roughness",
+   "group": "Conversion layers",
+   "title": "Roughness (metre-scale relief)",
+   "file": "textures/conv_roughness.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - rougher than anything Curiosity crossed: scout first",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "RMS relief in m (DEM minus 5 m Gaussian, 9 m window)",
+   "rule": {
+    "GO": "<= 0.56 m (smoother than 95 % of Curiosity's drive here)",
+    "CAUTION": "0.56-1.53 m (within the range Curiosity drove over)",
+    "UNKNOWN": "> 1.53 m (rougher than anything Curiosity crossed in the box: scout first)",
+    "NO-GO": "never from roughness alone (no NASA hard limit at this scale; the 1 m DEM cannot resolve single rocks)"
+   },
+   "basis": "ASSUMPTION calibrated on Curiosity's in-box path (MMGIS traverse, 1 m samples). Curiosity's wheels are 50 cm; single rocks are below this DEM's resolution, so this is a terrain-texture signal, not a rock count.",
+   "stats": {
+    "box": {
+     "UNKNOWN": 0.0035,
+     "GO": 0.8561,
+     "CAUTION": 0.1403,
+     "NO-GO": 0.0
+    },
+    "curiosity_path": {
+     "UNKNOWN": 0.0,
+     "GO": 0.9506,
+     "CAUTION": 0.0494,
+     "NO-GO": 0.0
+    }
+   },
+   "sources": [
+    "https://asc-pds-services.s3.us-west-2.amazonaws.com/mosaic/MSL_Gale_DEM_Mosaic_1m_v3.tif",
+    "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json"
+   ]
+  },
+  {
+   "id": "conv_terrain",
+   "group": "Conversion layers",
+   "title": "Terrain units (geology)",
+   "file": "textures/conv_terrain.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - not mapped (neutral in the combined map)",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "mapped unit -> trafficability",
+   "rule": {
+    "LSu": "GO: firm layered bedrock",
+    "BXr": "GO: firm bedrock ridge tops (Curiosity drove along them)",
+    "BXh": "CAUTION: hollows, often sediment-filled: possible loose fill",
+    "Aeo": "CAUTION: sand/ripples: sinkage risk (Hidden Valley, sols 709-710)",
+    "UNKNOWN": "not mapped (78 % of the box). In the combined map an unmapped cell is NEUTRAL: slope and roughness decide."
+   },
+   "basis": "ASSUMPTION per unit, from each unit's hazard note (Layer 3) and the NASA boxwork blogs (ridges firm, hollows sediment-filled).",
+   "stats": {
+    "box": {
+     "UNKNOWN": 0.7764,
+     "GO": 0.1928,
+     "CAUTION": 0.0308,
+     "NO-GO": 0.0
+    },
+    "curiosity_path": {
+     "UNKNOWN": 0.5344,
+     "GO": 0.3754,
+     "CAUTION": 0.0901,
+     "NO-GO": 0.0
+    }
+   },
+   "sources": [
+    "https://gsameetings.secure-platform.com/connects25/solicitations/103002/sessiongallery/schedule/items/95386/application/10634",
+    "https://www.nasa.gov/missions/mars-science-laboratory/curiosity-rover/nasas-curiosity-mars-rover-starts-unpacking-boxwork-formations/",
+    "https://science.nasa.gov/blog/curiosity-blog-sols-4709-4715-drilling-high-and-low-in-the-boxwork-unit",
+    "https://mars.nasa.gov/resources/6493/curiosity-tracks-in-hidden-valley-on-mars/"
+   ]
+  },
+  {
+   "id": "conv_groundtruth",
+   "group": "Conversion layers",
+   "title": "Ground truth (rover path + EVA stops)",
+   "file": "textures/conv_groundtruth.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "legend": [
+    {
+     "code": 1,
+     "label": "GO",
+     "color": "#1a9850"
+    },
+    {
+     "code": 2,
+     "label": "CAUTION",
+     "color": "#f4c430"
+    },
+    {
+     "code": 3,
+     "label": "NO-GO",
+     "color": "#d73027"
+    },
+    {
+     "code": 0,
+     "label": "UNKNOWN - no ground truth yet: send the scout",
+     "color": "#9e9e9e"
+    }
+   ],
+   "nearest": true,
+   "parameter": "driven within 5 m of Curiosity's path; team AI stop colour within 30 m of each EVA stop",
+   "rule": {
+    "GO": "Curiosity drove here (+/-5 m), or a GREEN stop within 30 m",
+    "CAUTION": "ORANGE stop within 30 m (sand 10%-30%, or AI certainty < 0.75); RED stop 15-30 m away",
+    "NO-GO": "within 15 m of a RED stop (sand > 30% or big rock > 2%)",
+    "UNKNOWN": "no ground truth (most of the box): send the scout"
+   },
+   "basis": "Stop colours, the 30 m AI radius and the 15 m red keep-out are the team's values (repo ASSUMPTIONS.md: mission.js, safety.js UNSURE, grey.js NEAR_AI_M, routes.js). Corridor 5 m = ASSUMPTION (rover ~3 m wide; MMGIS/PLACES agree to <= 2.1 m).",
+   "stats": {
+    "box": {
+     "UNKNOWN": 0.9872,
+     "GO": 0.011,
+     "CAUTION": 0.0017,
+     "NO-GO": 0.0001
+    },
+    "curiosity_path": {
+     "UNKNOWN": 0.0,
+     "GO": 0.9081,
+     "CAUTION": 0.0846,
+     "NO-GO": 0.0072
+    }
+   },
+   "sources": [
+    "https://mars.nasa.gov/mmgis-maps/MSL/Layers/json/MSL_traverse.json",
+    "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Ai_model/results/stops_v2.json",
+    "https://github.com/malek-mejaouel/Depo_nasa/blob/main/Application/data/stops.json",
+    "https://github.com/malek-mejaouel/Depo_nasa/blob/main/ASSUMPTIONS.md"
+   ]
+  },
+  {
+   "id": "certainty",
+   "group": "Conversion layers",
+   "title": "Certainty (how sure the colour is)",
+   "file": "textures/certainty.png",
+   "covers_m": [
+    2370.0,
+    2964.0
+   ],
+   "nearest": true,
+   "legend": [
+    {
+     "label": "none (no DEM)",
+     "color": "#9e9e9e"
+    },
+    {
+     "label": "orbital only (DEM + geology)",
+     "color": "#c6dbef"
+    },
+    {
+     "label": "seen from the ground (EVA stop <= 30 m)",
+     "color": "#6baed6"
+    },
+    {
+     "label": "driven by Curiosity (<= 5 m)",
+     "color": "#08519c"
+    }
+   ],
+   "parameter": "live > rover ground truth > orbital > none (team rule)",
+   "stats": {
+    "none (no DEM)": 0.0045,
+    "orbital only (DEM + geology)": 0.9826,
+    "seen from the ground (EVA stop <= 30 m)": 0.0062,
+    "driven by Curiosity (<= 5 m)": 0.0066
+   },
+   "sources": [
+    "Layer 4 traverse",
+    "Layer 5 EVA stops"
+   ]
+  }
+ ]
+}

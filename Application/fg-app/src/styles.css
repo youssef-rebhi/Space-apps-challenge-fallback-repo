@@ -428,3 +428,52 @@ button.primary { background: #1f4d34; border-color: #3cff8f88; }
   margin: 8px 0;
 }
 
+
+/* ── map column: title bar + 3D switch, 3D layer map (LayerMap3D.jsx) ───────────────── */
+.tablet header { align-items: center; }
+.mapCol { min-width: 0; display: grid; gap: 10px; align-content: start; }
+.mapCol .legend { margin-top: 0; }
+.mapbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.mapbar-title { display: grid; gap: 2px; min-width: 0; }
+.mapbar-title b { font-size: 16px; letter-spacing: .01em; }
+.mapbar-title span { font-size: 13px; color: var(--muted); }
+.toggle { position: relative; display: inline-flex; align-items: center; gap: 8px; cursor: pointer; font: 700 14px system-ui; user-select: none; flex: none; }
+.toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.toggle i { width: 46px; height: 26px; border-radius: 13px; background: #3a3029; border: 1px solid #ffffff2a; position: relative; transition: background .2s; }
+.toggle i::after { content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 50%; background: #efe9e2; box-shadow: 0 1px 3px #0008; transition: transform .2s; }
+.toggle input:checked + i { background: #2e8b4a; }
+.toggle input:checked + i::after { transform: translateX(20px); }
+.toggle input:focus-visible + i { outline: 3px solid #e07a1f; outline-offset: 2px; }
+.legend i.sq { border-radius: 3px; }
+
+.lm3d { position: relative; height: min(70vh, 660px); min-height: 380px; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); background: #0d0a08; }
+.lm3d iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; display: block; }
+.lm3d-top { position: absolute; top: 10px; left: 10px; right: 10px; display: flex; justify-content: space-between; align-items: center; gap: 8px; z-index: 2; pointer-events: none; }
+.lm3d-top > * { pointer-events: auto; }
+.seg2 { display: inline-flex; gap: 2px; padding: 3px; border-radius: 11px; background: #120e0bd0; border: 1px solid #ffffff22; backdrop-filter: blur(6px); }
+.seg2 button { font: 600 13px system-ui; padding: 6px 12px; border: 0; border-radius: 8px; background: none; color: var(--muted); }
+.seg2 button:hover:not(:disabled) { background: #ffffff12; color: var(--txt); }
+.seg2 button.on, .seg2 button.on:hover { background: #efe9e2; color: #120e0b; }
+.seg2 button:disabled { opacity: .45; cursor: not-allowed; }
+button.ghost { font: 600 13px system-ui; padding: 7px 12px; border-radius: 10px; background: #120e0bd0; border: 1px solid #ffffff22; backdrop-filter: blur(6px); }
+.lm3d-cap { position: absolute; top: 54px; left: 14px; right: 14px; margin: 0; z-index: 1; pointer-events: none; font-size: 13.5px; font-weight: 600; color: #efe9e2; text-shadow: 0 1px 4px #000; }
+.lm3d-cap small { display: block; margin-top: 2px; font-weight: 400; font-size: 12px; color: #efe9e2b0; }
+.lm3d-anim { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); z-index: 2; display: flex; align-items: center; gap: 14px; padding: 6px 6px 6px 14px; border-radius: 14px; background: #120e0bd9; border: 1px solid #ffffff22; backdrop-filter: blur(6px); white-space: nowrap; }
+.lm3d-dots { display: flex; gap: 12px; }
+.lm3d-dots span { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); }
+.lm3d-dots i { width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+.lm3d-dots span.on { color: var(--txt); } .lm3d-dots span.on i { background: #e3a868; border-color: #e3a868; }
+.lm3d-anim button { font: 700 13.5px system-ui; padding: 8px 16px; border-radius: 10px; border: 0; background: #e3a868; color: #1a120c; min-width: 138px; }
+.lm3d-anim button:hover { background: #f0bb80; }
+.lm3d-fail { position: absolute; inset: 0; z-index: 3; display: grid; place-content: center; gap: 10px; text-align: center; padding: 20px; background: #0d0a08ee; color: var(--muted); }
+.lm3d-warn { position: absolute; left: 14px; right: 14px; bottom: 64px; margin: 0; font-size: 12px; color: #ffb37a; text-shadow: 0 1px 3px #000; }
+@media (max-width: 560px) { .lm3d-dots { display: none; } .lm3d-cap small { display: none; } }
+
+/* route planner rows: no coordinates, just where the point is */
+.prow.ab { flex-wrap: nowrap; }
+.prow .where { flex: 1; min-width: 0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.prow .where.unset { color: var(--muted); font-style: italic; }
+.prow button.chipbtn { font-size: 12.5px; padding: 5px 10px; border-radius: 999px; white-space: nowrap; }
+.prow button.chipbtn.on { background: #2e8b4a; border-color: #2e8b4a; }
+details.rules summary { cursor: pointer; font-size: 13px; color: var(--muted); }
+details.rules small { display: block; margin-top: 6px; }
