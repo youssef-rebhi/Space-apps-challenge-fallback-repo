@@ -5,6 +5,7 @@ import json, os, threading
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 
 EVENTS, LOCK, NEXT = [], threading.Lock(), [1]
+PAIRS = {}  # short pairing code -> route (so the QR code stays small)
 
 class H(SimpleHTTPRequestHandler):
     def _json(self, obj, code=200):
@@ -20,6 +21,10 @@ class H(SimpleHTTPRequestHandler):
                 except ValueError: pass
             with LOCK: out = [e for e in EVENTS if e["id"] > since]
             return self._json({"events": out})
+        if self.path.startswith("/api/pair"):
+            c = self.path.split("c=")[1].split("&")[0].upper() if "c=" in self.path else ""
+            with LOCK: e = PAIRS.get(c)
+            return self._json(e or {"error": "unknown code"}, 200 if e else 404)
         return super().do_GET()
 
     def do_POST(self):
@@ -28,6 +33,7 @@ class H(SimpleHTTPRequestHandler):
             try: e = json.loads(self.rfile.read(n) or b"{}")
             except ValueError: return self._json({"ok": False}, 400)
             with LOCK:
+                if e.get("type") == "pair" and e.get("code"): PAIRS[str(e["code"]).upper()] = e
                 e["id"] = NEXT[0]; NEXT[0] += 1; EVENTS.append(e); del EVENTS[:-200]
             return self._json({"ok": True, "id": e["id"]})
         self.send_error(404)

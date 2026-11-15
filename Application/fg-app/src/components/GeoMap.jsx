@@ -15,7 +15,7 @@ const BASES = {
   crater: { file: "regional_gale_elevation.webp", key: "regional_gale_elevation.png", label: "Whole Gale crater" },
 };
 
-export default function GeoMap({ targets = [], astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, droneCells = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
+export default function GeoMap({ targets = [], astro, trail = [], stops, greys, picks = [], pathPts, pathUnsure, pathColour = "#3cff8f", altPaths = [], onChooseAlt, ab = {}, droneCells = [], scoutSegs = [], onPick, route, selected, onSelect, drone, laser, scouted, colourFor, onFail }) {
   const box = useRef(null), map = useRef(null), layers = useRef({}), geo = useRef(null), fitted = useRef(false);
   const fitStops = (m) => stops.length && m.fitBounds(L.latLngBounds(stops.map((s) => [s.lat, s.lon])), { padding: [50, 50] });
   const [base, setBase] = useState("gonogo");
@@ -68,7 +68,8 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
       L.rectangle([[g.lat - h, g.lon - h], [g.lat + h, g.lon + h]], { color: sel ? "#fff" : COLOURS[c], weight: sel ? 2 : 0.5, fillColor: COLOURS[c], fillOpacity: scouted[g.id] ? 0.7 : 0.25, bubblingMouseEvents: false })
         .on("click", () => onSelect(g)).bindTooltip("Unexplored · no Curiosity photo").addTo(grp);
     });
-    const DC = { sand: "#ffb020", clear: "#3ecf8e", steep: "#6a1fd1" };
+    const DC = { sand: "#ffb020", clear: "#3ecf8e", steep: "#6a1fd1", obstacle: "#ff3b3b", caution: "#b57cff" };
+    scoutSegs.forEach((sg) => L.polyline(sg.pts.map((q) => [q.lat, q.lon]), { color: sg.reason === "unknown" ? "#cfcfcf" : "#ff9a2e", weight: 14, opacity: 0.45, interactive: false }).addTo(grp));
     droneCells.forEach((d) => L.circleMarker([d.lat, d.lon], { radius: 2.5, stroke: false, fillColor: DC[d.r], fillOpacity: 0.85, interactive: false }).addTo(grp));
     // other route options: thin, click to choose
     altPaths.forEach((o) => {
@@ -107,7 +108,7 @@ export default function GeoMap({ targets = [], astro, trail = [], stops, greys, 
       L.circleMarker([p.lat, p.lon], { radius: sel ? 9 : 7, color: "#fff", weight: sel ? 3 : 2, dashArray: "3 2", fillColor: COLOURS[c], fillOpacity: 0.9, bubblingMouseEvents: false })
         .on("click", () => onSelect(p)).bindTooltip("your point").addTo(grp);
     });
-  }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, droneCells, route, selected, scouted, colourFor, ready, base, showStops]);
+  }, [targets, stops, greys, picks, pathPts, pathUnsure, pathColour, altPaths, ab, droneCells, scoutSegs, route, selected, scouted, colourFor, ready, base, showStops]);
 
   // drone scan layer (SIMULATED, by the team's drone simulator): display only, not used for decisions
   const DRONE_STYLE = { clear: "#3ecf8e", sand: "#ffb020", slope_caution: "#b57cff", slope_nogo: "#6a1fd1", obstacle: "#ff5a5a", obstacle_point: "#ff5a5a" };

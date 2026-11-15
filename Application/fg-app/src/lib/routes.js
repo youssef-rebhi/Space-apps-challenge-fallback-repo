@@ -23,7 +23,7 @@ function grid(geo, stops) {
   if (cache && cache.stops === stops && cache.geo === geo) return cache;
   const G = (geo.mapAt || geo.slopeAt).grid, F = geo.mapAt ? 1 : 2, W = Math.floor(G.W / F), H = Math.floor(G.H / F), N = W * H;
   const RANK = [2, 0, 1, 3]; // worst-of order, as in the combined map: GO < CAUTION < UNKNOWN < NO-GO
-  const cls = new Uint8Array(N), rover = new Uint8Array(N), red = new Uint8Array(N), orange = new Uint8Array(N), known = new Uint8Array(N);
+  const cls = new Uint8Array(N), rover = new Uint8Array(N), red = new Uint8Array(N), orange = new Uint8Array(N), known = new Uint8Array(N), unsure = new Uint8Array(N);
   for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
     let worst = 1;
     for (let dy = 0; dy < F; dy++) for (let dx = 0; dx < F; dx++) { const k = G.data[(y * F + dy) * G.W + x * F + dx]; if (RANK[k] > RANK[worst]) worst = k; }
@@ -45,9 +45,9 @@ function grid(geo, stops) {
     if (s.sand_pct == null) return;
     if (s.sand_pct > 0.3 || s.bigrock_pct > 0.02) stamp(s.lat, s.lon, SAND_R, red);
     else if (s.sand_pct >= 0.1) stamp(s.lat, s.lon, SAND_R, orange);
-    if ((s.certainty ?? 1) >= 0.75) stamp(s.lat, s.lon, AI_NEAR_M, known);
+    if ((s.certainty ?? 1) >= 0.75) stamp(s.lat, s.lon, AI_NEAR_M, known); else stamp(s.lat, s.lon, AI_NEAR_M, unsure);
   });
-  cache = { geo, stops, W, H, cls, rover, red, orange, known, lonOf, latOf, cellOf, cellM, bounds: G };
+  cache = { geo, stops, W, H, cls, rover, red, orange, known, unsure, lonOf, latOf, cellOf, cellM, bounds: G };
   return cache;
 }
 
@@ -99,7 +99,7 @@ function describe(C, cells, a, b, stops) {
   }
   // Curiosity science stops the route passes (within 30 m)
   const science = stops.filter((s) => pts.some((p, k) => k % 3 === 0 && dist(p, s) < AI_NEAR_M)).map((s) => s.sol);
-  return { pts, ...st, minutes: st.len / SPEED / 60, science: [...new Set(science)], unknownGround: st.len - st.known };
+  return { pts, cells, ...st, minutes: st.len / SPEED / 60, science: [...new Set(science)], unknownGround: st.len - st.known };
 }
 
 // Main entry: options A → B. via = a stop to pass by for science (optional; "auto" picks the best detour).
@@ -160,3 +160,87 @@ export function samplePts(pts, stepM = 200) {
   for (let k = 1; k < pts.length - 1; k++) { acc += dist(pts[k - 1], pts[k]); if (acc >= stepM) { out.push(pts[k]); acc = 0; } }
   out.push(pts[pts.length - 1]); return out;
 }
+
+
+// ── Drone scout (SIMULATED) ─────────────────────────────────────────────
+// Two jobs on the chosen route (TEAM RULES):
+//   unknown   = discovery: map class UNKNOWN, or no Curiosity photo within 30 m
+//   uncertain = confirmation: CAUTION on the team map, near an orange AI stop, or near a stop with AI certainty < 0.75
+export function scoutNeeds(geo, stops, opt) {
+  const C = grid(geo, stops), segs = [], tot = { unknown: 0, uncertain: 0 };
+  const why = (i) => (C.cls[i] === 2 || C.orange[i] || C.unsure[i] ? "uncertain" : C.cls[i] === 0 || !C.known[i] ? "unknown" : null);
+  let cur = null;
+  for (let k = 1; k < opt.pts.length; k++) {
+    const r = why(opt.cells[k]), d = dist(opt.pts[k - 1], opt.pts[k]);
+    if (r) tot[r] += d;
+    if (r && cur && cur.reason === r) cur.pts.push(opt.pts[k]);
+    else { if (cur) segs.push(cur); cur = r ? { reason: r, pts: [opt.pts[k - 1], opt.pts[k]] } : null; }
+  }
+  if (cur) segs.push(cur);
+  return { segs, ...tot };
+}
+
+// Mohamed's simulated drone flights (Drone/sim, along Curiosity's route), indexed on the route grid
+const HZ = { clear: "clear", sand: "sand", slope_caution: "caution", slope_nogo: "steep", obstacle: "obstacle", obstacle_point: "obstacle" };
+const RANK_HZ = { clear: 0, caution: 1, sand: 2, obstacle: 3, steep: 3 };
+let hzIdx = null;
+async function droneIndex(geo, stops) {
+  if (hzIdx && hzIdx.C === grid(geo, stops)) return hzIdx;
+  const C = grid(geo, stops), m = new Map();
+  try {
+    const d = await (await fetch("data/geo/drone_hazards.geojson")).json();
+    const put = (lon, lat, h) => { const [x, y] = C.cellOf(lat, lon); if (x < 0 || y < 0 || x >= C.W || y >= C.H) return; const i = y * C.W + x, old = m.get(i); if (!old || RANK_HZ[h] > RANK_HZ[old]) m.set(i, h); };
+    d.features.forEach((f) => { const h = HZ[f.properties.hazard]; if (!h) return; const g = f.geometry; (g.type === "Point" ? [g.coordinates] : g.coordinates).forEach(([lo, la]) => put(lo, la, h)); });
+  } catch { /* no drone layer */ }
+  hzIdx = { C, m };
+  return hzIdx;
+}
+
+// fly the drone over the cells that need it (3 m corridor each side) and read the ground
+export async function scoutRun(geo, stops, opt) {
+  const C = grid(geo, stops), { m } = await droneIndex(geo, stops), E = geo.elev;
+  const need = scoutNeeds(geo, stops, opt), scan = {}, src = { sim: 0, dem: 0 };
+  const nearest = (arr, v) => { let k = 0, d = 1e9; arr.forEach((q, j) => { const dd = Math.abs(q - v); if (dd < d) { d = dd; k = j; } }); return k; };
+  const relief = (lat, lon) => { // DEM method: a hollow > 1 m below its surroundings collects sand (team assumption)
+    if (!E) return 0; const i = nearest(E.lat, lat), j = nearest(E.lon, lon); let s2 = 0, n = 0;
+    for (let y = i - 2; y <= i + 2; y++) for (let x = j - 2; x <= j + 2; x++) { const v = E.z[y]?.[x]; if (v != null) { s2 += v; n++; } }
+    const z = E.z[i]?.[j]; return z == null || !n ? 0 : z - s2 / n;
+  };
+  const want = new Set(need.segs.flatMap((sg) => sg.pts.map((q) => { const [x, y] = C.cellOf(q.lat, q.lon); return y * C.W + x; })));
+  for (const c of want) {
+    const x0 = c % C.W, y0 = (c / C.W) | 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+      const x = x0 + dx, y = y0 + dy; if (x < 0 || y < 0 || x >= C.W || y >= C.H) continue;
+      const i = y * C.W + x; if (scan[i]) continue;
+      if (m.has(i)) { scan[i] = { r: m.get(i), src: "sim" }; src.sim++; continue; }
+      const r = C.cls[i] === 3 ? "steep" : relief(C.latOf(y), C.lonOf(x)) < -1 ? "sand" : C.cls[i] === 2 ? "caution" : "clear";
+      scan[i] = { r, src: "dem" }; src.dem++;
+    }
+  }
+  return { scan, src, need };
+}
+
+// plan again with what the drone saw: confirmed ground counts as GO, sand costs 8×, steep / obstacles are never crossed
+export const DRONE_SAND_W = 8;
+export function rerouteScanned(geo, stops, a, b, scan, profile = "safest") {
+  const C = grid(geo, stops), P = PROFILES[profile], base = weightFn(C, P);
+  const wt = (i) => {
+    const s = scan[i]; if (!s) return base(i);
+    if (C.red[i] || s.r === "steep" || s.r === "obstacle") return Infinity;
+    if (s.r === "sand") return Math.max(P.CAUTION, DRONE_SAND_W);
+    if (s.r === "caution") return P.CAUTION;
+    return C.rover[i] ? P.ROVER : P.GO;
+  };
+  const cells = dijkstra(C, wt, a, b);
+  if (!cells) return null;
+  const o = describe(C, cells, a, b, stops);
+  const st = { confirmed: 0, sand: 0, caution: 0, go: 0 };
+  for (let k = 1; k < o.pts.length; k++) {
+    const s = scan[cells[k]], d = dist(o.pts[k - 1], o.pts[k]);
+    if (s ? s.r === "clear" : C.cls[cells[k]] === 1) st.go += d;
+    if (!s) { if (C.cls[cells[k]] === 2) st.caution += d; continue; }
+    if (s.r === "clear") st.confirmed += d; else if (s.r === "sand") st.sand += d; else if (s.r === "caution") st.caution += d;
+  }
+  return { ...o, droneStat: st };
+}
+export const cellCentre = (geo, stops, i) => { const C = grid(geo, stops); return { lat: C.latOf((i / C.W) | 0), lon: C.lonOf(i % C.W) }; };

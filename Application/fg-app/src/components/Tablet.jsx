@@ -12,6 +12,7 @@ import { greyCells, keyOf, pickId, labelOf, pointFrom, NEAR_AI_M } from "../lib/
 import { loadGeo, elevAt } from "../lib/geo.js";
 import { dist } from "../lib/mission.js";
 import { safestPath, samplePath, WEIGHTS, droneScan, cellLatLon } from "../lib/pathfind.js";
+import { scoutNeeds, scoutRun, rerouteScanned, cellCentre } from "../lib/routes.js";
 import Planner from "./Planner.jsx";
 import { samplePts } from "../lib/routes.js";
 import { scienceTargets, LABEL, siteNear, openOf, samplesOf, HUMAN } from "../lib/science.js";
@@ -147,6 +148,44 @@ export default function Tablet() {
     setRoute(all.map(keyOf));
   }
 
+  // ── drone scout on the chosen route (SIMULATED) ──
+  const [need, setNeed] = useState(null), [scoutBusy, setScoutBusy] = useState(false);
+  useEffect(() => {
+    const o = options[chosen]; if (!o?.cells) { setNeed(null); return; }
+    loadGeo().then((g) => setNeed(scoutNeeds(g, stops, o))).catch(() => setNeed(null));
+  }, [options, chosen, stops]);
+  async function scoutRoute() {
+    const o = options[chosen]; if (!o || !need || scoutBusy) return;
+    const g = await loadGeo();
+    const way = need.segs.flatMap((sg) => sg.pts);
+    if (!way.length) return;
+    setScoutBusy(true);
+    const t0 = performance.now(), T = Math.min(7000, 1500 + way.length * 12);
+    await new Promise((done) => {
+      const fly = (t) => { setDrone(way[Math.min(way.length - 1, Math.floor(((t - t0) / T) * way.length))]); if (t - t0 < T) requestAnimationFrame(fly); else done(); };
+      requestAnimationFrame(fly);
+    });
+    setDrone(null);
+    const { scan, src } = await scoutRun(g, stops, o);
+    const r = rerouteScanned(g, stops, o.pts[0], o.pts[o.pts.length - 1], scan, o.id === "fastest" ? "fastest" : "safest");
+    const ents = Object.entries(scan).map(([i, v]) => ({ ...cellCentre(g, stops, +i), r: v.r, src: v.src }));
+    const cnt = (k) => ents.filter((e) => e.r === k).length;
+    const res = { sand: cnt("sand"), steep: cnt("steep") + cnt("obstacle"), caution: cnt("caution"), clear: cnt("clear"), sim: src.sim, dem: src.dem, before: o.len, unknownM: need.unknown, uncertainM: need.uncertain };
+    setDroneCells(ents.filter((e, k) => e.r !== "clear" || k % 3 === 0));
+    let changed = false;
+    if (r) {
+      changed = Math.abs(r.len - o.len) > 5;
+      const goPct = Math.round((100 * r.droneStat.go) / r.len);
+      const nopt = { ...o, ...r, id: o.id + "-drone", label: o.label.replace(/ · drone-checked$/, "") + " · drone-checked", goPct, tags: [...o.tags.filter((t) => t !== "drone-checked"), "drone-checked"], warn: [], scouted: res };
+      if (r.droneStat.sand > 5) nopt.warn.push(`${Math.round(r.droneStat.sand)} m on sand the drone found: go slowly`);
+      if (r.droneStat.caution > 20) nopt.warn.push(`${Math.round(r.droneStat.caution)} m on CAUTION ground (15–25° or rough): go slowly`);
+      setOptions((os) => os.map((x, k) => (k === chosen ? nopt : x)));
+    }
+    setScoutBusy(false);
+    say(`Drone scout done. ${res.sand ? `${res.sand} sand spots, ` : ""}${res.steep ? `${res.steep} steep or obstacle spots, ` : ""}${changed ? "route changed to avoid them." : "route confirmed."}`);
+    publish({ type: "dronescan", sand: res.sand, steep: res.steep, changed, cells: ents.filter((x) => x.r === "sand" || x.r === "steep" || x.r === "obstacle").slice(0, 600).map((x) => ({ lat: +x.lat.toFixed(6), lon: +x.lon.toFixed(6), r: x.r === "obstacle" ? "steep" : x.r })) });
+  }
+
   function usePath() {
     if (!path?.pts) return;
     const vias = samplePath(path.pts, 200).slice(1, -1).map((q) => ({ ...pointFrom(q.lat, q.lon, stops, dist), id: pickId(q.lat, q.lon, true), via: true }));
@@ -219,7 +258,7 @@ export default function Tablet() {
             ? (noGeo ? <Map3D stops={stops} route={routeStops} selected={sel} onSelect={setSel} colourFor={colourFor} />
                      : <Terrain3D stops={stops} route={routeStops} picks={picks} pathPts={options[chosen]?.pts} pathUnsure={null} onPick={pick} selected={sel} onSelect={setSel} colourFor={colourFor} onFail={() => setNoGeo(true)} />)
             : (noGeo ? <MiniMap stops={stops} greys={greys} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} />
-                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} droneCells={droneCells} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
+                     : <GeoMap targets={targets} astro={astroLive ? astro : null} trail={trail} stops={stops} greys={[]} picks={picks} pathPts={options[chosen]?.pts} pathColour={options[chosen]?.colour} altPaths={options.filter((_, k) => k !== chosen)} onChooseAlt={(o) => setChosen(options.indexOf(o))} ab={{ A, B }} droneCells={droneCells} scoutSegs={options[chosen]?.scouted ? [] : need?.segs || []} onPick={pick} route={routeStops} selected={sel} onSelect={setSel} drone={drone} laser={laser} scouted={scouted} colourFor={colourFor} onFail={() => setNoGeo(true)} />)}
           <div className="legend">
             {["green", "orange", "red", "grey"].map((c) => (
               <span key={c}><i style={{ background: COLOURS[c] }} />{{ green: "GO · AI sure", orange: "careful · or AI unsure", red: "don't go", grey: "no ground data · send scout" }[c]}</span>
@@ -235,7 +274,7 @@ export default function Tablet() {
             </select>
           </label>
           {!noGeo && <Planner targets={targets} stops={stops} A={A} B={B} setA={setA} setB={setB} pickFor={pickFor} setPickFor={setPickFor} sel={sel}
-            options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} />}
+            options={options} setOptions={setOptions} chosen={chosen} setChosen={setChosen} onUse={useOption} need={need} onScout={scoutRoute} scoutBusy={scoutBusy} />}
           {sel && (
             <div className="card">
               {targetOf(sel) && (

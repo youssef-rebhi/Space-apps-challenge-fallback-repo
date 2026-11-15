@@ -3,7 +3,7 @@ import { loadGeo } from "../lib/geo.js";
 import { routeOptions, inBox, RULES } from "../lib/routes.js";
 
 // Route planner: A → B by typing coordinates or picking on the map; several options like a maps app.
-export default function Planner({ targets = [], stops, A, B, setA, setB, pickFor, setPickFor, sel, options, setOptions, chosen, setChosen, onUse }) {
+export default function Planner({ targets = [], stops, A, B, setA, setB, pickFor, setPickFor, sel, options, setOptions, chosen, setChosen, onUse, need, onScout, scoutBusy }) {
   const [via, setVia] = useState("auto");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
@@ -65,6 +65,26 @@ export default function Planner({ targets = [], stops, A, B, setA, setB, pickFor
           {o.warn.length ? o.warn.map((w) => <small key={w} className="wtxt">⚠ {w}</small>) : <small className="ok">✓ firm, known ground</small>}
         </button>
       ))}
+      {options[chosen] && need && (
+        <div className="scoutbox">
+          {options[chosen].scouted ? (
+            <>
+              <b>🛸 Drone scout done (SIMULATED)</b>
+              <small>{options[chosen].scouted.sim + options[chosen].scouted.dem} spots read · {options[chosen].scouted.sand} sand · {options[chosen].scouted.steep} steep / obstacle · {options[chosen].scouted.caution} on 15–25° · the rest clear.</small>
+              <small>Route {Math.round(options[chosen].scouted.before)} m → <b>{Math.round(options[chosen].len)} m</b>; {Math.round(options[chosen].droneStat.confirmed)} m now confirmed by the drone.</small>
+              <small className="muted">Readings: {options[chosen].scouted.sim} from the team's drone flights over Curiosity's route (Drone/sim), {options[chosen].scouted.dem} from the drone method on the USGS DEM. Simulated, not real observations.</small>
+            </>
+          ) : need.unknown + need.uncertain < 1 ? <small className="ok">🛸 No drone needed: every metre is known and sure.</small> : (
+            <>
+              <b>🛸 Send the drone first?</b>
+              <small><i className="sw u" /> <b>{Math.round(need.unknown)} m unknown</b>: no Curiosity photo or no map data (discovery)</small>
+              <small><i className="sw c" /> <b>{Math.round(need.uncertain)} m uncertain</b>: CAUTION ground or AI not sure (confirmation)</small>
+              <button className="primary" onClick={onScout} disabled={scoutBusy}>{scoutBusy ? "🛸 Flying…" : "🛸 Scout this route (SIM)"}</button>
+            </>
+          )}
+          <a className="muted" href="drone.html#auto=real" target="_blank" rel="noreferrer">Open the drone simulator (flights on Curiosity's real route) ↗</a>
+        </div>
+      )}
       {options.length > 0 && <button className="primary" onClick={() => onUse(options[chosen])}>➕ Use “{options[chosen].label}” as the route</button>}
       <small className="muted">{RULES} Weights are team assumptions.</small>
     </div>

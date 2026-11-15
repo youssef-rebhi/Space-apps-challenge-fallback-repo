@@ -162,3 +162,8 @@ button.primary { background: #1f4d34; border-color: #3cff8f88; }
 .sciPanel ul { margin: 0; padding-left: 18px; } .sciPanel i { color: #d9b8ff; font-style: normal; font-weight: 700; font-size: 13px; }
 .legend4 i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin: 0 3px 0 8px; vertical-align: middle; }
 .mc0 { color: #b0b0b0; } .mc1 { color: #3cff8f; } .mc2 { color: #f4c430; } .mc3 { color: #ff5a4a; }
+.scoutbox { display: grid; gap: 4px; margin: 8px 0; padding: 8px 10px; border: 1px dashed #8a8f98; border-radius: 10px; background: #ffffff08; }
+.scoutbox a { font-size: 12px; }
+.sw { display: inline-block; width: 12px; height: 8px; border-radius: 2px; vertical-align: middle; }
+.sw.u { background: #cfcfcf; } .sw.c { background: #ff9a2e; }
+.paircode { font-family: ui-monospace, monospace; font-size: 15px; color: #ffd27a; word-break: break-all; }
