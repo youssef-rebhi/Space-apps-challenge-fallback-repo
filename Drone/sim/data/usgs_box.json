@@ -1,0 +1,14 @@
+{
+ "file": "usgs_box.npy",
+ "shape": [
+  2964,
+  2371
+ ],
+ "pixel_m": 0.9999999999999999,
+ "west": 137.36000069143637,
+ "north": -4.780000354755657,
+ "east": 137.40000089555497,
+ "south": -4.83000482755511,
+ "note": "row 0 = north edge; planetocentric lon/lat, east-positive, Mars sphere R=3396190",
+ "source": "USGS MSL Gale Merged DEM Mosaic 1 m v3 (Parker & Calef 2016) via Map_layer/Layer2_Elevation (rover frame)"
+}
