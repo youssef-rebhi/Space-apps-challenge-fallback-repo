@@ -378,12 +378,19 @@ const st = { x: +(q.get("x") ?? B.x), y: +(q.get("y") ?? B.y), yaw: +(q.get("yaw
 if (!cellAt(st.x, st.y).walk) [st.x, st.y] = nearestWalkable(st.x, st.y);   // e.g. the helmet's spot is on NO-GO
 // A -> B route from the helmet (?x,y = A, ?bx,by = B): a marker post at A and a tall beacon at B.
 // Marker size and colour are display choices (ASSUMPTION), not data.
-const AB = { a: [st.x, st.y], b: q.get("bx") != null ? [+q.get("bx"), +q.get("by")] : null };
+const AB = { a: [st.x, st.y], b: null, marks: [] };
 function abMarker([x, y], h, color) {
   const g = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, h, 8), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85 }));
-  g.position.copy(toScene(x, y, heightAt(x, y) + h / 2)); scene.add(g);
+  g.position.copy(toScene(x, y, heightAt(x, y) + h / 2)); scene.add(g); AB.marks.push(g);
 }
-if (AB.b) { abMarker(AB.a, 3, 0xffffff); abMarker(AB.b, 40, 0x3cff8f); }
+// put the walker at A, facing B, and mark both (also used by the portal when it fetches the tablet's route)
+function setAB(a, b) {
+  AB.marks.forEach((g) => scene.remove(g)); AB.marks = [];
+  [st.x, st.y] = cellAt(a[0], a[1]).walk ? a : nearestWalkable(a[0], a[1]);
+  AB.a = [st.x, st.y]; AB.b = b;
+  if (b) { st.yaw = -Math.atan2(b[0] - st.x, b[1] - st.y); abMarker(AB.a, 3, 0xffffff); abMarker(b, 40, 0x3cff8f); }
+}
+if (q.get("bx") != null) setAB([st.x, st.y], [+q.get("bx"), +q.get("by")]);
 const keys = new Set();
 addEventListener("keydown", (e) => { if (e.code === "KeyF") toggleFast(); keys.add(e.code); });
 addEventListener("keyup", (e) => keys.delete(e.code));
@@ -525,10 +532,10 @@ if (q.has("portal")) {
   // phone: lighter shadows (display choice), then the portal start screen
   sun.shadow.mapSize.set(1024, 1024);
   const { startPortal } = await import("./portal.js");
-  portal = startPortal({ THREE, st, camera, rig, renderer, tryMove, heightAt, toScene, say, EYE });
+  portal = startPortal({ THREE, st, camera, rig, renderer, tryMove, heightAt, toScene, say, EYE, setAB });
 }
 renderer.setAnimationLoop(frame);        // (not requestAnimationFrame: WebXR needs the renderer's loop)
-window.__walk = { st, M, scene, camera, rig, renderer, tiles, cellAt, heightAt, setSun, tryMove, get portal() { return portal; } };
+window.__walk = { st, M, scene, camera, rig, renderer, tiles, cellAt, heightAt, setSun, tryMove, setAB, get portal() { return portal; } };
 </script>
 </body>
 </html>

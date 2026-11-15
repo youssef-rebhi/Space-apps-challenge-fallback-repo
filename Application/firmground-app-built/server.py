@@ -35,7 +35,7 @@ class H(SimpleHTTPRequestHandler):
             try: e = json.loads(self.rfile.read(n) or b"{}")
             except ValueError: return self._json({"ok": False}, 400)
             with LOCK:
-                if e.get("type") == "pair" and e.get("code"): PAIRS[str(e["code"]).upper()] = e
+                if e.get("type") == "pair" and e.get("code"): PAIRS[str(e["code"]).upper()] = PAIRS["LATEST"] = e   # LATEST: for the 3D portal opened directly
                 e["id"] = NEXT[0]; NEXT[0] += 1; EVENTS.append(e); del EVENTS[:-200]
             return self._json({"ok": True, "id": e["id"]})
         self.send_error(404)

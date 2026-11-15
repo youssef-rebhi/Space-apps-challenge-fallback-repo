@@ -131,6 +131,7 @@ export function startPortal(api) {
       renderer.xr.setFramebufferScaleFactor(0.8);       // lighter for a phone GPU (display choice)
       await renderer.xr.setSession(session);
       // the direction you face now = the direction the walk view was facing
+      placeAtA();                                 // AR always starts with the astronaut on A, facing B
       rig.rotation.set(0, st.yaw, 0);
       havePrev = false; arFault = false;
       showBar("ar");
@@ -240,8 +241,38 @@ export function startPortal(api) {
   let geo = null;
   fetch("../terrain/terrain.json").then((r) => r.json()).then((t) => {
     const [lonW, latS] = t.corners_lonlat.SW, mPerDeg = 3396190 * Math.PI / 180;
-    geo = { toLonLat: (x, y) => [lonW + x / mPerDeg, latS + y / mPerDeg] };
+    geo = { toLonLat: (x, y) => [lonW + x / mPerDeg, latS + y / mPerDeg], toXY: (lon, lat) => [(lon - lonW) * mPerDeg, (lat - latS) * mPerDeg] };
+    routeFromTablet();
   }).catch(() => {});
+  // A is where the astronaut is. The tablet sends A and B to server.py as soon as they are picked
+  // (or the route it paired); the portal asks every 3 s. When A changes, the astronaut moves to the new A,
+  // facing B. Every AR start also puts him back on A. Tokens: Curiosity sol number, or p/v<lat>_<lon>.
+  let route = null, routeKey = "";
+  async function routeFromTablet() {
+    try {
+      const r = await fetch("/api/pair?c=LATEST");
+      if (!r.ok) { if (!route) $("pwhere").textContent = "Waiting for A from the tablet: pick A and B on the tablet…"; return; }
+      const toks = (await r.json()).stops.split(",").filter((t) => t[0] !== "v");
+      const key = toks[0] + ">" + toks[toks.length - 1];
+      if (key === routeKey) return;
+      const sols = toks.some((t) => /^\d/.test(t)) ? await (await fetch("/data/stops.json")).json() : [];
+      const ll = (t) => { if (/^\d/.test(t)) { const s = sols.find((x) => x.sol === +t); return s && [s.lon, s.lat]; } const [la, lo] = t.slice(1).split("_").map(Number); return [lo, la]; };
+      const A = ll(toks[0]), B = ll(toks[toks.length - 1]); if (!A || !B) return;
+      routeKey = key; route = { A, B };
+      placeAtA();
+      say("The astronaut is at A. The green beacon is B.");
+    } catch {}
+  }
+  function placeAtA() {
+    if (!route || !geo) return;
+    const same = route.A[0] === route.B[0] && route.A[1] === route.B[1];
+    api.setAB(geo.toXY(...route.A), same ? null : geo.toXY(...route.B));
+    snap = { ...snap, goalLat: route.B[1], goalLon: route.B[0], next: same ? "A (start)" : "B (destination)" };
+    havePrev = false; P.gz = null;           // AR: the phone's next pose starts from A
+    showWhere();
+  }
+  P.placeAtA = placeAtA;
+  setInterval(routeFromTablet, 3000);
   const COL = ["grey", "green", "orange", "red"], HAZ = ["Unknown ground: scout first", "GO ground", "Caution ground: walk slowly", "NO-GO ground ahead: do not cross"];
   let lastCls = 1;
   const distM = (a, b) => { const r = Math.PI / 180, R = 3396190, dl = (b[1] - a.lat) * r, dn = (b[0] - a.lon) * r * Math.cos(a.lat * r); return R * Math.hypot(dl, dn); };

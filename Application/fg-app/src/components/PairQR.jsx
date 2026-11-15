@@ -31,7 +31,10 @@ export default function PairQR({ routePts, evaMin = 240, why = "" }) {
     publish(e);
     // check the server kept it (server.py); if not, fall back to the long link
     const t = setTimeout(() => fetch("api/pair?c=" + code).then((r) => setStored(r.ok)).catch(() => setStored(false)), 600);
-    return () => clearTimeout(t);
+    // server.py keeps pairings in memory: after a restart it forgets them, so send the route again
+    // (the phone's 3D portal reads the last route from there to start the astronaut at A)
+    const again = setInterval(() => fetch("api/pair?c=" + code).then((r) => { if (r.status === 404) publish(e); }).catch(() => {}), 5000);
+    return () => { clearTimeout(t); clearInterval(again); };
   }, [code]);
   if (routePts.length < 2) return <p className="muted">Add at least 2 stops to the route to pair the helmet.</p>;
   const short = (phoneBase || base()) + "?h=" + code;

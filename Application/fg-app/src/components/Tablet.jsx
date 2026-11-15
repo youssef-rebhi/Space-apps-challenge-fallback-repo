@@ -45,6 +45,17 @@ export default function Tablet() {
   const [droneCells, setDroneCells] = useState([]);
   // route planner A → B (several options)
   const [A, setA] = useState(null), [B, setB] = useState(null), [pickFor, setPickFor] = useState(null);
+  // A and B go to server.py as soon as they are picked: the phone's 3D portal always puts the astronaut
+  // at A (and moves him when A moves). Sent again whenever the server holds another A or forgot it (restart).
+  useEffect(() => {
+    if (!A) return;
+    const tok = (p) => `p${p.lat.toFixed(6)}_${p.lon.toFixed(6)}`;
+    const stops = [A, B || A].map(tok).join(",");
+    const send = () => publish({ type: "pair", code: "AB", stops, eva: 240, why: "A and B picked on the tablet" });
+    const check = () => fetch("api/pair?c=LATEST").then((r) => (r.ok ? r.json() : null)).then((j) => { if (!j || j.stops.split(",")[0] !== stops.split(",")[0] || j.stops.split(",").pop() !== stops.split(",").pop()) send(); }).catch(() => {});
+    check(); const t = setInterval(check, 4000);
+    return () => clearInterval(t);
+  }, [A?.lat, A?.lon, B?.lat, B?.lon]);
   const [waypoints, setWaypoints] = useState([]);
   const [planMode, setPlanMode] = useState("direct"); // route planner: "direct" (A → B) or "multi" (W0..Wk)
   const [abortData, setAbortData] = useState(null);
