@@ -9,7 +9,7 @@ const has = (q, words) => words.some((w) => q.includes(w));
 export function answer(raw, c) {
   const q = (raw || "").toLowerCase();
   const stop = c.stop;
-  const where = stop ? `stop sol ${stop.sol}` : "this stop";
+  const where = stop ? (stop.sol != null && !stop.grey && !stop.custom ? `stop sol ${stop.sol}` : stop.custom ? "your point" : "this unexplored area") : "this stop";
 
   if (has(q, ["safe", "can i go", "go?", "should i", "nemchi", "najem", "est-ce que", "danger", "risk"]))
     return `${where}: ${c.colour.toUpperCase()}. ${c.advice}${c.cert != null ? ` AI certainty ${Math.round(c.cert * 100)} percent.` : ""}`;

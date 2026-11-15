@@ -10,7 +10,7 @@ export default function MiniMap({ stops, greys = [], route, selected, onSelect, 
   const span = Math.max(x1 - x0, y1 - y0) || 1e-3;
   const X = (lon) => P + ((lon - x0) / span) * (W - 2 * P);
   const Y = (lat) => H - P - ((lat - y0) / span) * (H - 2 * P);
-  const routePts = route.map((sol) => stops.find((s) => s.sol === sol)).filter(Boolean);
+  const routePts = route;
 
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="minimap" role="img" aria-label="Map of Curiosity's boxwork stops coloured by our AI">

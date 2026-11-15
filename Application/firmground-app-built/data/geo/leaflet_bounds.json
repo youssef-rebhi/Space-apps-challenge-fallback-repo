@@ -1,0 +1,55 @@
+{
+ "crs": "planetocentric lon/lat, east-positive, Mars sphere R=3396190 (use with L.CRS.Simple or EPSG:4326-style lon/lat axes; NOT Earth)",
+ "overlays": {
+  "elevation_box.png": {
+   "bounds": [
+    [
+     -4.83000482755511,
+     137.36000069143637
+    ],
+    [
+     -4.780000354755657,
+     137.40000089555497
+    ]
+   ],
+   "range_m": [
+    -3939.9619140625,
+    -3373.5849267578124
+   ]
+  },
+  "regional_gale_elevation.png": {
+   "bounds": [
+    [
+     -6.995851518436828,
+     136.19898540186006
+    ],
+    [
+     -3.7971849709891643,
+     139.39765194930771
+    ]
+   ],
+   "range_m": [
+    -4480.0,
+    586.0
+   ]
+  },
+  "slope_classes_box.png": {
+   "bounds": [
+    [
+     -4.83000482755511,
+     137.36000069143637
+    ],
+    [
+     -4.780000354755657,
+     137.3999840249501
+    ]
+   ],
+   "classes": {
+    "0": "grey unknown",
+    "1": "green GO",
+    "2": "orange caution",
+    "3": "red NO-GO"
+   }
+  }
+ }
+}

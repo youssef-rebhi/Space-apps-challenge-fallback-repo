@@ -3,6 +3,8 @@
 import { dist } from "./mission.js";
 
 export const keyOf = (s) => s.id ?? s.sol;
+export const pickId = (lat, lon, via = false) => `${via ? "v" : "p"}${lat.toFixed(6)}_${lon.toFixed(6)}`;
+export const labelOf = (s) => (s.sol != null && !s.grey && !s.custom ? `sol ${s.sol}` : s.via ? "path point" : s.custom ? "your point" : "unexplored area");
 
 export function greyCells(stops, n = 14) {
   if (!stops.length) return [];
@@ -20,4 +22,18 @@ export function greyCells(stops, n = 14) {
     cells.push({ id: `g${i}_${j}`, grey: true, ...c, cell, nearest: near, metres: Math.round(dist(c, near)) });
   }
   return cells;
+}
+
+// A point anywhere on the map. Ground data from our AI only if a Curiosity photo stop is close
+// (Navcam looks at the ground a few metres to ~30 m in front of the rover: team assumption).
+export const NEAR_AI_M = 30;
+export function pointFrom(lat, lon, stops, distFn) {
+  let near = stops[0], nd = Infinity;
+  stops.forEach((s) => { const d = distFn(s, { lat, lon }); if (d < nd) { nd = d; near = s; } });
+  const p = { id: pickId(lat, lon), custom: true, lat, lon, nearest: near, metres: Math.round(nd) };
+  if (near && nd <= NEAR_AI_M) Object.assign(p, {
+    soil_pct: near.soil_pct, bedrock_pct: near.bedrock_pct, sand_pct: near.sand_pct, bigrock_pct: near.bigrock_pct,
+    certainty: near.certainty, image: near.image, aiFrom: near.sol,
+  });
+  return p;
 }

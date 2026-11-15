@@ -42,9 +42,9 @@ export function finalColour(s, live) {
 export function advice(s, live) {
   const e = effective(s, live), c = colourOf(e), cert = certaintyOf(s, live).v;
   if (c === "grey") return { text: "No data here. Send the scout first.", scout: true };
-  if (c === "red") return { text: "Don't go. Too much sand or big rocks.", scout: false };
+  if (c === "red") return { text: e.slope_class === 3 && !(e.sand_pct > 0.3 || e.bigrock_pct > 0.02) ? "Don't go. Slope 25° or more (team DEM)." : "Don't go. Too much sand or big rocks.", scout: false };
   if (!live && cert < UNSURE) return { text: "The AI is not sure here. Better send the scout before you go.", scout: true };
-  if (c === "orange") return { text: "Risky: go only with extreme care, slow steps, stay on rock.", scout: !live };
+  if (c === "orange") return { text: e.slope_class === 2 && e.sand_pct < 0.1 ? "Risky: slope 15–25°. Slow steps, go only with extreme care." : "Risky: go only with extreme care, slow steps, stay on rock.", scout: !live };
   return { text: live ? "GO. Confirmed by the scout." : "GO. Firm ground, AI is confident.", scout: false };
 }
 
@@ -60,7 +60,7 @@ export function missionCheck(stops, evaMin) {
   if (stops.length < 2) return null;
   const out = routeMetres(stops) / SPEED;
   const back = (dist(stops[stops.length - 1], stops[0]) * RETURN_FACTOR) / SPEED;
-  const work = STOP_MIN * 60 * stops.length;
+  const work = STOP_MIN * 60 * stops.filter((x) => !x.via).length; // no work stop at path points
   const need = out + work + back;
   const o2 = O2_H * 3600 - RESERVE_MIN * 60;
   const limit = Math.min(evaMin * 60, o2);

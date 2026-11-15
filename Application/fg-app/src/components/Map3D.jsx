@@ -33,7 +33,7 @@ export default function Map3D({ stops, route, selected, onSelect, colourFor }) {
       ctx.beginPath(); ctx.moveTo(a, b); ctx.lineTo(p, q); ctx.stroke();
     }
     // route
-    const rp = route.map((sol) => stops.find((s) => s.sol === sol)).filter(Boolean);
+    const rp = route;
     if (rp.length > 1) {
       ctx.strokeStyle = "#7fb3ff"; ctx.lineWidth = 3; ctx.setLineDash([6, 5]); ctx.beginPath();
       rp.forEach((s, k) => { const [x, y] = proj(s.lon, s.lat); k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });

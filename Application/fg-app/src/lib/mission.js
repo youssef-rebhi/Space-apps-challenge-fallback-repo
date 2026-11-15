@@ -7,14 +7,22 @@ export const MARS_R = 3389500; // Mars mean radius, metres
 export async function loadStops() {
   const r = await fetch(DATA + "stops.json");
   if (!r.ok) throw new Error("could not load data/stops.json");
-  return r.json();
+  const stops = await r.json();
+  // add slope class + height from the team's geo layers, if they are there
+  try {
+    const { loadGeo, elevAt } = await import("./geo.js");
+    const g = await loadGeo();
+    stops.forEach((s) => { s.slope_class = g.slopeAt(s.lat, s.lon); s.elev = elevAt(g.elev, s.lat, s.lon); });
+  } catch { /* no geo layers: the app still works with the AI data only */ }
+  return stops;
 }
 
 // Our 4 colours: green GO · orange careful · red don't go · grey no data
 export function colourOf(s) {
-  if (!s || s.sand_pct == null) return "grey";
-  if (s.sand_pct > 0.3 || s.bigrock_pct > 0.02) return "red";
-  if (s.sand_pct >= 0.1) return "orange";
+  if (!s) return "grey";
+  if (s.sand_pct == null) return s.slope_class === 3 ? "red" : "grey"; // no ground data; steep is still a NO-GO
+  if (s.sand_pct > 0.3 || s.bigrock_pct > 0.02 || s.slope_class === 3) return "red";
+  if (s.sand_pct >= 0.1 || s.slope_class === 2) return "orange";
   return "green";
 }
 
@@ -23,6 +31,9 @@ export const COLOURS = { green: "#2e8b4a", orange: "#e07a1f", red: "#d43d3d", gr
 export function hazardText(s) {
   const c = colourOf(s);
   if (c === "grey") return "NO DATA";
+  const groundOk = !(s.sand_pct > 0.3 || s.bigrock_pct > 0.02);
+  if (s.slope_class === 3 && groundOk) return "STEEP ≥25°";
+  if (s.slope_class === 2 && groundOk && s.sand_pct < 0.1) return "SLOPE 15-25°";
   if (s.bigrock_pct > 0.02) return `ROCKS ${Math.round(s.bigrock_pct * 100)}%`;
   if (c === "green") return "FIRM";
   return `SAND ${Math.round(s.sand_pct * 100)}%`;
